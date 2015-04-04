@@ -1,0 +1,37 @@
+ENV['RAILS_ENV'] ||= 'test'
+
+require 'active_model'
+require 'skn_util'
+require 'rspec'
+
+
+# See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
+RSpec.configure do |config|
+  Kernel.srand config.seed
+
+  config.order = :random
+  config.color = true
+  config.tty = false
+  config.formatter = :progress  #:html, :textmate, :documentation
+
+  config.filter_run :focus
+  config.run_all_when_everything_filtered = true
+
+  # config.disable_monkey_patching!  # -- breaks rspec runtime
+  config.warnings = false
+  # config.profile_examples = 10
+
+  if config.files_to_run.one?
+    config.formatter = :documentation 
+  end
+
+  config.expect_with :rspec do |expectations|
+    expectations.include_chain_clauses_in_custom_matcher_descriptions = true
+    expectations.syntax = :expect
+  end
+
+  config.mock_with :rspec do |mocks|
+    mocks.verify_partial_doubles = true
+  end
+  
+end
