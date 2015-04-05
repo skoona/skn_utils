@@ -30,7 +30,7 @@
 
 
 ## Basic function includes:
-
+```ruby
  - provides the hash or dot notation methods of accessing values from object created; i.e
      'obj = ResultBean.new({value1: "some value", value2: {one: 1, two: "two"}}) 
      'x = obj.value1' or 'x = obj.value2.one'
@@ -64,6 +64,7 @@
     'obj = PageControls.new({name: "Something", phone: "2609998888"})'
     'obj.name?'       # => true    true or false, like obj.name.present?
     'obj.clear_name'  # => nil     sets :name to nil
+```
 
 ### The combination of this NestedResultBase(dot notation class) and AttributeHelpers(hash notation module), produces
  this effect from an input hash:
@@ -72,6 +73,7 @@
     ----------------------------------------------------      ---------------------------------
 
 ### (DOES NOT FOLLOW Values) :depth => :single
+```ruby
     * params = {one: 1,                                         drb.one      = 1
                 two: { one: 1,                                  drb.two      = {one: 1, two: 'two}
                        two: "two"                               drb.two.two  = NoMethodError
@@ -80,8 +82,10 @@
                          {three: 'three', four: 4}              drb.three[1] = {three: 'three', four: 4}
                        ]                                        drb.three[1].four = NoMethodError
                }      
+```
 
 ### (Follow VALUES that are Hashes only.) :depth => :multi
+```ruby
     * params = {one: 1,                                         drb.one      = 1
                 two: { one: 1,                                  drb.two.one  = 1
                 	   two: "two"                               drb.two.two  = 'two'
@@ -90,8 +94,10 @@
                          {three: 'three', four: 4}              drb.three[1] = {three: 'three', four: 4}
                        ]                                        drb.three[1].four = NoMethodError
 	           }
+```
  
 ### (Follow VALUES that are Hashes and/or Arrays of Hashes) :depth => :multi_with_arrays
+```ruby
     * params = {one: 1,                                         drb.one      = 1
                 two: { one: 1,                                  drb.two.one  = 1
                        two: "two"                               drb.two.two  = 'two'
@@ -101,19 +107,20 @@
                        ]
                }      
  
-
+```
 # Usage Examples: SubClassing 
 
 ###(DOES NOT FOLLOW Values)
-
+```ruby
        class SmallPackage < NestedResultBase
           def initialize(params={})
             super( params.merge({depth: :single}) )    # override default of :multi level
           end
        end
+```
 
 ###(Follow VALUES that are Hashes only.)
-
+```ruby
        class ResultBean < NestedResultBase
           # defaults to :multi level
        end
@@ -142,13 +149,16 @@
             super( params.merge({enable_serialization: true}) )    # Specified with Serialization Enabled
           end
        end
+```
 
 ###(Follow VALUES that are Hashes and/or Arrays of Hashes, and enable Serializers)
+```ruby
        class PageControl < NestedResultBase
           def initialize(params={})
             super( params.merge({depth: :multi_with_arrays, enable_serialization: true}) )    # override defaults
           end
        end
+```
 
 
 ### NOTE: Cannot be Marshalled/Serialized unless input params.merge({enable_serialization: true}) -- default is false
