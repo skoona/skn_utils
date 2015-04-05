@@ -32,14 +32,12 @@
 ## Basic function includes:
 
  - provides the hash or dot notation methods of accessing values from object created; i.e
-
-    'obj = ResultBean.new({value1: "some value", value2: {one: 1, two: "two"}}) 
-    'x = obj.value1' or 'x = obj.value2.one'
-    'x = obj["value1"]'
-    'x = obj[:value1]'
+     'obj = ResultBean.new({value1: "some value", value2: {one: 1, two: "two"}}) 
+     'x = obj.value1' or 'x = obj.value2.one'
+     'x = obj["value1"]'
+     'x = obj[:value1]'
 
  - enables serialization by avoiding the use of 'singleton_class' methods which breaks Serializers:
-
     Serializer supports xml, json, hash, and standard Marshall'ing
 
     person = PageControls.new({name: "Bob"})
@@ -54,7 +52,6 @@
     ***GenericBean designed to automatically handle the setup for serialization and multi level without arrays 
 
  - post create additions:
-
     'obj = ResultBean.new({value1: "some value", value2: {one: 1, two: "two"}}) 
     'x = obj.one'                          --causes NoMethodError
     'x = obj.one = 'some other value'      --creates a new instance value with accessors
@@ -63,9 +60,8 @@
     'y = obj.one[:two]                     --returns "two"
     'y = obj.one['two']                    --returns "two"
 
- - supports predicates <attr>? and clear_<attr>? method patterns:
-	
-    'obj = PageControls.new({name: "Something", phone: "2604815365"})'
+ - supports predicates <attr>? and clear_<attr>? method patterns:	
+    'obj = PageControls.new({name: "Something", phone: "2609998888"})'
     'obj.name?'       # => true    true or false, like obj.name.present?
     'obj.clear_name'  # => nil     sets :name to nil
 
