@@ -1,6 +1,6 @@
-# SknUtils
-
-## Creates an Object with instance variables and associated getters and setters for hash each input key. 
+# SknUtils 
+##Rails Gem containing a Ruby POJO that can be instantiated at runtime with an input hash.  This library 
+creates an Object with instance variables and associated getters and setters for hash each input key. 
 
 * If the key's value is also a hash itself, it too will become an Object.
 * if the key's value is a Array of Hashes, each element of the Array will become an Object.
@@ -26,7 +26,7 @@
       SknUtils::PageControls             # => Serializable, includes attr_accessors, and follows hash values and arrays of hashes.
       SknUtils::ResultBean               # => Not Serializable, includes attr_accessors, and follows hash values only.
       SknUtils::ResultsBeanWithErrors    # => Same as ResultBean with addition of ActiveModel::Errors object.
-    or Include AttributeHelpers            # => Add getter/setters, and hash notation access to instance vars of any object.
+    or Include AttributeHelpers          # => Add getter/setters, and hash notation access to instance vars of any object.
 
 
 ## Basic function includes:
@@ -38,6 +38,7 @@
      'x = obj[:value1]'
 
  - enables serialization by avoiding the use of 'singleton_class' methods which breaks Serializers:
+
     Serializer supports xml, json, hash, and standard Marshall'ing
 
     person = PageControls.new({name: "Bob"})
