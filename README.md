@@ -163,8 +163,8 @@ The combination of this NestedResultBase(dot notation class) and AttributeHelper
 ```
 
 
-### NOTE: Cannot be Marshalled/Serialized unless input params.merge({enable_serialization: true}) -- default is false
-Use GenericBean if serialization is needed, it sets this value to default to true
+NOTE: Cannot be Marshalled/Serialized unless input params.merge({enable_serialization: true}) -- default is false
+Use GenericBean or PageControls if serialization is needed, it initializes with this value true.
 
 ## Installation
 
@@ -188,7 +188,7 @@ If your doing this from source then build it first before attempting an install:
     
 ## Contributing
 
-1. Fork it ( https://github.com/skoona/skn_utils/fork )
+1. Fork it 
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
