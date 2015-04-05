@@ -1,5 +1,5 @@
 ##
-# <Rails.root>/lib/skn_util/nested_result_base.rb
+# <Rails.root>/lib/skn_utils/nested_result_base.rb
 #
 # Creates an Object with instance variables and associated getters and setters for hash each input key. 
 #   If the key's value is also a hash itself, it too will become an Object.
@@ -39,8 +39,8 @@
 #    person.to_hash             # => {"name"=>"Bob"}
 #    person.to_json             # => "{\"name\":\"Bob\"}"
 #    person.to_xml              # => "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<page-controls>\n  <name>Bob</name>\n</page-controls>\n"
-#    dmp = Marshal.dump(person) # => "\x04\bo:\x1ASknUtil::PageControls\x06:\n@nameI\"\bBob\x06:\x06ET"
-#    person = Marshal.load(dmp) # => #<SknUtil::PageControls:0x007faede906d40 @name="Bob">
+#    dmp = Marshal.dump(person) # => "\x04\bo:\x1ASknUtils::PageControls\x06:\n@nameI\"\bBob\x06:\x06ET"
+#    person = Marshal.load(dmp) # => #<SknUtils::PageControls:0x007faede906d40 @name="Bob">
 #
 #    ***GenericBean designed to automatically handle the setup for serialization and multi level without arrays 
 #
@@ -143,7 +143,7 @@
 ##
 
 
-module SknUtil
+module SknUtils
 
   class NestedResultBase
     include ActiveModel::Serialization

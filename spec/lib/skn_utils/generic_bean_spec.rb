@@ -1,16 +1,14 @@
 ##
-# spec/lib/skn_util/generic_bean_spec.rb
+# spec/lib/skn_utils/generic_bean_spec.rb
 #
 
-describe SknUtil::PageControls, "Generic Marshal'able Bean class " do
+describe SknUtils::GenericBean, "Generic Marshal'able Bean class " do
   let(:object) {
-    SknUtil::PageControls.new({one: "one",
-                               two: "two",
-                               three: {four: 4, five: 5, six: {seven: 7, eight: "eight" }},
-                               four: {any_key: "any value"}, 
-                               five: [],
-                               six: [{any_key: "any value"},{four: 4, five: 5, six: {seven: 7, eight: "eight" }}]
-                              })
+    SknUtils::GenericBean.new({one: "one",
+                             two: "two",
+                             three: {four: 4, five: 5, six: {seven: 7, eight: "eight" }},
+                             four: {any_key: "any value"}, five: []}
+                           )
   }
 
   context "Initialization Features " do
@@ -24,7 +22,7 @@ describe SknUtil::PageControls, "Generic Marshal'able Bean class " do
         dmp = obj = ""  
         expect { dmp =  Marshal.dump(object) }.not_to raise_error
         expect { obj = Marshal.load(dmp) }.not_to raise_error
-        expect(obj).to be_a(SknUtil::PageControls)
+        expect(obj).to be_a(SknUtils::GenericBean)
         expect( object.fifty.any_key).to eql "any value"  
         expect( object.sixty).to eql 60
     end
@@ -32,11 +30,11 @@ describe SknUtil::PageControls, "Generic Marshal'able Bean class " do
   
   context "Internal Operations " do
     it "Initializes from a hash" do
-      expect(object).to be
+      expect(SknUtils::GenericBean.new({one: "one", two: "two"})).to be
     end
     it "Does not modify the base class, only singleton instance methods" do
-      obj1 = SknUtil::PageControls.new({one: "one", two: "two"})
-      obj2 = SknUtil::PageControls.new({three: "3", four: "4"})
+      obj1 = SknUtils::GenericBean.new({one: "one", two: "two"})
+      obj2 = SknUtils::GenericBean.new({three: "3", four: "4"})
       expect(obj1.one).to eql "one"
       expect(obj2.three).to eql "3"
       expect(obj2.one?).to be false
@@ -44,34 +42,26 @@ describe SknUtil::PageControls, "Generic Marshal'able Bean class " do
       expect { obj1.three }.to raise_error NoMethodError
       expect { obj2.one }.to raise_error NoMethodError
     end
-    it "Supports predicates(?)" do
-      expect(object.one?).to be true
-      expect(object.three.five?).to be true
-    end
     it "Does not support - respond_to - methods, because it has no accessor methods" do
       expect(object).not_to respond_to(:one)
       expect(object.one).to eql "one"
     end
     it "nest objects if multi-level hash is given" do
-      expect(object.three).to be_a(SknUtil::PageControls)
+      expect(object.one).to be_eql("one")
+      expect(object.two).to be_eql("two")
+      expect(object.three).to be_a(SknUtils::GenericBean)
       expect(object.three.five).to eq(5)
-    end
-    it "nest objects if multi-level array of hashes is given" do
-      expect(object.six.first).to be_a(SknUtil::PageControls)
-      expect(object.six.last).to be_a(SknUtil::PageControls)
-      expect(object.six.last.six.eight).to eq('eight')
     end
     it "#attributes method returns a hash of all attributes and their values." do
       expect(object.attributes).to be_a(Hash)
       expect(object.attributes[:one]).to be_eql("one")
       expect(object.attributes[:three]).to be_a(Hash)
-      expect(object.attributes[:six].last[:six][:eight]).to eql('eight')
     end
   end
 
   shared_examples_for "marshal-able generic variable container" do
     it "retains depth_level option flag" do
-      expect(@obj.depth_level).to eql(:multi_with_arrays)
+      expect(@obj.depth_level).to eql(:multi)
     end
     it "retains serialization option flag" do
       expect(@obj.serialization_required?).to be true
@@ -93,11 +83,11 @@ describe SknUtil::PageControls, "Generic Marshal'able Bean class " do
       expect(@obj.clear_two).to be_nil
     end
     it "#attribute? returns true or false based on contents of attribute." do
-      expect(@obj.two?).to be true
+      expect(@obj.two?).to be_truthy
       @obj.clear_two
       expect(@obj.two?).to be false
-      expect(@obj.three?).to be true
-      expect(@obj.four?).to be true
+      expect(@obj.three?).to be_truthy
+      expect(@obj.four?).to be_truthy
       @obj.clear_three
       expect(@obj.three?).to be false
       @obj.clear_four
@@ -118,9 +108,6 @@ describe SknUtil::PageControls, "Generic Marshal'able Bean class " do
       end
       it "#to_hash method returns a serialized version of this object." do
         expect(object.to_hash).to be_a(Hash)
-      end
-      it "#attributes method returns original input hash." do
-        expect(object.attributes).to be_a(Hash)
       end
     end
   end

@@ -1,7 +1,7 @@
 ENV['RAILS_ENV'] ||= 'test'
 
 require 'active_model'
-require 'skn_util'
+require 'skn_utils'
 require 'rspec'
 
 

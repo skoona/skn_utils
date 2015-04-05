@@ -1,7 +1,7 @@
 ##
-# <Rails.root>/lib/skn_util/page_controls.rb
+# <Rails.root>/lib/skn_utils/page_controls.rb
 #
-# *** See SknUtil::NestedResultBase for details ***
+# *** See SknUtils::NestedResultBase for details ***
 #
 ##
 # (Defaults)
@@ -9,7 +9,7 @@
 # :depth = :multi_with_arrays
 ##
 
-module SknUtil
+module SknUtils
 
   class PageControls < NestedResultBase
     def initialize(params={})

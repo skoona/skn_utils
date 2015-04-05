@@ -1,14 +1,14 @@
 ##
-# <Rails.root>/lib/skn_util/generic_bean.rb
+# <Rails.root>/lib/skn_utils/generic_bean.rb
 #
-# *** See SknUtil::NestedResultBase for details ***
+# *** See SknUtils::NestedResultBase for details ***
 #
 ##
 # (Defaults)
 # :enable_serialization = true
 # :depth = :multi
 
-module SknUtil
+module SknUtils
 
   class GenericBean < NestedResultBase
     def initialize(params={})

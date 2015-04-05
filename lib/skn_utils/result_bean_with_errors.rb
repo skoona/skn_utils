@@ -1,7 +1,7 @@
 ##
-# <Rails.root>/lib/skn_util/result_bean_with_errors.rb
+# <Rails.root>/lib/skn_utils/result_bean_with_errors.rb
 #
-# *** See SknUtil::NestedResultBase for details ***
+# *** See SknUtils::NestedResultBase for details ***
 #
 ##
 # (Defaults)
@@ -14,7 +14,7 @@
 #  bean.errors.add(:name, "can not be nil") if name == nil
 ###
 
-module SknUtil
+module SknUtils
   
   class ResultBeanWithErrors < NestedResultBase
     include ActiveModel::Conversion

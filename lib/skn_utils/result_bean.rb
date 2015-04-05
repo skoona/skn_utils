@@ -1,7 +1,7 @@
 ##
-# <Rails.root>/lib/skn_util/result_bean.rb
+# <Rails.root>/lib/skn_utils/result_bean.rb
 #
-# *** See SknUtil::NestedResultBase for details ***
+# *** See SknUtils::NestedResultBase for details ***
 #
 ##
 # (Defaults)
@@ -9,7 +9,7 @@
 # :depth = :multi
 ##
 
-module SknUtil
+module SknUtils
 
   class ResultBean < NestedResultBase
   end

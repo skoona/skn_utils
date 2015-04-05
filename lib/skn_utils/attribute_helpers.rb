@@ -1,7 +1,7 @@
 ##
-# <Rails.root>/lib/skn_util/attribute_helpers.rb
+# <Rails.root>/lib/skn_utils/attribute_helpers.rb
 #
-# *** See SknUtil::NestedResultBase for details ***
+# *** See SknUtils::NestedResultBase for details ***
 #
 ##
 # This module provides
@@ -26,7 +26,7 @@
 
 
 
-module SknUtil
+module SknUtils
   module AttributeHelpers
 
     # return a hash of all attributes and their current values
@@ -109,38 +109,36 @@ module SknUtil
     ##
     def method_missing(method, *args, &block)
       #puts "method_missing/method/type=#{method}/#{method.class.name}"
-      begin
-        if method.to_s.start_with?('clear_') and instance_variable_defined?("@#{method.to_s[6..-1]}")
-          clear_attribute(method.to_s[6..-1].to_sym)
-        elsif method.to_s.end_with?('?')
-          if instance_variable_defined?("@#{method.to_s[0..-2]}")
-            attribute?(method.to_s[0..-2].to_sym)
-          else
-            false
-          end
-        elsif method.to_s.end_with?("=")              # add new attribute or whole object
-          if args.first.is_a?(Hash) 
-            singleton_class.send(:attr_accessor, method.to_s[0..-2]) unless serial_required?
-            if multi_required?
-              instance_variable_set "@#{method.to_s[0..-2]}", self.class.new(*args)
-            else
-              instance_variable_set "@#{method.to_s[0..-2]}", *args
-            end
-          elsif args.size > 0
-            singleton_class.send(:attr_accessor, method.to_s[0..-2]) unless serial_required?
-            instance_variable_set "@#{method.to_s[0..-2]}", *args
-          else
-            super(method, *args, &block)      # throw excpt for not found or could return false
-          end
-        elsif instance_variable_defined? "@#{method.to_s}"
-          instance_variable_get "@#{method.to_s}"
+      if method.to_s.start_with?('clear_') and instance_variable_defined?("@#{method.to_s[6..-1]}")
+        clear_attribute(method.to_s[6..-1].to_sym)
+      elsif method.to_s.end_with?('?')
+        if instance_variable_defined?("@#{method.to_s[0..-2]}")
+          attribute?(method.to_s[0..-2].to_sym)
         else
-          super(method, *args, &block)
+          false
         end
-      rescue
-         # puts $!.message + $!.backtrace.join("\n")
+      elsif method.to_s.end_with?("=")              # add new attribute or whole object
+        if args.first.is_a?(Hash) 
+          singleton_class.send(:attr_accessor, method.to_s[0..-2]) unless serial_required?
+          if multi_required?
+            instance_variable_set "@#{method.to_s[0..-2]}", self.class.new(*args)
+          else
+            instance_variable_set "@#{method.to_s[0..-2]}", *args
+          end
+        elsif args.size > 0
+          singleton_class.send(:attr_accessor, method.to_s[0..-2]) unless serial_required?
+          instance_variable_set "@#{method.to_s[0..-2]}", *args
+        else
+          super(method, *args, &block)      # throw excpt for not found or could return false
+        end
+      elsif instance_variable_defined? "@#{method.to_s}"
+        instance_variable_get "@#{method.to_s}"
+      else
         super(method, *args, &block)
       end
+    rescue
+       # puts $!.message + $!.backtrace.join("\n")
+      super(method, *args, &block)
     end
     # end of private section
 

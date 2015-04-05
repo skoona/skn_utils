@@ -1,10 +1,10 @@
 ##
-# spec/lib/skn_util/result_bean_spec.rb
+# spec/lib/skn_utils/result_bean_spec.rb
 #
 
-describe SknUtil::ResultBean, "Generic Bean class " do
+describe SknUtils::ResultBean, "Generic Bean class " do
   let(:object) {
-    SknUtil::ResultBean.new({one: "one",
+    SknUtils::ResultBean.new({one: "one",
                              two: "two",
                              three: {four: 4, five: 5, six: {seven: 7, eight: "eight" }},
                              four: {any_key: "any value"}, five: []}
@@ -18,11 +18,11 @@ describe SknUtil::ResultBean, "Generic Bean class " do
 
   context "Internal Operations " do
     it "Initializes from a hash" do
-      expect(SknUtil::ResultBean.new({one: "one", two: "two"})).to be
+      expect(SknUtils::ResultBean.new({one: "one", two: "two"})).to be
     end
     it "Does not modify the base class, only singleton instance methods" do
-      obj1 = SknUtil::ResultBean.new({one: "one", two: "two"})
-      obj2 = SknUtil::ResultBean.new({three: 3, four: "4"})
+      obj1 = SknUtils::ResultBean.new({one: "one", two: "two"})
+      obj2 = SknUtils::ResultBean.new({three: 3, four: "4"})
       expect(obj1.one).to eql "one"
       expect(obj2.three).to eql 3
       expect(obj2.one?).to be false
@@ -34,7 +34,7 @@ describe SknUtil::ResultBean, "Generic Bean class " do
       expect(object).to respond_to(:one)
     end
     it "nest objects if multi-level hash is given" do
-      expect(object.three).to be_a(SknUtil::ResultBean)
+      expect(object.three).to be_a(SknUtils::ResultBean)
       expect(object.three.five).to eq(5)
     end
     it "#attributes method returns a hash of all attributes and their values." do
