@@ -74,7 +74,7 @@ The combination of this NestedResultBase(dot notation class) and AttributeHelper
     {:depth => <select>, ...}  Input Hash                        Basic dot notation: effect of :depth
     ----------------------------------------------------      ---------------------------------
 
-### (DOES NOT FOLLOW Values) :depth => :single
+(DOES NOT FOLLOW Values) :depth => :single
 ```ruby
     * params = {one: 1,                                         drb.one      = 1
                 two: { one: 1,                                  drb.two      = {one: 1, two: 'two}
@@ -86,7 +86,7 @@ The combination of this NestedResultBase(dot notation class) and AttributeHelper
                }      
 ```
 
-### (Follow VALUES that are Hashes only.) :depth => :multi
+(Follow VALUES that are Hashes only.) :depth => :multi
 ```ruby
     * params = {one: 1,                                         drb.one      = 1
                 two: { one: 1,                                  drb.two.one  = 1
@@ -98,7 +98,7 @@ The combination of this NestedResultBase(dot notation class) and AttributeHelper
 	           }
 ```
  
-### (Follow VALUES that are Hashes and/or Arrays of Hashes) :depth => :multi_with_arrays
+(Follow VALUES that are Hashes and/or Arrays of Hashes) :depth => :multi_with_arrays
 ```ruby
     * params = {one: 1,                                         drb.one      = 1
                 two: { one: 1,                                  drb.two.one  = 1
@@ -112,7 +112,7 @@ The combination of this NestedResultBase(dot notation class) and AttributeHelper
 ```
 # Usage Examples: SubClassing 
 
-###(DOES NOT FOLLOW Values)
+(DOES NOT FOLLOW Values)
 ```ruby
        class SmallPackage < NestedResultBase
           def initialize(params={})
@@ -121,7 +121,7 @@ The combination of this NestedResultBase(dot notation class) and AttributeHelper
        end
 ```
 
-###(Follow VALUES that are Hashes only.)
+(Follow VALUES that are Hashes only.)
 ```ruby
        class ResultBean < NestedResultBase
           # defaults to :multi level
@@ -153,7 +153,7 @@ The combination of this NestedResultBase(dot notation class) and AttributeHelper
        end
 ```
 
-###(Follow VALUES that are Hashes and/or Arrays of Hashes, and enable Serializers)
+(Follow VALUES that are Hashes and/or Arrays of Hashes, and enable Serializers)
 ```ruby
        class PageControl < NestedResultBase
           def initialize(params={})
