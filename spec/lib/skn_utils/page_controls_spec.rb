@@ -61,6 +61,12 @@ describe SknUtils::PageControls, "Generic Marshal'able Bean class " do
       expect(object.six.last).to be_a(SknUtils::PageControls)
       expect(object.six.last.six.eight).to eq('eight')
     end
+    it "nest arrays of objects if array of hashes is dynamically given  (post-create)" do
+      expect { object.one_array = [{one: "one", two: "two"},{one: 1, two: 2}] }.not_to raise_error
+      expect(object.one_array.first.one).to eql("one")
+      expect(object.one_array.last.two).to eql(2)
+      expect(object.one_array[0]).to be_a(SknUtils::PageControls)
+    end
     it "#attributes method returns a hash of all attributes and their values." do
       expect(object.attributes).to be_a(Hash)
       expect(object.attributes[:one]).to be_eql("one")

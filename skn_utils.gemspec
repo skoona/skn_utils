@@ -70,7 +70,7 @@ Gem::Specification.new do |spec|
      'obj.name?'       # => true    true or false, like obj.name.present?
      'obj.clear_name'  # => nil     sets :name to nil
 $
-  spec.homepage      = ""
+  spec.homepage      = "https://github.com/skoona/skn_utils"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
@@ -83,4 +83,5 @@ $
   spec.add_development_dependency "bundler", "~> 1.7"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", '~> 3.0'
+  spec.add_development_dependency "pry"
 end

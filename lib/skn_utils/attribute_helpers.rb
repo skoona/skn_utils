@@ -95,6 +95,10 @@ module SknUtils
     def multi_required?
       respond_to? :depth_level and depth_level != :single 
     end
+    # see NestedResultBase
+    def multi_with_arrays_required?
+      respond_to? :depth_level and depth_level == :multi_with_arrays 
+    end
 
     ##
     # Adds the attr?() method pattern.  all attributes will respond to attr?: example - obj.name? with true or false
@@ -108,7 +112,7 @@ module SknUtils
     # However not adding attr_accessors may impact performance, as method_missing must fill-in for read/writes
     ##
     def method_missing(method, *args, &block)
-      #puts "method_missing/method/type=#{method}/#{method.class.name}"
+      # puts("method_missing/method/class/*args=#{method}/#{method.class.name}/#{args}")
       if method.to_s.start_with?('clear_') and instance_variable_defined?("@#{method.to_s[6..-1]}")
         clear_attribute(method.to_s[6..-1].to_sym)
       elsif method.to_s.end_with?('?')
@@ -125,7 +129,16 @@ module SknUtils
           else
             instance_variable_set "@#{method.to_s[0..-2]}", *args
           end
-        elsif args.size > 0
+        elsif args.first.is_a?(Array) and args.flatten.first.kind_of?(Hash)
+          singleton_class.send(:attr_accessor, method.to_s[0..-2]) unless serial_required?
+          if multi_with_arrays_required?
+            instance_variable_set("@#{method.to_s[0..-2]}", 
+                (args.flatten.map {|nobj| nobj.kind_of?(Hash) ? self.class.new(nobj) : nobj }) 
+            )
+          else
+            instance_variable_set "@#{method.to_s[0..-2]}", *args
+          end
+        elsif !args.empty?
           singleton_class.send(:attr_accessor, method.to_s[0..-2]) unless serial_required?
           instance_variable_set "@#{method.to_s[0..-2]}", *args
         else
