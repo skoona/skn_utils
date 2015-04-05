@@ -2,7 +2,7 @@
 Rails Gem containing a Ruby POJO that can be instantiated at runtime with an input hash.  This library creates an Object with instance variables and associated getters and setters for Dot or Hash notational access to each instance variable.  Additional instance variables can be added post-create by 'obj.my_new_var = "some value"', or simply assigning it.  
 
 
-The intent of this component is to be container of data results, with easy access to its contents with on demand transformation to hash, xml, or json. 
+The intent of this component is to be a container of data results, with easy access to its contents with on-demand transformation to hash, xml, or json. 
 
 * If the key's value is also a hash itself, it too will become an Object.
 * if the key's value is a Array of Hashes, each element of the Array will become an Object.
@@ -167,7 +167,7 @@ NOTE: Cannot be Marshalled/Serialized unless input params.merge({enable_serializ
 Use GenericBean or PageControls if serialization is needed, it initializes with this value true.
 
 ## Installation
-
+----------------
 runtime prereqs: gem 'active_model', '~> 3.0'
 
 Add this line to your application's Gemfile:
@@ -195,9 +195,9 @@ Or install it yourself as:
 7. $ gem install skn_utils
 * Done
 
-## Console Commander    
+## Console Workout    
 
- * Start with building gem first.
+Start with building gem first.
 ```bash    
     $ cd skn_utils
     $ bundle exec pry
