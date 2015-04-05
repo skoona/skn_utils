@@ -168,6 +168,8 @@ Use GenericBean or PageControls if serialization is needed, it initializes with 
 
 ## Installation
 
+runtime prereqs: gem 'active_model', '~> 3.0'
+
 Add this line to your application's Gemfile:
 
 ```ruby
@@ -181,10 +183,34 @@ And then execute:
 Or install it yourself as:
 
     $ gem install skn_utils
-    
-If your doing this from source then build it first before attempting an install:
 
-    $ gem build skn_utils.gemspec
+## Build    
+
+1. $ git clone git@github.com:skoona/skn_utils.git
+2. $ cd skn_utils
+3. $ gem install bundler
+4. $ bundle install
+5. $ gem build skn_utils.gemspec
+6. $ gem install skn_utils
+* Done
+
+## Console Commander    
+
+ * Start with building gem first.
+    
+    $ cd skn_utils
+    $ bundle exec pry
+    [1] pry(main)> require 'active_model' 
+    [2] pry(main)> require 'skn_utils'    
+    [3] pry(main)> rb = SknUtils::ResultBean.new({sample: [{one: "one", two: "two"},{one: 1, two: 2}] })
+    [4] pry(main)> pg = SknUtils::PageControls.new({sample: [{one: "one", two: "two"},{one: 1, two: 2}] }) 
+    [5] pry(main)> pg.sample.first.one          # Tip :multi_with_arrays
+    [6] pry(main)> rb.sample.first.one          # Tip :multi without arrays  you will get a NoMethodError
+    [7] pry(main)> rb.sample.first[:one]        
+    
+    [n] pry(main)> exit
+    * Done
+
     
 ## Contributing
 
