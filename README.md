@@ -1,5 +1,5 @@
 # SknUtils 
-##Rails Gem containing a Ruby POJO that can be instantiated at runtime with an input hash.  This library 
+### Rails Gem containing a Ruby POJO that can be instantiated at runtime with an input hash.  This library 
 creates an Object with instance variables and associated getters and setters for hash each input key. 
 
 * If the key's value is also a hash itself, it too will become an Object.
