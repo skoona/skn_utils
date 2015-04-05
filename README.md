@@ -199,18 +199,18 @@ Or install it yourself as:
 
  * Start with building gem first.
     
-    $ cd skn_utils
-    $ bundle exec pry
-    [1] pry(main)> require 'active_model' 
-    [2] pry(main)> require 'skn_utils'    
-    [3] pry(main)> rb = SknUtils::ResultBean.new({sample: [{one: "one", two: "two"},{one: 1, two: 2}] })
-    [4] pry(main)> pg = SknUtils::PageControls.new({sample: [{one: "one", two: "two"},{one: 1, two: 2}] }) 
-    [5] pry(main)> pg.sample.first.one          # Tip :multi_with_arrays
-    [6] pry(main)> rb.sample.first.one          # Tip :multi without arrays  you will get a NoMethodError
-    [7] pry(main)> rb.sample.first[:one]        
-    
-    [n] pry(main)> exit
-    * Done
+ * $ cd skn_utils
+ * $ bundle exec pry
+ * [1] pry(main)> require 'active_model' 
+ * [2] pry(main)> require 'skn_utils'    
+ * [3] pry(main)> rb = SknUtils::ResultBean.new({sample: [{one: "one", two: "two"},{one: 1, two: 2}] })
+ * [4] pry(main)> pg = SknUtils::PageControls.new({sample: [{one: "one", two: "two"},{one: 1, two: 2}] }) 
+ * [5] pry(main)> pg.sample.first.one          # Tip :multi_with_arrays
+ * [6] pry(main)> rb.sample.first.one          # Tip :multi without arrays  you will get a NoMethodError
+ * [7] pry(main)> rb.sample.first[:one]        
+ * ...
+ * [n] pry(main)> exit
+ * Done
 
     
 ## Contributing
