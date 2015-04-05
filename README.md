@@ -12,32 +12,34 @@
     into the input params key ':enable_serialization' set to true.  It defaults to false for speed purposes
  
 
-## Operational Options
+### Operational Options
 --------------------------------
 
-  :enable_serialization = false     -- [ true | false ], for speed, omits creation of attr_accessor
-  :depth = :multi                   -- [ :single | :multi | :multi_with_arrays ]
+    :enable_serialization = false     -- [ true | false ], for speed, omits creation of attr_accessor
+    :depth = :multi                   -- [ :single | :multi | :multi_with_arrays ]
 
-## Public Components
+### Public Components
 --------------------------------
 
-  Inherit from NestedResultBase or instantiate an included example:
+    Inherit from NestedResultBase or instantiate an included example:
       SknUtils::GenericBean              # => Serializable, includes attr_accessors, and follows hash values only.
       SknUtils::PageControls             # => Serializable, includes attr_accessors, and follows hash values and arrays of hashes.
       SknUtils::ResultBean               # => Not Serializable, includes attr_accessors, and follows hash values only.
       SknUtils::ResultsBeanWithErrors    # => Same as ResultBean with addition of ActiveModel::Errors object.
-  or Include AttributeHelpers            # => Add getter/setters, and hash notation access to instance vars of any object.
+    or Include AttributeHelpers            # => Add getter/setters, and hash notation access to instance vars of any object.
 
 
 ## Basic function includes:
 
-   - provides the hash or dot notation methods of accessing values from object created; i.e
-     'obj = ResultBean.new({value1: "some value", value2: {one: 1, two: "two"}}) 
-     'x = obj.value1' or 'x = obj.value2.one'
-     'x = obj["value1"]'
-     'x = obj[:value1]'
+ - provides the hash or dot notation methods of accessing values from object created; i.e
 
-   - enables serialization by avoiding the use of 'singleton_class' methods which breaks Serializers
+    'obj = ResultBean.new({value1: "some value", value2: {one: 1, two: "two"}}) 
+    'x = obj.value1' or 'x = obj.value2.one'
+    'x = obj["value1"]'
+    'x = obj[:value1]'
+
+ - enables serialization by avoiding the use of 'singleton_class' methods which breaks Serializers:
+
     Serializer supports xml, json, hash, and standard Marshall'ing
 
     person = PageControls.new({name: "Bob"})
@@ -51,55 +53,57 @@
 
     ***GenericBean designed to automatically handle the setup for serialization and multi level without arrays 
 
-   - post create additions:
-     'obj = ResultBean.new({value1: "some value", value2: {one: 1, two: "two"}}) 
-     'x = obj.one'                          --causes NoMethodError
-     'x = obj.one = 'some other value'      --creates a new instance value with accessors
-     'x = obj.one = {key1: 1, two: "two"}'  --creates a new ***bean as the value of obj.one
-     'y = obj.one.two'                      --returns "two"
-     'y = obj.one[:two]                     --returns "two"
-     'y = obj.one['two']                    --returns "two"
+ - post create additions:
 
-   - supports predicates <attr>? and clear_<attr>? method patterns
-     'obj = PageControls.new({name: "Something", phone: "2604815365"})'
-     'obj.name?'       # => true    true or false, like obj.name.present?
-     'obj.clear_name'  # => nil     sets :name to nil
+    'obj = ResultBean.new({value1: "some value", value2: {one: 1, two: "two"}}) 
+    'x = obj.one'                          --causes NoMethodError
+    'x = obj.one = 'some other value'      --creates a new instance value with accessors
+    'x = obj.one = {key1: 1, two: "two"}'  --creates a new ***bean as the value of obj.one
+    'y = obj.one.two'                      --returns "two"
+    'y = obj.one[:two]                     --returns "two"
+    'y = obj.one['two']                    --returns "two"
+
+ - supports predicates <attr>? and clear_<attr>? method patterns:
+	
+    'obj = PageControls.new({name: "Something", phone: "2604815365"})'
+    'obj.name?'       # => true    true or false, like obj.name.present?
+    'obj.clear_name'  # => nil     sets :name to nil
 
 ### The combination of this NestedResultBase(dot notation class) and AttributeHelpers(hash notation module), produces
  this effect from an input hash:
 
-    {:depth => <select>, ...}  Input Hash                                        Basic dot notation
-    -------------------------  ---------------------------------------          ---------------------------------
+    {:depth => <select>, ...}  Input Hash                        Basic dot notation: effect of :depth
+    ----------------------------------------------------      ---------------------------------
 
-### (DOES NOT FOLLOW Values)
-    * :single                  - {one: 1,                                         drb.one      = 1
-                                  two: { one: 1,                                  drb.two      = {one: 1, two: 'two}
-                                         two: "two"                               drb.two.two  = NoMethodError
-                                       }, 
-                                  three: [ {one: 'one', two: 2},                  drb.three    = [{one: 'one', two: 2},{three: 'three', four: 4}]
-                                           {three: 'three', four: 4}              drb.three[1] = {three: 'three', four: 4}
-                                         ]                                        drb.three[1].four = NoMethodError
-                                 }      
+### (DOES NOT FOLLOW Values) :depth => :single
+    * params = {one: 1,                                         drb.one      = 1
+                two: { one: 1,                                  drb.two      = {one: 1, two: 'two}
+                       two: "two"                               drb.two.two  = NoMethodError
+                     }, 
+                three: [ {one: 'one', two: 2},                  drb.three    = [{one: 'one', two: 2},{three: 'three', four: 4}]
+                         {three: 'three', four: 4}              drb.three[1] = {three: 'three', four: 4}
+                       ]                                        drb.three[1].four = NoMethodError
+               }      
 
-### (Follow VALUES that are Hashes only.)
-    * :multi                   - {one: 1,                                         drb.one      = 1
-                                  two: { one: 1,                                  drb.two.one  = 1
-                                         two: "two"                               drb.two.two  = 'two'
-                                       }, 
-                                  three: [ {one: 'one', two: 2},                  drb.three    = [{one: 'one', two: 2},{three: 'three', four: 4}]
-                                           {three: 'three', four: 4}              drb.three[1] = {three: 'three', four: 4}
-                                         ]                                        drb.three[1].four = NoMethodError
-                                 }      
+### (Follow VALUES that are Hashes only.) :depth => :multi
+    * params = {one: 1,                                         drb.one      = 1
+                two: { one: 1,                                  drb.two.one  = 1
+                	   two: "two"                               drb.two.two  = 'two'
+                     }, 
+                three: [ {one: 'one', two: 2},                  drb.three    = [{one: 'one', two: 2},{three: 'three', four: 4}]
+                         {three: 'three', four: 4}              drb.three[1] = {three: 'three', four: 4}
+                       ]                                        drb.three[1].four = NoMethodError
+	           }
  
-### (Follow VALUES that are Hashes and/or Arrays of Hashes)
-    * :multi_with_arrays       - {one: 1,                                         drb.one      = 1
-                                  two: { one: 1,                                  drb.two.one  = 1
-                                         two: "two"                               drb.two.two  = 'two'
-                                       }, 
-                                  three: [ {one: 'one', two: 2},                  drb.three.first.one = 'one'
-                                           {three: 'three', four: 4}              drb.three[1].four   = 4
-                                         ]
-                                 }      
+### (Follow VALUES that are Hashes and/or Arrays of Hashes) :depth => :multi_with_arrays
+    * params = {one: 1,                                         drb.one      = 1
+                two: { one: 1,                                  drb.two.one  = 1
+                       two: "two"                               drb.two.two  = 'two'
+                     }, 
+                three: [ {one: 'one', two: 2},                  drb.three.first.one = 'one'
+                		 {three: 'three', four: 4}              drb.three[1].four   = 4
+                       ]
+               }      
  
 
 # Usage Examples: SubClassing 
