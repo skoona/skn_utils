@@ -23,7 +23,7 @@ The intent of this component is to be container of data results, with easy acces
 ### Public Components
 --------------------------------
 
-    Inherit from NestedResultBase or instantiate an included example:
+    Inherit from NestedResultBase or instantiate an pre-built Class:
       SknUtils::GenericBean              # => Serializable, includes attr_accessors, and follows hash values only.
       SknUtils::PageControls             # => Serializable, includes attr_accessors, and follows hash values and arrays of hashes.
       SknUtils::ResultBean               # => Not Serializable, includes attr_accessors, and follows hash values only.
@@ -69,8 +69,7 @@ The intent of this component is to be container of data results, with easy acces
     'obj.clear_name'  # => nil     sets :name to nil
 ```
 
-### The combination of this NestedResultBase(dot notation class) and AttributeHelpers(hash notation module), produces
- this effect from an input hash:
+The combination of this NestedResultBase(dot notation class) and AttributeHelpers(hash notation module), produces this effect given the same params hash:
 
     {:depth => <select>, ...}  Input Hash                        Basic dot notation: effect of :depth
     ----------------------------------------------------      ---------------------------------
