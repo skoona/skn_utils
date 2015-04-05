@@ -190,8 +190,9 @@ Or install it yourself as:
 2. $ cd skn_utils
 3. $ gem install bundler
 4. $ bundle install
-5. $ gem build skn_utils.gemspec
-6. $ gem install skn_utils
+5. $ bundle exec rspec
+6. $ gem build skn_utils.gemspec
+7. $ gem install skn_utils
 * Done
 
 ## Console Commander    
