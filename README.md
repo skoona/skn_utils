@@ -1,20 +1,20 @@
 # SknUtils 
-Rails Gem containing a Ruby POJO that can be instantiated at runtime with an input hash.  This library creates an Object with instance variables and associated getters and setters for Dot or Hash notational access to each instance variable.  Additional instance variables can be added post-create by 'obj.my_new_var = "some value"', or simply assigning it.  
+Rails Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated at runtime with an input hash.  This library creates an Object with instance variables and associated getters and setters for Dot or Hash notational access to each instance variable.  Additional instance variables can be added post-create by 'obj.my_new_var = "some value"', or simply assigning it.  
 
 
 The intent of this component is to be a container of data results, with easy access to its contents with on-demand transformation to hash, xml, or json. 
 
-* If the key's value is also a hash itself, it too will become an Object.
-* if the key's value is a Array of Hashes, each element of the Array will become an Object.
+* If the key's value is also a hash, it too can optionally become an Object.
+* if the key's value is a Array of Hashes, each element of the Array can optionally become an Object.
   
-  This nesting action is controlled by the value of the option key ':depth'. 
-    The key :depth defaults to :multi, an has options of :single, or :multi_with_arrays
+  This nesting action is controlled by the value of the options key ':depth'. 
+    The key :depth defaults to :multi, an has options of :single, :multi, or :multi_with_arrays
   
-  The ability of the resulting Object to be Marshalled(dump/load) can be preserved by merging 
+  The ability of the resulting Object to be Marshalled(dump/load) can be preserved by merging configuration options 
     into the input params key ':enable_serialization' set to true.  It defaults to false for speed purposes
  
 
-### Operational Options
+### Configuration Options
 --------------------------------
 
     :enable_serialization = false     -- [ true | false ], for speed, omits creation of attr_accessor
@@ -31,7 +31,7 @@ The intent of this component is to be a container of data results, with easy acc
     or Include AttributeHelpers          # => Add getter/setters, and hash notation access to instance vars of any object.
 
 
-## Basic function includes:
+## Basic features include:
 ```ruby
  - provides the hash or dot notation methods of accessing values from object created; i.e
      'obj = ResultBean.new({value1: "some value", value2: {one: 1, two: "two"}}) 

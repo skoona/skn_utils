@@ -1,3 +1,3 @@
 module SknUtils
-  VERSION = "0.9.2"
+  VERSION = "1.4.0"
 end
