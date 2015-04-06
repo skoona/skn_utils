@@ -46,11 +46,11 @@ EOF
   spec.test_files    = spec.files.grep(%r{^(spec)/})
   spec.require_paths = ["lib"]
 
-  spec.add_runtime_dependency 'activemodel', '~> 3.2'  
+  spec.add_runtime_dependency 'activemodel', '>= 3.0'  
   
   spec.add_development_dependency "bundler", "~> 1.7"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", '~> 3.0'
-  spec.add_development_dependency "pry"
+  spec.add_development_dependency "pry", '~> 0'
   spec.post_install_message = "Thanks for installing SknUtils, keep watch more utilities will be added!"
 end
