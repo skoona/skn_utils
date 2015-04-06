@@ -11,6 +11,7 @@ Gem::Specification.new do |spec|
   spec.summary       = <<EOF
 Ruby convenience utilities, the first being a ResultBean. 
 
+
 ResultBean is a PORO (Plain Old Ruby Object) which inherits from NestedResultBean class (inlcuded). This class 
 is intantiated  via a hash at Ruby/Rails Runtime, allows access to vars via dot or hash notation, 
 and is serializable via to_xml, to_hash, and to_json.
@@ -18,16 +19,21 @@ EOF
 
   spec.description   = <<EOF
 Creates an PORO Object with instance variables and associated getters and setters for each input key, during runtime.
+
  
 If a key's value is also a hash, it too can optionally become an Object.
+
  
 If a key's value is a Array of Hashes, each element of the Array can optionally become an Object.
+
   
 This nesting action is controlled by the value of the options key ':depth'.  Options key :depth defaults 
 to :multi, and has options of :single, :multi, or :multi_with_arrays
+
   
 The ability of the resulting Object to be Marshalled(dump/load) can be preserved by merging configuration options
-into the input params key ':enable_serialization' set to true.  It defaults to false for speed purposes
+into the input params key ':enable_serialization' set to true.  It defaults to false for speed purposes.
+
 
 Review the RSpec tests, and or review the README for more details.
 EOF

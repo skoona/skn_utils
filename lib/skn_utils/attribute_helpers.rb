@@ -133,7 +133,7 @@ module SknUtils
           singleton_class.send(:attr_accessor, method.to_s[0..-2]) unless serial_required?
           if multi_with_arrays_required?
             instance_variable_set("@#{method.to_s[0..-2]}", 
-                (args.flatten.map {|nobj| nobj.kind_of?(Hash) ? self.class.new(nobj) : nobj }) 
+                (args.first.map {|nobj| nobj.kind_of?(Hash) ? self.class.new(nobj) : nobj }) 
             )
           else
             instance_variable_set "@#{method.to_s[0..-2]}", *args

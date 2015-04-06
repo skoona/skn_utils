@@ -70,8 +70,8 @@ The intent of this component is to be a container of data results, with easy acc
 
 The combination of this NestedResultBase(dot notation class) and AttributeHelpers(hash notation module), produces this effect given the same params hash:
 
-    {:depth => <select>, ...}  Input Hash                        Basic dot notation: effect of :depth
-    ----------------------------------------------------      ---------------------------------
+    SknUtils::ResultBean.new(params)                          Basic dot notation: effect of :depth
+    ----------------------------------------------------      -----------------------------------------------------------------
 
 (DOES NOT FOLLOW Values) :depth => :single
 ```ruby
@@ -88,8 +88,8 @@ The combination of this NestedResultBase(dot notation class) and AttributeHelper
 (Follow VALUES that are Hashes only.) :depth => :multi
 ```ruby
     * params = {one: 1,                                         drb.one      = 1
-                two: { one: 1,                                  drb.two.one  = 1
-                	   two: "two"                               drb.two.two  = 'two'
+                two: { one: 1,                                  drb.two      = <SknUtils::ResultBean>
+                	   two: "two"                                 drb.two.two  = 'two'
                      }, 
                 three: [ {one: 'one', two: 2},                  drb.three    = [{one: 'one', two: 2},{three: 'three', four: 4}]
                          {three: 'three', four: 4}              drb.three[1] = {three: 'three', four: 4}
@@ -100,20 +100,20 @@ The combination of this NestedResultBase(dot notation class) and AttributeHelper
 (Follow VALUES that are Hashes and/or Arrays of Hashes) :depth => :multi_with_arrays
 ```ruby
     * params = {one: 1,                                         drb.one      = 1
-                two: { one: 1,                                  drb.two.one  = 1
+                two: { one: 1,                                  drb.two      = <SknUtils::ResultBean>
                        two: "two"                               drb.two.two  = 'two'
                      }, 
-                three: [ {one: 'one', two: 2},                  drb.three.first.one = 'one'
-                		 {three: 'three', four: 4}              drb.three[1].four   = 4
-                       ]
+                three: [ {one: 'one', two: 2},                  drb.three    = [<SknUtils::ResultBean>,<SknUtils::ResultBean>]
+                		     {three: 'three', four: 4}              drb.three[1] = <SknUtils::ResultBean>
+                       ]                                        drb.three[1].four = 4
                }      
  
 ```
-# Usage Examples: SubClassing 
+# Usage: 
 
 (DOES NOT FOLLOW Values)
 ```ruby
-       class SmallPackage < NestedResultBase
+       class SmallPackage < SknUtils::NestedResultBase
           def initialize(params={})
             super( params.merge({depth: :single}) )    # override default of :multi level
           end
@@ -122,13 +122,13 @@ The combination of this NestedResultBase(dot notation class) and AttributeHelper
 
 (Follow VALUES that are Hashes only.)
 ```ruby
-       class ResultBean < NestedResultBase
+       class ResultBean < SknUtils::NestedResultBase
           # defaults to :multi level
        end
        
     -- or --
     
-       class ResultBean < NestedResultBase
+       class ResultBean < SknUtils::NestedResultBase
           def initialize(params={})
             # your other init stuff here
             super(params)    # default taken 
@@ -137,7 +137,7 @@ The combination of this NestedResultBase(dot notation class) and AttributeHelper
        
     -- or --
     
-       class ResultBean < NestedResultBase
+       class ResultBean < SknUtils::NestedResultBase
           def initialize(params={})
             # your other init stuff here
             super( params.merge({depth: :multi}) )    # Specified
@@ -145,7 +145,7 @@ The combination of this NestedResultBase(dot notation class) and AttributeHelper
        end
        
     ** - or -- enable serialization and default to multi
-       class GenericBean < NestedResultBase
+       class GenericBean < SknUtils::NestedResultBase
           def initialize(params={})
             super( params.merge({enable_serialization: true}) )    # Specified with Serialization Enabled
           end
@@ -154,7 +154,7 @@ The combination of this NestedResultBase(dot notation class) and AttributeHelper
 
 (Follow VALUES that are Hashes and/or Arrays of Hashes, and enable Serializers)
 ```ruby
-       class PageControl < NestedResultBase
+       class PageControl < SknUtils::NestedResultBase
           def initialize(params={})
             super( params.merge({depth: :multi_with_arrays, enable_serialization: true}) )    # override defaults
           end
@@ -163,7 +163,7 @@ The combination of this NestedResultBase(dot notation class) and AttributeHelper
 
 
 NOTE: Cannot be Marshalled/Serialized unless input params.merge({enable_serialization: true}) -- default is false
-Use GenericBean or PageControls if serialization is needed, it initializes with this value true.
+Use GenericBean or PageControls if serialization is needed, they initialize with this value true.
 
 ## Installation
 ----------------
@@ -183,7 +183,7 @@ Or install it yourself as:
 
     $ gem install skn_utils
 
-## Build (If not found in RubyGems Yet...)    
+## Build    
 
 1. $ git clone git@github.com:skoona/skn_utils.git
 2. $ cd skn_utils
