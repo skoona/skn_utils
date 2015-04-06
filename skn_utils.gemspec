@@ -4,10 +4,10 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'skn_utils/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "skn_utils"
+  spec.name          = 'skn_utils'
   spec.version       = SknUtils::VERSION
-  spec.author        = "James Scott Jr"
-  spec.email         = ["skoona@gmail.com"]
+  spec.author        = 'James Scott Jr'
+  spec.email         = 'skoona@gmail.com'
   spec.summary       = <<EOF
 Ruby convenience utilities, the first being a ResultBean. 
 
@@ -46,4 +46,5 @@ EOF
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", '~> 3.0'
   spec.add_development_dependency "pry"
+  spec.post_install_message = "Thanks for installing SknUtils, keep watch more utilities will be added!"
 end
