@@ -39,9 +39,8 @@ The intent of this component is to be a container of data results, with easy acc
      'x = obj["value1"]'
      'x = obj[:value1]'
 
- - enables serialization by avoiding the use of 'singleton_class' methods which breaks Serializers:
-
-    Serializer supports xml, json, hash, and standard Marshall'ing
+ - enables serialization by avoiding the use of ''singleton_class'' methods which breaks Serializers:
+    Serializer supports xml, json, hash, and standard Marshall''ing
 
     person = PageControls.new({name: "Bob"})
     person.attributes          # => {"name"=>"Bob"}
@@ -184,7 +183,7 @@ Or install it yourself as:
 
     $ gem install skn_utils
 
-## Build    
+## Build (If not found in RubyGems Yet...)    
 
 1. $ git clone git@github.com:skoona/skn_utils.git
 2. $ cd skn_utils
