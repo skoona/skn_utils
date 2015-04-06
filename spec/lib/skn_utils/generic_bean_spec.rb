@@ -2,7 +2,7 @@
 # spec/lib/skn_utils/generic_bean_spec.rb
 #
 
-describe SknUtils::GenericBean, "Generic Marshal'able Bean class " do
+RSpec.describe SknUtils::GenericBean, "Generic Marshal'able Bean class " do
   let(:object) {
     SknUtils::GenericBean.new({one: "one",
                              two: "two",
@@ -11,11 +11,10 @@ describe SknUtils::GenericBean, "Generic Marshal'able Bean class " do
                            )
   }
 
-  context "Initialization Features " do
+  context "Internal Operations, assuming :dept => :multi and enable_serialization => true" do
     it "Creates an empty bean if no params are passed" do
       is_expected.to be
     end
-
     it "Can be Marshalled after dynamically adding a key/value." do
         expect { object.fifty = {any_key: "any value"} }.not_to raise_error  
         expect { object.sixty = 60 }.not_to raise_error
@@ -26,9 +25,6 @@ describe SknUtils::GenericBean, "Generic Marshal'able Bean class " do
         expect( object.fifty.any_key).to eql "any value"  
         expect( object.sixty).to eql 60
     end
-  end
-  
-  context "Internal Operations " do
     it "Initializes from a hash" do
       expect(SknUtils::GenericBean.new({one: "one", two: "two"})).to be
     end
@@ -59,78 +55,40 @@ describe SknUtils::GenericBean, "Generic Marshal'able Bean class " do
     end
   end
 
-  shared_examples_for "marshal-able generic variable container" do
+  shared_examples_for "retains initialization options" do
     it "retains depth_level option flag" do
       expect(@obj.depth_level).to eql(:multi)
     end
     it "retains serialization option flag" do
       expect(@obj.serialization_required?).to be true
-    end
-    it "provides getters" do
-      expect(@obj.one).to be_eql("one")
-      expect(@obj.two).to be_eql("two")
-    end
-    it "provides setters" do
-      expect(@obj.one).to be_eql("one")
-      expect(@obj.two).to be_eql("two")
-      @obj.one = "1"
-      @obj.two = "2"
-      expect(@obj.two).to be_eql("2")
-      expect(@obj.one).to be_eql("1")
-    end
-    it "#clear_attribute sets given attribute to nil." do
-      expect(@obj.two).to be_eql("two")
-      expect(@obj.clear_two).to be_nil
-    end
-    it "#attribute? returns true or false based on contents of attribute." do
-      expect(@obj.two?).to be_truthy
-      @obj.clear_two
-      expect(@obj.two?).to be false
-      expect(@obj.three?).to be_truthy
-      expect(@obj.four?).to be_truthy
-      @obj.clear_three
-      expect(@obj.three?).to be false
-      @obj.clear_four
-      expect(@obj.four?).to be false
-    end
-    it "#attribute? returns false when attribute is not defined or unknown" do
-      expect(@obj.address?).to be false
-    end
-    it "raises an 'NoMethodError' error when attribute does not exist" do
-      expect { @obj.address }.to raise_error NoMethodError
-    end
-    context "transformations are enabled with " do
-      it "#to_json method returns a serialized version of this object." do
-        expect(object.to_json).to include(":\"")
-      end
-      it "#to_xml method returns a serialized version of this object." do
-        expect(object.to_xml).to include("xml version")
-      end
-      it "#to_hash method returns a serialized version of this object." do
-        expect(object.to_hash).to be_a(Hash)
-      end
-    end
+    end    
   end
 
   context "Basic Operations without marshaling " do
     before :each do
       @obj = object
     end
-    it_behaves_like "marshal-able generic variable container"
+
+    it_behaves_like "retains initialization options"    
+    it_behaves_like "marshalable ruby pojo"
   end
   context "Basic Operations after Yaml marshaling " do
     before :each do
       dmp = YAML::dump(object)
       @obj = YAML::load(dmp)
     end
-    it_behaves_like "marshal-able generic variable container"
+
+    it_behaves_like "retains initialization options"    
+    it_behaves_like "marshalable ruby pojo"
   end
   context "Basic Operations after Marshal marshaling " do
     before :each do
       dmp =  Marshal.dump(object)
       @obj = Marshal.load(dmp)
     end
-    it_behaves_like "marshal-able generic variable container"
+
+    it_behaves_like "retains initialization options"    
+    it_behaves_like "marshalable ruby pojo"
   end
 
 end

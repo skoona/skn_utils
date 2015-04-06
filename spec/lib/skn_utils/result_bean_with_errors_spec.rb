@@ -2,34 +2,27 @@
 # spec/lib/skn_utils/result_bean_with_errors_spec.rb
 #
 
-describe SknUtils::ResultBeanWithErrors, "Generic Bean class with ActiveModel::Errors object " do
+RSpec.describe SknUtils::ResultBeanWithErrors, "Result Bean class with ActiveModel::Errors object " do
+  let(:object) {
+    SknUtils::ResultBeanWithErrors.new({one: "one",
+                             two: "two",
+                             three: {four: 4, five: 5, six: {seven: 7, eight: "eight" }},
+                             four: {any_key: "any value"}, 
+                             five: []
+                            })
+  }
 
-  context "Internal Operations" do
+  context "Internal Operations, assuming :dept => :multi and enable_serialization => false" do
     it "Creates an empty bean if no params are passed" do
       is_expected.to be
       expect(subject.errors).to be
     end
-
     it "Initializes from a hash that DOES NOT include an errors.object " do
       expect(SknUtils::ResultBeanWithErrors.new({one: "one", two: "two"})).to be
     end
     it "Initializes from a hash that DOES include an errors.object " do
       errors = ActiveModel::Errors.new(self)  ## VERY BAD IDEAL
       expect(SknUtils::ResultBeanWithErrors.new({one: "one", two: "two", errors: errors})).to be
-    end
-    it "provides getters" do
-      obj = SknUtils::ResultBeanWithErrors.new({one: "one", two: "two"})
-      expect(obj.one).to be_eql("one")
-      expect(obj.two).to be_eql("two")
-    end
-    it "provides setters" do
-      obj = SknUtils::ResultBeanWithErrors.new({one: "one", two: "two"})
-      expect(obj.one).to be_eql("one")
-      expect(obj.two).to be_eql("two")
-      obj.one = "1"
-      obj.two = "2"
-      expect(obj.one).to be_eql("1")
-      expect(obj.two).to be_eql("2")
     end
     it "Does not modify the base class, only singleton instance methods" do
       obj1 = SknUtils::ResultBeanWithErrors.new({one: "one", two: "two"})
@@ -42,16 +35,17 @@ describe SknUtils::ResultBeanWithErrors, "Generic Bean class with ActiveModel::E
       expect { obj2.one }.to raise_error NoMethodError
     end
     it "Supports - respond_to - methods, because it has accessor methods" do
-      obj = SknUtils::ResultBeanWithErrors.new({one: "one", two: "two"})
-      expect(obj).to respond_to(:one)
+      expect(object).to respond_to(:one)
     end
-    it "Nests objects if multi-level hash is given using a regular ResultBean" do
-      obj = SknUtils::ResultBeanWithErrors.new({one: "one", two: "two", three: {four: 4, five: 5}})
-      expect(obj.one).to be_eql("one")
-      expect(obj.two).to be_eql("two")
-      expect(obj.three).to be_a(SknUtils::ResultBeanWithErrors)
-      expect(obj.three.five).to eq(5)
+  end
+
+  shared_examples_for "retains initialization options" do
+    it "retains depth_level option flag" do
+      expect(@obj.depth_level).to eql(:multi)
     end
+    it "retains serialization option flag" do
+      expect(@obj.serialization_required?).to be false
+    end    
   end
 
   context "ActiveModel:Errors object" do
@@ -124,25 +118,61 @@ describe SknUtils::ResultBeanWithErrors, "Generic Bean class with ActiveModel::E
 
   context "Serialization" do
     before :each do
-      @obj = SknUtils::ResultBeanWithErrors.new({one: "one", two: "two", three: {four: 4, five: 5, six: {seven: 7, eight: "eight"}}})      
-    end
-    it "#attributes method returns a hash of all attributes and their values." do
-      expect(@obj.attributes).to be_a(Hash)
-      expect(@obj.attributes[:one]).to be_eql("one")
-      expect(@obj.attributes[:three]).to be_a(Hash)
-    end
-    it "#to_json method returns a serialized verion of this object." do
-      expect(@obj.to_json).to include(":\"")
-    end
-    it "#to_xml method returns a serialized verion of this object." do
-      expect(@obj.to_xml).to include("xml version")
-    end
-    it "#to_hash method returns a serialized verion of this object." do
-      expect(@obj.to_hash).to be_a(Hash)
+      @obj = object
     end
     it "Serialization does not include the errors object." do
       expect(@obj.to_hash[:errors]).not_to be
       expect(@obj.errors).to be_a(ActiveModel::Errors)
     end
+
+    it_behaves_like "retains initialization options"    
+    it_behaves_like "ruby pojo"    
   end
+
+  context "Basic Operations after Marshal marshaling " do
+    it "Singleton objects (like ResultBean) cannot be marshaled" do
+      expect { Marshal.dump(object) }.to raise_error TypeError
+    end
+  end
+  context "Basic Operations without marshaling " do
+    before :each do
+      @obj = object
+    end
+    it_behaves_like "retains initialization options"    
+    it_behaves_like "ruby pojo"
+  end
+  context "Basic Operations after Yaml marshaling " do
+    before :each do
+      dmp = YAML::dump(object)
+      @obj = YAML::load(dmp)
+    end
+    it_behaves_like "retains initialization options"    
+    it_behaves_like "ruby pojo"
+  end
+  context "ResultBeans stripped of their internal singleton accessors can be Marshaled! " do
+    before :each do
+      dmp = YAML::dump(object)
+      obj = YAML::load(dmp)                        # Yaml'ing removes singleton accessor methods'
+                                                   # by initializing object without using its
+                                                   # initialize() method
+
+      dmp =  Marshal.dump(obj)                     # Now Marshal load/dump will work
+      @obj = Marshal.load(dmp)                     # Use GenericBean if Marshal support is needed
+    end
+    it_behaves_like "retains initialization options"    
+    it_behaves_like "ruby pojo"
+  end
+  context "Basic Operations after Yaml marshaling via restored accessors " do
+    before :each do
+      dmp = YAML::dump(object)
+      @obj = YAML::load(dmp)
+      # Restore setters
+      @obj.attributes.keys.each do |k|
+        @obj.singleton_class.send(:attr_accessor, k)
+      end
+    end
+    it_behaves_like "retains initialization options"    
+    it_behaves_like "ruby pojo"
+  end
+  
 end

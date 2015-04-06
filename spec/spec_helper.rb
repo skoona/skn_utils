@@ -4,6 +4,8 @@ require 'active_model'
 require 'skn_utils'
 require 'rspec'
 
+# Shared Examples and Support Routines
+Dir["./spec/support/**/*.rb"].sort.each { |f| require f}
 
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
@@ -17,8 +19,8 @@ RSpec.configure do |config|
   config.filter_run :focus
   config.run_all_when_everything_filtered = true
 
-  # config.disable_monkey_patching!  # -- breaks rspec runtime
-  config.warnings = false
+  config.disable_monkey_patching!  # -- breaks rspec runtime
+  config.warnings = true
   # config.profile_examples = 10
 
   if config.files_to_run.one?
