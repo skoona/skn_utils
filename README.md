@@ -1,3 +1,5 @@
+[![Gem Version](https://badge.fury.io/rb/skn_utils.svg)](http://badge.fury.io/rb/skn_utils)
+
 # SknUtils 
 Rails Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated at runtime with an input hash.  This library creates an Object with instance variables and associated getters and setters for Dot or Hash notational access to each instance variable.  Additional instance variables can be added post-create by 'obj.my_new_var = "some value"', or simply assigning it.  
 
@@ -167,8 +169,6 @@ Use GenericBean or PageControls if serialization is needed, they initialize with
 
 ## Installation
 ----------------
-[![Gem Version](https://badge.fury.io/rb/skn_utils.svg)](http://badge.fury.io/rb/skn_utils)
-
 runtime prereqs: gem 'active_model', '~> 3.0'
 
 Add this line to your application's Gemfile:
