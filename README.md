@@ -167,6 +167,8 @@ Use GenericBean or PageControls if serialization is needed, they initialize with
 
 ## Installation
 ----------------
+[![Gem Version](https://badge.fury.io/rb/skn_utils.svg)](http://badge.fury.io/rb/skn_utils)
+
 runtime prereqs: gem 'active_model', '~> 3.0'
 
 Add this line to your application's Gemfile:
