@@ -15,7 +15,6 @@ RSpec.configure do |config|
   config.order = :random
   config.color = true
   config.tty = false
-  config.formatter = :progress  #:html, :textmate, :documentation
 
   config.filter_run :focus
   config.run_all_when_everything_filtered = true
@@ -25,7 +24,9 @@ RSpec.configure do |config|
   # config.profile_examples = 10
 
   if config.files_to_run.one?
-    config.formatter = :documentation 
+    config.formatter = :documentation
+  else
+    config.formatter = :progress  #:html, :textmate, :documentation
   end
 
   config.expect_with :rspec do |expectations|
