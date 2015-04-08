@@ -5,6 +5,7 @@ require 'skn_utils/generic_bean'
 require 'skn_utils/page_controls'
 require 'skn_utils/result_bean'
 require 'skn_utils/result_bean_with_errors'
+require 'yaml'
 
 module SknUtils
   
