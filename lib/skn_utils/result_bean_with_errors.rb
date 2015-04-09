@@ -22,20 +22,24 @@ module SknUtils
 
     attr_reader :errors
 
+    #:nodoc:
     def initialize(params={})
       @errors = params.delete :errors
       @errors = ActiveModel::Errors.new(self) unless @errors.present?
       super(params)
     end
-
+    
+    #:nodoc:
     def read_attribute_for_validation(attr)
       send(attr)
     end
 
+    #:nodoc:
     def self.human_attribute_name(attr, options = {})
       attr
     end
 
+    #:nodoc:
     def self.lookup_ancestors
       [self]
     end

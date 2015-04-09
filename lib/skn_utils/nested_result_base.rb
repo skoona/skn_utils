@@ -156,6 +156,7 @@ module SknUtils
     # :depth defaults to :multi
     # :enable_serialization controls the use of singleton_method() to preserve the ability to Marshal
     # :enable_serialization defaults to false
+    #:nodoc:
     def initialize(params={})
       @skn_enabled_depth = params.delete(:depth) {|not_found| :multi }
       @skn_enable_serialization = params.delete(:enable_serialization) {|not_found| false }
@@ -169,6 +170,7 @@ module SknUtils
       end
     end
 
+    #:nodoc:
     def single_level_initializer(params={})   # Single Level Initializer -- ignore value eql hash
       params.each do |k,v|
         key = clean_key(k)
@@ -177,6 +179,7 @@ module SknUtils
       end
     end
 
+    #:nodoc:
     def multi_level_initializer(params={}) # Multi Level Initializer -- value eql hash then interate
       params.each do |k,v|
         key = clean_key(k)
@@ -189,6 +192,7 @@ module SknUtils
       end
     end
 
+    #:nodoc:
     def multi_level_incl_arrays_initializer(params={}) # Multi Level Initializer including Arrays of Hashes
       params.each do |k,v|
         key = clean_key(k)
@@ -208,12 +212,13 @@ module SknUtils
       @skn_enable_serialization
     end
 
-    # enablement for latter additions    
+    # enablement for latter additions        
     def depth_level
       @skn_enabled_depth
     end
 
     # Some keys have chars not suitable for symbol keys
+    #:nodoc:
     def clean_key(original)
       formatted_key = original.to_s
       if /^[#|@|:]/.match(formatted_key)  # filter out (@xsi) from '@xsi:type' keys

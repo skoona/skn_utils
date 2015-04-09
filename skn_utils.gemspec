@@ -8,6 +8,7 @@ Gem::Specification.new do |spec|
   spec.version       = SknUtils::VERSION
   spec.author        = 'James Scott Jr'
   spec.email         = 'skoona@gmail.com'
+  spec.date          = %q{2015-04-06}
   spec.summary       = <<EOF
 Ruby convenience utilities, the first being a ResultBean. 
 
@@ -52,5 +53,10 @@ EOF
   spec.add_development_dependency "rake", ">= 0"
   spec.add_development_dependency "rspec", '~> 3.0'
   spec.add_development_dependency "pry", ">= 0"
-  spec.post_install_message = "Thanks for installing SknUtils, keep watch more utilities will be added!"
+  
+  ## Make sure you can build the gem on older versions of RubyGems too:
+  spec.rubygems_version = "1.6.2"
+  spec.required_rubygems_version = Gem::Requirement.new(">= 0") if spec.respond_to? :required_rubygems_version=
+  spec.required_ruby_version = '>= 2.0.0'
+  spec.specification_version = 3 if spec.respond_to? :specification_version  
 end

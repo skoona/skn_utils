@@ -12,6 +12,7 @@
 module SknUtils
 
   class PageControls < NestedResultBase
+    #:nodoc:
     def initialize(params={})
       super( params.merge({enable_serialization: true, depth: :multi_with_arrays}) )
     end

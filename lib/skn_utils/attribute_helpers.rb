@@ -51,16 +51,18 @@ module SknUtils
     end
 
     # An alternative mechanism for property access.
-    # This let's you do foo['bar'] along with foo.bar.
+    # Hash notation
     def [](attr)
       send("#{attr}")
     end
 
+    # Hash notation
     def []=(attr, value)
       send("#{attr}=", value)
     end
 
     # determines if this is one of our objects
+    #:nodoc:
     def attribute_helper_object
       true
     end
@@ -70,6 +72,7 @@ module SknUtils
     ##
     private
 
+    #:nodoc:
     def attribute?(attr)
       if attr.is_a? Symbol
         send(attr).present?
@@ -78,6 +81,7 @@ module SknUtils
       end
     end
 
+    #:nodoc:
     def clear_attribute(attr)
       if attr.is_a? Symbol
         instance_variable_set("@#{attr.to_s}", nil)
@@ -88,14 +92,17 @@ module SknUtils
 
     # Determines operable Options in effect for this instance
     # see NestedResultBase
+    #:nodoc:
     def serial_required?
       respond_to? :serialization_required? and serialization_required?
     end
     # see NestedResultBase
+    #:nodoc:
     def multi_required?
       respond_to? :depth_level and depth_level != :single 
     end
     # see NestedResultBase
+    #:nodoc:
     def multi_with_arrays_required?
       respond_to? :depth_level and depth_level == :multi_with_arrays 
     end
@@ -111,6 +118,7 @@ module SknUtils
     # Using any form of singleton_class() will break the generic bean, which requires Serialization.
     # However not adding attr_accessors may impact performance, as method_missing must fill-in for read/writes
     ##
+    #:nodoc:
     def method_missing(method, *args, &block)
       # puts("method_missing/method/class/*args=#{method}/#{method.class.name}/#{args}")
       if method.to_s.start_with?('clear_') and instance_variable_defined?("@#{method.to_s[6..-1]}")

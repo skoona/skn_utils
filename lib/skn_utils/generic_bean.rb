@@ -11,6 +11,7 @@
 module SknUtils
 
   class GenericBean < NestedResultBase
+    #:nodoc:
     def initialize(params={})
       super( params.merge({enable_serialization: true}) )
     end
