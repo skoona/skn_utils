@@ -7,8 +7,7 @@ Gem::Specification.new do |spec|
   spec.name          = 'skn_utils'
   spec.version       = SknUtils::VERSION
   spec.author        = 'James Scott Jr'
-  spec.email         = 'skoona@gmail.com'
-  spec.date          = %q{2015-04-06}
+  spec.email         = 'skoona@gmail.com'  
   spec.summary       = <<EOF
 Ruby convenience utilities, the first being a ResultBean. 
 
