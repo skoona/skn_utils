@@ -49,9 +49,10 @@ RSpec.describe SknUtils::PageControls, "PageControls Marshal'able Bean class " d
     it "Supports predicates(?)" do
       expect(object.one?).to be true
       expect(object.three.five?).to be true
+      expect(object.fourtyfive?).to be false
     end
-    it "Does not support - respond_to - methods, because it has no accessor methods" do
-      expect(object).not_to respond_to(:one)
+    it "Supports - respond_to? - method, because it has accessor or method_missing coverage" do
+      expect(object).to respond_to(:one)
       expect(object.one).to eql "one"
     end
     it "nest objects if multi-level hash is given" do

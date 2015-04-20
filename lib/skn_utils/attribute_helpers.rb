@@ -70,14 +70,25 @@ module SknUtils
     ##
     #  DO NOT ADD METHODS BELOW THIS LINE, unless you want them to be private
     ##
+
+    # Support the regular respond_to? method by 
+    # answering for any attr that method missing actually handle
+    #:nodoc:
+    def respond_to_missing?(method, incl_private=false)
+       instance_variable_names.include?("@#{method.to_s}")
+    end
+    
     private
 
-    #:nodoc:
+    # Deals with the true presence of a attribute and then its non-blank and empty value
+    # - attribute must exist and have a non-blank value to cause this method to return true
+    #:nodoc:    
     def attribute?(attr)
-      if attr.is_a? Symbol
-        send(attr).present?
+      return false unless  instance_variable_names.include?("@#{attr.to_s}")
+      if attr.is_a? Symbol        
+       ![ "", " ", nil, [],[""], [" "], {} ].include?( send(attr) )
       else
-        send(attr.to_sym).present?
+        ![ "", " ", nil, [],[""], [" "], {} ].include?( send(attr.to_sym) )
       end
     end
 

@@ -19,10 +19,10 @@ RSpec.shared_examples "marshalable ruby pojo" do
     expect(@obj.two).to be_eql("two")
     expect(@obj.clear_two).to be_nil
   end
-  it "#attribute? returns true or false based on contents of attribute." do
+  it "#attribute? returns true or false based on true presence and non-blank contents of attribute." do
     expect(@obj.two?).to be true
     @obj.two = false
-    expect(@obj.two?).to be false
+    expect(@obj.two?).to be true
     @obj.clear_two
     expect(@obj.two?).to be false
     expect(@obj.three?).to be true

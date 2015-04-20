@@ -38,8 +38,8 @@ RSpec.describe SknUtils::GenericBean, "Generic Marshal'able Bean class " do
       expect { obj1.three }.to raise_error NoMethodError
       expect { obj2.one }.to raise_error NoMethodError
     end
-    it "Does not support - respond_to - methods, because it has no accessor methods" do
-      expect(object).not_to respond_to(:one)
+    it "Supports - respond_to? - method, because it has accessors or method_missing coverage" do
+      expect(object).to respond_to(:one)
       expect(object.one).to eql "one"
     end
     it "nest objects if multi-level hash is given" do
