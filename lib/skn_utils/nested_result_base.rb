@@ -217,6 +217,12 @@ module SknUtils
       @skn_enabled_depth
     end
 
+    # determines if this is one of our objects
+    #:nodoc:
+    def attribute_helper_object
+      true
+    end
+
     # Some keys have chars not suitable for symbol keys
     #:nodoc:
     def clean_key(original)

@@ -31,9 +31,9 @@ module SknUtils
 
     # return a hash of all attributes and their current values
     # including nested arrays of hashes/objects
-    def attributes
+    def attributes(filter_internal=true)
       instance_variable_names.each_with_object({}) do |attr,collector|
-        next if ['skn_enable_serialization', 'skn_enabled_depth'].include?(attr.to_s[1..-1])   # skip control keys
+        next if ['skn_enable_serialization', 'skn_enabled_depth'].include?(attr.to_s[1..-1]) and filter_internal  # skip control keys
         value = instance_variable_get(attr)
         next if value.is_a?(ActiveModel::Errors)
 
@@ -61,12 +61,6 @@ module SknUtils
       send("#{attr}=", value)
     end
 
-    # determines if this is one of our objects
-    #:nodoc:
-    def attribute_helper_object
-      true
-    end
-
     ##
     #  DO NOT ADD METHODS BELOW THIS LINE, unless you want them to be private
     ##
@@ -75,12 +69,12 @@ module SknUtils
     # answering for any attr that method missing actually handle
     #:nodoc:
     def respond_to_missing?(method, incl_private=false)
-       instance_variable_names.include?("@#{method.to_s}")
+       instance_variable_names.include?("@#{method.to_s}") || super(method,incl_private)
     end
     
     private
 
-    # Deals with the true presence of a attribute and then its non-blank and empty value
+    # Deals with the true existance of an attribute and then its non-blank or empty value
     # - attribute must exist and have a non-blank value to cause this method to return true
     #:nodoc:    
     def attribute?(attr)

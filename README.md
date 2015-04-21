@@ -1,10 +1,12 @@
 [![Gem Version](https://badge.fury.io/rb/skn_utils.svg)](http://badge.fury.io/rb/skn_utils)
 
 # SknUtils 
-Rails Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated at runtime with an input hash.  This library creates an Object with instance variables and associated getters and setters for Dot or Hash notational access to each instance variable.  Additional instance variables can be added post-create by 'obj.my_new_var = "some value"', or simply assigning it.  
+Rails Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated at runtime with an input hash.  This library creates 
+an Object with instance variables and associated getters and setters for Dot or Hash notational access to each instance variable.  Additional 
+instance variables can be added post-create by 'obj.my_new_var = "some value"', or simply assigning it.  
 
 
-The intent of this component is to be a container of data results, with easy access to its contents with on-demand transformation to hash, xml, or json. 
+The intent of this gem is to be a container of data results, with easy access to its contents with on-demand transformation to hash, xml, or json. 
 
 * If the key's value is also a hash, it too can optionally become an Object.
 * if the key's value is a Array of Hashes, each element of the Array can optionally become an Object.
