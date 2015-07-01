@@ -37,29 +37,34 @@ RSpec.shared_examples "ruby pojo" do
   end
   it "Nests objects if multi-level hash is given " do
     obj = SknUtils::ResultBeanWithErrors.new({one: "one", two: "two", three: {four: 4, five: 5}})
-    expect(object.three).to be_kind_of(SknUtils::NestedResultBase)
-    expect(object.three.five).to eq(5)
+    expect(obj.three).to be_kind_of(SknUtils::NestedResultBase)
+    expect(obj.three.five).to eq(5)
   end
   it "#attributes method returns a hash of all attributes and their values." do
-    expect(object.attributes).to be_a(Hash)
-    expect(object.attributes[:one]).to eql("one")
-    expect(object.attributes[:three]).to be_a(Hash)
+    expect(@obj.attributes).to be_a(Hash)
+    expect(@obj.attributes[:one]).to eql("one")
+    expect(@obj.attributes[:three]).to be_a(Hash)
+  end
+  it "#attributes method excludes internal attributes unless overridden." do
+    expect(@obj.attributes[:skn_enabled_depth]).to be_nil
+    expect(@obj.attributes(true)[:skn_enabled_depth]).to be_nil
+    expect(@obj.attributes(false)[:skn_enabled_depth]).to eql @obj.depth_level
   end
   
   context "transformations are enabled with " do
     it "#attributes method returns a hash of all attributes and their values." do
-      expect(object.attributes).to be_a(Hash)
-      expect(object.attributes[:one]).to be_eql("one")
-      expect(object.attributes[:three]).to be_a(Hash)
+      expect(@obj.attributes).to be_a(Hash)
+      expect(@obj.attributes[:one]).to be_eql("one")
+      expect(@obj.attributes[:three]).to be_a(Hash)
     end    
     it "#to_json method returns a serialized version of this object." do
-      expect(object.to_json).to include(":\"")
+      expect(@obj.to_json).to include(":\"")
     end
     it "#to_xml method returns a serialized version of this object." do
-      expect(object.to_xml).to include("xml version")
+      expect(@obj.to_xml).to include("xml version")
     end
     it "#to_hash method returns a serialized version of this object." do
-      expect(object.to_hash).to be_a(Hash)
+      expect(@obj.to_hash).to be_a(Hash)
     end
   end
 end

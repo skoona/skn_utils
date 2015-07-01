@@ -30,8 +30,8 @@ RSpec.describe SknUtils::PageControls, "PageControls Marshal'able Bean class " d
         expect { dmp =  Marshal.dump(object) }.not_to raise_error
         expect { obj = Marshal.load(dmp) }.not_to raise_error
         expect(obj).to be_a(SknUtils::PageControls)
-        expect( object.fifty.any_key).to eql "any value"  
-        expect( object.sixty).to eql 60
+        expect( obj.fifty.any_key).to eql "any value"  
+        expect( obj.sixty).to eql 60
     end
     it "Initializes from a hash" do
       expect(object).to be

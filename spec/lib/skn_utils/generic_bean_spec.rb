@@ -22,8 +22,8 @@ RSpec.describe SknUtils::GenericBean, "Generic Marshal'able Bean class " do
         expect { dmp =  Marshal.dump(object) }.not_to raise_error
         expect { obj = Marshal.load(dmp) }.not_to raise_error
         expect(obj).to be_a(SknUtils::GenericBean)
-        expect( object.fifty.any_key).to eql "any value"  
-        expect( object.sixty).to eql 60
+        expect(obj.fifty.any_key).to eql "any value"  
+        expect(obj.sixty).to eql 60
     end
     it "Initializes from a hash" do
       expect(SknUtils::GenericBean.new({one: "one", two: "two"})).to be
@@ -41,6 +41,8 @@ RSpec.describe SknUtils::GenericBean, "Generic Marshal'able Bean class " do
     it "Supports - respond_to? - method, because it has accessors or method_missing coverage" do
       expect(object).to respond_to(:one)
       expect(object.one).to eql "one"
+      expect{ object.fifty = {any_key: "any value"} }.not_to raise_error  
+      expect( object.fifty).to respond_to(:any_key)  
     end
     it "nest objects if multi-level hash is given" do
       expect(object.one).to be_eql("one")
