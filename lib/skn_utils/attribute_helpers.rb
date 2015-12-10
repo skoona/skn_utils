@@ -1,5 +1,5 @@
 ##
-# <Rails.root>/lib/skn_utils/attribute_helpers.rb
+# <project.root>/lib/skn_utils/attribute_helpers.rb
 #
 # *** See SknUtils::NestedResultBase for details ***
 #
@@ -29,13 +29,28 @@
 module SknUtils
   module AttributeHelpers
 
+    # These methods normally come from ActiveSupport in Rails
+    # If your not using this gem with Rails, then the :included method
+    # will add these routines to the Object class
+    def self.included(mod)
+        unless Object.respond_to? :instance_variable_names  
+          Object.class_exec {
+            def instance_variable_names 
+              instance_variables.map { |var| var.to_s } 
+            end
+            def instance_values
+              Hash[instance_variables.map { |name| [name[1..-1], instance_variable_get(name)] }]
+            end
+          }
+        end
+    end
+
     # return a hash of all attributes and their current values
     # including nested arrays of hashes/objects
     def attributes(filter_internal=true)
       instance_variable_names.each_with_object({}) do |attr,collector|
         next if ['skn_enable_serialization', 'skn_enabled_depth'].include?(attr.to_s[1..-1]) and filter_internal  # skip control keys
         value = instance_variable_get(attr)
-        next if value.is_a?(ActiveModel::Errors)
 
         if value.kind_of?(Array) and value.first.respond_to?(:attribute_helper_object)
           value = value.map {|ov| ov.respond_to?(:attribute_helper_object) ? ov.attributes : ov }
@@ -46,8 +61,8 @@ module SknUtils
       end
     end
 
-    def to_hash
-      attributes
+    def to_hash(exclude_internal_vars=false)
+      attributes(!exclude_internal_vars)
     end
 
     # An alternative mechanism for property access.

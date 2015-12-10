@@ -1,5 +1,5 @@
 ##
-# <Rails.root>/lib/skn_utils/page_controls.rb
+# <project.root>/lib/skn_utils/page_controls.rb
 #
 # *** See SknUtils::NestedResultBase for details ***
 #

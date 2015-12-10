@@ -13,8 +13,8 @@ Ruby convenience utilities, the first being a ResultBean.
 
 
 ResultBean is a PORO (Plain Old Ruby Object) which inherits from NestedResultBean class (inlcuded). This class 
-is intantiated  via a hash at Ruby/Rails Runtime, allows access to vars via dot or hash notation, 
-and is serializable via to_xml, to_hash, and to_json.
+is instantiated via a hash at Ruby Runtime, allowing access to vars via dot or hash notation, 
+and is serializable (<obj>.to_hash) using standard Hash serialization methods. 
 EOF
 
   spec.description   = <<EOF
@@ -45,8 +45,6 @@ EOF
   spec.executables   = []
   spec.test_files    = spec.files.grep(%r{^(spec)/})
   spec.require_paths = ["lib"]
-
-  spec.add_runtime_dependency 'activemodel', '>= 3.0'  
   
   spec.add_development_dependency "bundler", ">= 0"
   spec.add_development_dependency "rake", ">= 0"

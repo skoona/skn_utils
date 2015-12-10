@@ -1,7 +1,7 @@
 ##
 # <root>/spec/support/shared_example_ruby_pojo.rb
 #
-# refs: result_bean, result_with_errors
+# refs: result_bean
 #
 
 RSpec.shared_examples "ruby pojo" do
@@ -35,11 +35,6 @@ RSpec.shared_examples "ruby pojo" do
   it "raises an 'NoMethodError' error when attribute that does not exist is accessed " do
     expect { @obj.address }.to raise_error NoMethodError
   end
-  it "Nests objects if multi-level hash is given " do
-    obj = SknUtils::ResultBeanWithErrors.new({one: "one", two: "two", three: {four: 4, five: 5}})
-    expect(obj.three).to be_kind_of(SknUtils::NestedResultBase)
-    expect(obj.three.five).to eq(5)
-  end
   it "#attributes method returns a hash of all attributes and their values." do
     expect(@obj.attributes).to be_a(Hash)
     expect(@obj.attributes[:one]).to eql("one")
@@ -57,12 +52,6 @@ RSpec.shared_examples "ruby pojo" do
       expect(@obj.attributes[:one]).to be_eql("one")
       expect(@obj.attributes[:three]).to be_a(Hash)
     end    
-    it "#to_json method returns a serialized version of this object." do
-      expect(@obj.to_json).to include(":\"")
-    end
-    it "#to_xml method returns a serialized version of this object." do
-      expect(@obj.to_xml).to include("xml version")
-    end
     it "#to_hash method returns a serialized version of this object." do
       expect(@obj.to_hash).to be_a(Hash)
     end

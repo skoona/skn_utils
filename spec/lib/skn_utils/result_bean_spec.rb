@@ -81,9 +81,9 @@ RSpec.describe SknUtils::ResultBean, "Result Bean class - Basic useage." do
       dmp = YAML::dump(object)
       @obj = YAML::load(dmp)
       # Restore setters
-      @obj.attributes.keys.each do |k|
-        @obj.singleton_class.send(:attr_accessor, k)
-      end
+      # @obj.attributes.keys.each do |k|
+        # @obj.singleton_class.send(:attr_accessor, k)
+      # end
     end
     it_behaves_like "retains initialization options"    
     it_behaves_like "ruby pojo"

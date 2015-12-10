@@ -1,5 +1,5 @@
 ##
-# <Rails.root>/lib/skn_utils/generic_bean.rb
+# <project.root>/lib/skn_utils/generic_bean.rb
 #
 # *** See SknUtils::NestedResultBase for details ***
 #

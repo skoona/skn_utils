@@ -44,12 +44,6 @@ RSpec.shared_examples "marshalable ruby pojo" do
     expect(@obj.attributes(false)[:skn_enabled_depth]).to eql @obj.depth_level
   end
   context "transformations are enabled with " do
-    it "#to_json method returns a serialized version of this object." do
-      expect(@obj.to_json).to include(":\"")
-    end
-    it "#to_xml method returns a serialized version of this object." do
-      expect(@obj.to_xml).to include("xml version")
-    end
     it "#to_hash method returns a serialized version of this object." do
       expect(@obj.to_hash).to be_a(Hash)
     end
