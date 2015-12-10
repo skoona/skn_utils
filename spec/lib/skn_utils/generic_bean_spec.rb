@@ -51,9 +51,9 @@ RSpec.describe SknUtils::GenericBean, "Generic Marshal'able Bean class " do
       expect(object.three.five).to eq(5)
     end
     it "#attributes method returns a hash of all attributes and their values." do
-      expect(object.attributes).to be_a(Hash)
-      expect(object.attributes[:one]).to be_eql("one")
-      expect(object.attributes[:three]).to be_a(Hash)
+      expect(object.to_hash).to be_a(Hash)
+      expect(object.to_hash[:one]).to be_eql("one")
+      expect(object.to_hash[:three]).to be_a(Hash)
     end
   end
 

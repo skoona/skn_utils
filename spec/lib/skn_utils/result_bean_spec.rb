@@ -2,13 +2,16 @@
 # spec/lib/skn_utils/result_bean_spec.rb
 #
 
-RSpec.describe SknUtils::ResultBean, "Result Bean class - Basic useage." do
+RSpec.describe SknUtils::ResultBean, "Result Bean class - Basic usage." do
   let(:object) {
     SknUtils::ResultBean.new({one: "one",
                              two: "two",
                              three: {four: 4, five: 5, six: {seven: 7, eight: "eight" }},
                              four: {any_key: "any value"}, 
-                             five: []
+                             five: [],
+                             six: [{four: 4, five: 5, six: {seven: 7, eight: "eight" }},
+                                   {four: 4, five: 5, six: {nine: 9, ten: "ten" }}
+                                  ]
                             })
   }
 

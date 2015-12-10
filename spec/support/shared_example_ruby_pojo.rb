@@ -35,22 +35,22 @@ RSpec.shared_examples "ruby pojo" do
   it "raises an 'NoMethodError' error when attribute that does not exist is accessed " do
     expect { @obj.address }.to raise_error NoMethodError
   end
-  it "#attributes method returns a hash of all attributes and their values." do
-    expect(@obj.attributes).to be_a(Hash)
-    expect(@obj.attributes[:one]).to eql("one")
-    expect(@obj.attributes[:three]).to be_a(Hash)
+  it "#to_hash method returns a hash of all attributes and their values." do
+    expect(@obj.to_hash).to be_a(Hash)
+    expect(@obj.to_hash[:one]).to eql("one")
+    expect(@obj.to_hash[:three]).to be_a(Hash)
   end
   it "#attributes method excludes internal attributes unless overridden." do
-    expect(@obj.attributes[:skn_enabled_depth]).to be_nil
-    expect(@obj.attributes(true)[:skn_enabled_depth]).to be_nil
-    expect(@obj.attributes(false)[:skn_enabled_depth]).to eql @obj.depth_level
+    expect(@obj.to_hash[:skn_enabled_depth]).to be_nil
+    expect(@obj.to_hash(false)[:skn_enabled_depth]).to be_nil
+    expect(@obj.to_hash(true)[:skn_enabled_depth]).to eql @obj.depth_level
   end
   
   context "transformations are enabled with " do
     it "#attributes method returns a hash of all attributes and their values." do
-      expect(@obj.attributes).to be_a(Hash)
-      expect(@obj.attributes[:one]).to be_eql("one")
-      expect(@obj.attributes[:three]).to be_a(Hash)
+      expect(@obj.to_hash).to be_a(Hash)
+      expect(@obj.to_hash[:one]).to be_eql("one")
+      expect(@obj.to_hash[:three]).to be_a(Hash)
     end    
     it "#to_hash method returns a serialized version of this object." do
       expect(@obj.to_hash).to be_a(Hash)

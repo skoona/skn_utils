@@ -38,10 +38,10 @@ RSpec.shared_examples "marshalable ruby pojo" do
   it "raises an 'NoMethodError' error when attribute does not exist" do
     expect { @obj.address }.to raise_error NoMethodError
   end
-  it "#attributes method excludes internal attributes unless overridden." do
-    expect(@obj.attributes[:skn_enabled_depth]).to be_nil
-    expect(@obj.attributes(true)[:skn_enabled_depth]).to be_nil
-    expect(@obj.attributes(false)[:skn_enabled_depth]).to eql @obj.depth_level
+  it "#to_hash method excludes internal attributes unless overridden." do
+    expect(@obj.to_hash[:skn_enabled_depth]).to be_nil
+    expect(@obj.to_hash(false)[:skn_enabled_depth]).to be_nil
+    expect(@obj.to_hash(true)[:skn_enabled_depth]).to eql @obj.depth_level
   end
   context "transformations are enabled with " do
     it "#to_hash method returns a serialized version of this object." do

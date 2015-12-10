@@ -2,6 +2,7 @@ ENV['RAILS_ENV'] ||= 'test'
 
 require 'skn_utils'
 require 'rspec'
+require 'yaml'
 
 # Shared Examples and Support Routines
 Dir["./spec/support/**/*.rb"].sort.each { |f| require f}

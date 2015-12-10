@@ -81,10 +81,10 @@ RSpec.describe SknUtils::PageControls, "PageControls Marshal'able Bean class " d
       expect(object.one_array[0]).to be_a(SknUtils::PageControls)
     end
     it "#attributes method returns a hash of all attributes and their values." do
-      expect(object.attributes).to be_a(Hash)
-      expect(object.attributes[:one]).to be_eql("one")
-      expect(object.attributes[:three]).to be_a(Hash)
-      expect(object.attributes[:six].last[:six][:eight]).to eql('eight')
+      expect(object.to_hash).to be_a(Hash)
+      expect(object.to_hash[:one]).to be_eql("one")
+      expect(object.to_hash[:three]).to be_a(Hash)
+      expect(object.to_hash[:six].last[:six][:eight]).to eql('eight')
     end
   end
 
