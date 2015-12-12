@@ -9,22 +9,29 @@ instance variables can be added post-create by 'obj.my_new_var = "some value"', 
 The intent of this gem is to be a container of data results, with easy access to its contents with on-demand transformation back to a hash (#to_hash) 
 for easy serialization using standard ruby Hash serialization methods. 
 
+
 * Transforms the initialization hash into object instance variables, with their Keys as the variable names
 * If the key's value is also a hash, it too can optionally become an Object.
 * if the key's value is a Array of Hashes, each element of the Array can optionally become an Object.
+
   
 This nesting action is controlled by the value of the options key ':depth'. 
 The key :depth defaults to :multi, and has options of :single, :multi, or :multi_with_arrays
   
 The ability of the resulting Object to be Marshalled(dump/load) can be preserved by merging configuration options 
-    into the input params key ':enable_serialization' set to true.  It defaults to false for speed purposes
+into the input params key ':enable_serialization' set to true.  It defaults to false for speed purposes
 
 
 ### New Features
 --------------------------------
-    12/2015   V2.0  All references to ActiveRecord or Rails has been removed to allow use in non-Rails environments
-                    as a result serialization is done with standard Ruby Hash serialization methods; by first transforming
-                    object back to a hash using its #to_hash method. 
+
+    12/2015  V2.0  
+	All references to ActiveRecord or Rails has been removed to allow use in non-Rails environments
+    as a result serialization is done with standard Ruby Hash serialization methods; by first transforming
+    object back to a hash using its #to_hash method. 
+
+	06/2015  V1.5.1 commit #67ef656
+	Last Version to depend on Rails (ActiveModel) for #to_json and #to_xml serialization
 
 
 ### Configuration Options
@@ -55,9 +62,9 @@ The ability of the resulting Object to be Marshalled(dump/load) can be preserved
 --------------------------------
 
     Inherit from NestedResultBase or instantiate an pre-built Class:
-      SknUtils::GenericBean              # => Serializable, includes attr_accessors, and follows hash values only.
-      SknUtils::PageControls             # => Serializable, includes attr_accessors, and follows hash values and arrays of hashes.
-      SknUtils::ResultBean               # => Not Serializable, includes attr_accessors, and follows hash values only.
+      SknUtils::ResultBean               # => Not Serializable and follows hash values only.
+      SknUtils::PageControls             # => Serializable and follows hash values and arrays of hashes.
+      SknUtils::GenericBean              # => Serializable and follows hash values only.
     or Include AttributeHelpers          # => Add getter/setters, and hash notation access to instance vars of any object.
 
 
@@ -69,7 +76,7 @@ The ability of the resulting Object to be Marshalled(dump/load) can be preserved
      'x = obj["value1"]'
      'x = obj[:value1]'
 
- - enables serialization by avoiding the use of ''singleton_class'' methods which breaks Serializers:
+ - enables serialization by avoiding the use of ''singleton_class'' methods, #attr_accessor, which breaks Serializers:
     Serializer supports #to_hash, and standard Marshall''ing.  Notice use of #to_hash to convert object back to a Ruby Hash before
     using #to_json and #to_xml; presumed to be methods enabled on the standard Ruby Hash class.
 
@@ -102,11 +109,11 @@ The combination of this NestedResultBase(dot notation class) and AttributeHelper
     drb = SknUtils::ResultBean.new(params)                          Basic dot notation: effect of :depth
     ----------------------------------------------------      -----------------------------------------------------------------
 
-(DOES NOT FOLLOW Values) ***:depth => :single
+(DOES NOT FOLLOW Values) :depth => :single
 ```ruby
     * params = {one: 1,                                         drb.one      = 1
                 two: { one: 1,                                  drb.two      = {one: 1, two: 'two}
-                       two: "two"                               drb.two.two  = NoMethodError
+                     two: "two"                               drb.two.two  = NoMethodError
                      }, 
                 three: [ {one: 'one', two: 2},                  drb.three    = [{one: 'one', two: 2},{three: 'three', four: 4}]
                          {three: 'three', four: 4}              drb.three[1] = {three: 'three', four: 4}
@@ -114,7 +121,7 @@ The combination of this NestedResultBase(dot notation class) and AttributeHelper
                }      
 ```
 
-(Follow VALUES that are Hashes only.) ***:depth => :multi
+(Follow VALUES that are Hashes only.) :depth => :multi
 ```ruby
     * params = {one: 1,                                         drb.one      = 1
                 two: { one: 1,                                  drb.two      = <SknUtils::ResultBean>
@@ -126,7 +133,7 @@ The combination of this NestedResultBase(dot notation class) and AttributeHelper
 	           }
 ```
  
-(Follow VALUES that are Hashes and/or Arrays of Hashes) ***:depth => :multi_with_arrays
+(Follow VALUES that are Hashes and/or Arrays of Hashes) :depth => :multi_with_arrays
 ```ruby
     * params = {one: 1,                                         drb.one      = 1
                 two: { one: 1,                                  drb.two      = <SknUtils::ResultBean>
@@ -196,6 +203,7 @@ Use GenericBean or PageControls if serialization is needed, they initialize with
 
 ## Installation
 ----------------
+
 runtime prereqs: 
     V2+ None
     V1+ gem 'active_model', '~> 3.0'

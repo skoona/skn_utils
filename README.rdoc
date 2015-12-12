@@ -22,9 +22,14 @@ into the input params key ':enable_serialization' set to true.  It defaults to f
 
 === New Features
 --------------------------------
-    12/2015   V2.0  All references to ActiveRecord or Rails has been removed to allow use in non-Rails environments
-                    as a result serialization is done with standard Ruby Hash serialization methods; by first transforming
-                    object back to a hash using its #to_hash method. 
+
+    12/2015  V2.0  
+	All references to ActiveRecord or Rails has been removed to allow use in non-Rails environments
+    as a result serialization is done with standard Ruby Hash serialization methods; by first transforming
+    object back to a hash using its #to_hash method. 
+
+	06/2015  V1.5.1 commit #67ef656
+	Last Version to depend on Rails (ActiveModel) for #to_json and #to_xml serialization
 
 
 === Configuration Options
@@ -54,10 +59,10 @@ into the input params key ':enable_serialization' set to true.  It defaults to f
 === Public Components
 --------------------------------
 
-    Inherit from NestedResultBase or instantiate an pre-built Class:
-      SknUtils::GenericBean              # => Serializable, includes attr_accessors, and follows hash values only.
-      SknUtils::PageControls             # => Serializable, includes attr_accessors, and follows hash values and arrays of hashes.
-      SknUtils::ResultBean               # => Not Serializable, includes attr_accessors, and follows hash values only.
+    Inherit from NestedResultBase or instantiate a pre-built Class:
+      SknUtils::ResultBean               # => Not Serializable and follows hash values only.
+      SknUtils::PageControls             # => Serializable and follows hash values and arrays of hashes.
+      SknUtils::GenericBean              # => Serializable and follows hash values only.
     or Include AttributeHelpers          # => Add getter/setters, and hash notation access to instance vars of any object.
 
 
@@ -69,7 +74,7 @@ into the input params key ':enable_serialization' set to true.  It defaults to f
      'x = obj["value1"]'
      'x = obj[:value1]'
 
- - enables serialization by avoiding the use of ''singleton_class'' methods which breaks Serializers:
+ - enables serialization by avoiding the use of ''singleton_class'' methods, #attr_accessor, which breaks Serializers:
     Serializer supports #to_hash, and standard Marshall''ing.  Notice use of #to_hash to convert object back to a Ruby Hash before
     using #to_json and #to_xml; presumed to be methods enabled on the standard Ruby Hash class.
 
@@ -106,7 +111,7 @@ The combination of this NestedResultBase(dot notation class) and AttributeHelper
 ```ruby
     * params = {one: 1,                                         drb.one      = 1
                 two: { one: 1,                                  drb.two      = {one: 1, two: 'two}
-                       two: "two"                               drb.two.two  = NoMethodError
+                     two: "two"                               drb.two.two  = NoMethodError
                      }, 
                 three: [ {one: 'one', two: 2},                  drb.three    = [{one: 'one', two: 2},{three: 'three', four: 4}]
                          {three: 'three', four: 4}              drb.three[1] = {three: 'three', four: 4}
@@ -197,6 +202,7 @@ Use GenericBean or PageControls if serialization is needed, they initialize with
 == Installation
 ----------------
 runtime prereqs: 
+
     V2+ None
     V1+ gem 'active_model', '~> 3.0'
 
