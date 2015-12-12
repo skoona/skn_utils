@@ -1,7 +1,7 @@
 [![Gem Version](https://badge.fury.io/rb/skn_utils.svg)](http://badge.fury.io/rb/skn_utils)
 
 # SknUtils 
-Rails Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated at runtime with an input hash.  This library creates 
+Ruby Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated at runtime with an input hash.  This library creates 
 an Object with instance variables and associated getters and setters for Dot or Hash notational access to each instance variable.  Additional 
 instance variables can be added post-create by 'obj.my_new_var = "some value"', or simply assigning it.  
 
@@ -9,13 +9,14 @@ instance variables can be added post-create by 'obj.my_new_var = "some value"', 
 The intent of this gem is to be a container of data results, with easy access to its contents with on-demand transformation back to a hash (#to_hash) 
 for easy serialization using standard ruby Hash serialization methods. 
 
+* Transforms the initialization hash into object instance variables, with their Keys as the variable names
 * If the key's value is also a hash, it too can optionally become an Object.
 * if the key's value is a Array of Hashes, each element of the Array can optionally become an Object.
   
-  This nesting action is controlled by the value of the options key ':depth'. 
-    The key :depth defaults to :multi, and has options of :single, :multi, or :multi_with_arrays
+This nesting action is controlled by the value of the options key ':depth'. 
+The key :depth defaults to :multi, and has options of :single, :multi, or :multi_with_arrays
   
-  The ability of the resulting Object to be Marshalled(dump/load) can be preserved by merging configuration options 
+The ability of the resulting Object to be Marshalled(dump/load) can be preserved by merging configuration options 
     into the input params key ':enable_serialization' set to true.  It defaults to false for speed purposes
 
 
