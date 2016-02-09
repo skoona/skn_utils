@@ -6,11 +6,11 @@ an Object with instance variables and associated getters and setters for Dot or 
 instance variables can be added post-create by 'obj.my_new_var = "some value"', or simply assigning it.  
 
 
-The intent of this gem is to be a container of data results, with easy access to its contents with on-demand transformation back to a hash (#to_hash) 
+The intent of this gem is to be a container of data results or value bean, with easy access to its contents with on-demand transformation back to a hash (#to_hash) 
 for easy serialization using standard ruby Hash serialization methods. 
 
 
-* Transforms the initialization hash into object instance variables, with their Keys as the variable names
+* Transforms the initialization hash into object instance variables, with their Keys as the method names.
 * If the key's value is also a hash, it too can optionally become an Object.
 * if the key's value is a Array of Hashes, each element of the Array can optionally become an Object.
 
@@ -25,6 +25,12 @@ into the input params key ':enable_serialization' set to true.  It defaults to f
 ### New Features
 --------------------------------
 
+    02/2015  V2.1  
+    Added Jim Gay's Direction module, from his [![Eastward Video](http://confreaks.tv/videos/rubyconf2014-eastward-ho-a-clear-path-through-ruby-with-oo)
+    which allows to use :command instead of :Forwardable to implement a portion of the 'Eastward' methodology.
+    
+    
+
     12/2015  V2.0  
 	All references to ActiveRecord or Rails has been removed to allow use in non-Rails environments
     as a result serialization is done with standard Ruby Hash serialization methods; by first transforming
@@ -37,25 +43,27 @@ into the input params key ':enable_serialization' set to true.  It defaults to f
 ### Configuration Options
 --------------------------------
 
-    :enable_serialization = false     -- [ true | false ], for speed, omits creation of attr_accessor
-    :depth = :multi                   -- [ :single | :multi | :multi_with_arrays ]
+    Include in initialization hash
+      :enable_serialization = false     -- [ true | false ], for speed, omits creation of attr_accessor
+      :depth = :multi                   -- [ :single | :multi | :multi_with_arrays ]
 
 
 ### Public Methods
 --------------------------------
 
     Each concrete Class supports the following utility methods:
-      #depth_level                   -- returns parsing depth level, see :depth
-      #serialization_required?       -- returns true/false if serialization is enabled
       #to_hash                       -- returns a hash of all user attributes
-      #to_hash(true)                 -- returns a hash of all user and internal attributes
+      #to_hash(true)                 -- returns a hash of all user and internal attributes -- use for serialization
       #[]                            -- returns value of attr, when #[<attr_name_symbol>]
       #[]=(attr, value)              -- assigns value to existing attr, or creates a new key/value pair
-      #clear_<attr>                  -- assigns nil to existing attr, when #clear_attr
       #<attr>?                       -- detects true/false presence? of attr, and non-blank existance of attr's value; when #address?
       #<attr>                        -- returns value of named attribute
       #<attr> = (value)              -- assigns value to existing attr, or creates a new key/value pair
-      -- Where <attr> is a key value from the initial hash, or a key that was dynamically added      
+      -- Where <attr> is a key value from the initial hash, or a key that was/will be dynamically added      
+
+      #depth_level                   -- returns parsing depth level, see :depth
+      #serialization_required?       -- returns true/false if serialization is enabled
+      #clear_<attr>                  -- assigns nil to existing attr, when #clear_attr
       
 
 ### Public Components
@@ -65,6 +73,7 @@ into the input params key ':enable_serialization' set to true.  It defaults to f
       SknUtils::ResultBean               # => Not Serializable and follows hash values only.
       SknUtils::PageControls             # => Serializable and follows hash values and arrays of hashes.
       SknUtils::GenericBean              # => Serializable and follows hash values only.
+      SknUtils::ValueBean                # => Serializable and DOES NOT follows hash values.
     or Include AttributeHelpers          # => Add getter/setters, and hash notation access to instance vars of any object.
 
 
