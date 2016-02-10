@@ -50,6 +50,6 @@ EOF
   ## Make sure you can build the gem on older versions of RubyGems too:
   spec.rubygems_version = "1.6.2"
   spec.required_rubygems_version = Gem::Requirement.new(">= 0") if spec.respond_to? :required_rubygems_version=
-  spec.required_ruby_version = '>= 2.0.0'
+  spec.required_ruby_version = '~> 2.0'
   spec.specification_version = 3 if spec.respond_to? :specification_version  
 end

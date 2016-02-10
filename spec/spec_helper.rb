@@ -20,7 +20,6 @@ RSpec.configure do |config|
 
   config.disable_monkey_patching!  # -- breaks rspec runtime
   config.warnings = true
-  # config.profile_examples = 10
 
   if config.files_to_run.one?
     config.formatter = :documentation
