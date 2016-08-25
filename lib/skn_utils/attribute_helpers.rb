@@ -64,6 +64,7 @@ module SknUtils
     def to_hash(exclude_internal_vars=false)
       attributes(!exclude_internal_vars)
     end
+    alias_method :to_h, :to_hash
 
     # An alternative mechanism for property access.
     # Hash notation

@@ -35,6 +35,9 @@ RSpec.describe SknUtils::ResultBean, "Result Bean class - Basic usage." do
     it "Supports - respond_to - methods, because it has accessor methods" do
       expect(object).to respond_to(:one)
     end
+    it "Supports - respond_to - methods, because it has respond_to_missing? method" do
+      expect(object.method(:one)).to be
+    end
   end
 
   shared_examples_for "retains initialization options" do

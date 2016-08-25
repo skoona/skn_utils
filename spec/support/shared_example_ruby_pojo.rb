@@ -49,6 +49,7 @@ RSpec.shared_examples "ruby pojo" do
   context "transformations are enabled with " do
     it "#attributes method returns a hash of all attributes and their values." do
       expect(@obj.to_hash).to be_a(Hash)
+      expect(@obj.to_h).to be_a(Hash)
       expect(@obj.to_hash[:one]).to be_eql("one")
       expect(@obj.to_hash[:three]).to be_a(Hash)
     end    

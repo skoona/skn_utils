@@ -99,22 +99,23 @@ module SknUtils
       true
     end
 
-    # Some keys have chars not suitable for symbol keys
+    # Some keys have chars not suitable for symbol keys => @,#,:,-
     #:nodoc:
     def clean_key(original)
-      formatted_key = original.to_s
-      if /^[#|@|:]/.match(formatted_key)  # filter out (@xsi) from '@xsi:type' keys
-        label = /@(.+):(.+)/.match(formatted_key) || /[#|@|:](.+)/.match(formatted_key) || [] 
-        formatted_key = case label.size
-                          when 1
-                            label[1].to_s
-                          when 2
-                            "#{label[1]}_#{label[2]}"
-                          else
-                            original  # who knows what it was, give it back
-                        end
-      end
-      formatted_key
+      formatted_key = original.to_s.gsub(/[#|@]/,'').gsub(/[:|-]/,'_')
+
+      # if /^[#|@|:]/.match(formatted_key)  # filter out (@xsi) from '@xsi:type' keys
+      #   label = /@(.+):(.+)/.match(formatted_key) || /[#|@|:](.+)/.match(formatted_key) || []
+      #   formatted_key = case label.size
+      #                     when 1
+      #                       label[1].to_s
+      #                     when 2
+      #                       "#{label[1]}_#{label[2]}"
+      #                     else
+      #                       original  # who knows what it was, give it back
+      #                   end
+      # end
+      # formatted_key
     end
     
         
