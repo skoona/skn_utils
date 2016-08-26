@@ -36,7 +36,7 @@ module SknUtils
     def initialize(params={})
       @skn_enabled_depth = params.delete(:depth) {|not_found| :multi }
       @skn_enable_serialization = params.delete(:enable_serialization) {|not_found| false }
-      case depth_level
+      case @skn_enabled_depth
         when :single
               single_level_initializer(params)                 
         when :multi_with_arrays
