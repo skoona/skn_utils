@@ -23,6 +23,10 @@ into the input params key ':enable_serialization' set to true.  It defaults to f
 === New Features
 --------------------------------
 
+    08/2016  V2.0.3
+    Added an exploritory ActionService class and RSpec test, triggered by reading [Kamil Lelonek](https://blog.lelonek.me/what-service-objects-are-not-7abef8aa2f99#.p64vudxq4)
+    I don't support his approach, but the CreateTask class caught my attention as a Rubyist.
+
     12/2015  V2.0  
 	All references to ActiveRecord or Rails has been removed to allow use in non-Rails environments
     as a result serialization is done with standard Ruby Hash serialization methods; by first transforming
