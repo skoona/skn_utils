@@ -4,7 +4,7 @@
 #
 
 class Person
-  extend SknUtils::Commander
+  extend SknUtils::Exploring::Commander
   command [:make_me_a_sandwich, :cook, :blocky] => :@friend
   query [:activities, :go, :say_what] => :friend
   attr_accessor :friend
@@ -60,7 +60,7 @@ module Activities
   end
 end
 
-RSpec.describe SknUtils::Commander, 'command' do
+RSpec.describe SknUtils::Exploring::Commander, 'command' do
   let(:friend){ Friend.new }
   let(:person){ person = Person.new
   person.friend = friend
@@ -95,7 +95,7 @@ RSpec.describe SknUtils::Commander, 'command' do
   end
 end
 
-RSpec.describe SknUtils::Commander, 'query' do
+RSpec.describe SknUtils::Exploring::Commander, 'query' do
   let(:friend){ Friend.new }
   let(:person){ person = Person.new
   person.friend = friend

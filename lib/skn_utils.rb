@@ -5,8 +5,8 @@ require 'skn_utils/generic_bean'
 require 'skn_utils/page_controls'
 require 'skn_utils/result_bean'
 require 'skn_utils/value_bean'
-require 'skn_utils/commander'
-require 'skn_utils/action_service'
+require 'skn_utils/exploring/commander'
+require 'skn_utils/exploring/action_service'
 
 module SknUtils
   

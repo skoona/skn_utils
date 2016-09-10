@@ -1,6 +1,9 @@
 ENV['RAILS_ENV'] ||= 'test'
 
 require 'skn_utils'
+require 'skn_utils/exploring/commander'
+require 'skn_utils/exploring/action_service'
+
 require 'rspec'
 require 'yaml'
 

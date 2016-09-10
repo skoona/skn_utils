@@ -2,42 +2,44 @@
 #
 # Exploritory Action/Service Class
 # Ref: https://blog.lelonek.me/what-service-objects-are-not-7abef8aa2f99#.p64vudxq4
+#      http://sporto.github.io/blog/2012/11/15/a-pattern-for-service-objects-in-rails/
 #
 # Not a template or abstract class, Just an Example of an Action class
 #
 
 module SknUtils
-  class ActionService
+  module Exploring
+    class ActionService
 
-    def initialize(dependency_injection_arguments)
-      @thingy = dependency_injection_arguments
-    end
-
-    def call(*command_and_params)
-      puts "Called with: #{command_and_params}"
-      value = command_and_params
-      if value.first.is_a?(Symbol)
-        (value.size == 1 ? self.send(value.first) : self.send(value.first, value[1..-1]))
-      else
-        puts('No Action Taken')
+      def initialize(dependency_injection_arguments)
+        @thingy = dependency_injection_arguments
       end
 
-      self
-    end
+      def call(*command_and_params)
+        puts "Called with: #{command_and_params}"
+        if command_and_params.first.is_a?(Symbol)
+          (command_and_params.size == 1 ? self.send(command_and_params.first) : self.send(command_and_params.first, command_and_params[1..-1]))
+        else
+          puts('No Action Taken')
+        end
 
-    private
-    # a bunch of private methods
-    def action_one
-      puts "#{__method__}() #{@thingy}"
-      true
-    end
+        self
+      end
 
-    def action_two(parm)
-      puts "#{__method__} => #{parm} #{@thingy}"
-      true
-    end
+      private
+      # a bunch of private methods
+      def action_one
+        puts "#{__method__}() #{@thingy}"
+        true
+      end
 
-  end # end class
+      def action_two(parm)
+        puts "#{__method__} => #{parm} #{@thingy}"
+        true
+      end
+
+    end # end class
+  end # end module
 end # end module
 
 

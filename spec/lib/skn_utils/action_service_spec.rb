@@ -1,10 +1,10 @@
 ##
-# spec/lib/skn_utils/action_service_spec.rb
+# spec/lib/skn_utils/exploring/action_service_spec.rb
 #
 
-RSpec.describe SknUtils::ActionService, "Example Service Object class with command interface." do
+RSpec.describe SknUtils::Exploring::ActionService, "Example Service Object class with command interface." do
   let(:action) {
-    SknUtils::ActionService.new('Thingys')
+    SknUtils::Exploring::ActionService.new('Thingys')
   }
 
   context "Handles Bad Input. " do
