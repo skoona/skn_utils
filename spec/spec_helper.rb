@@ -3,6 +3,7 @@ ENV['RAILS_ENV'] ||= 'test'
 require 'skn_utils'
 require 'skn_utils/exploring/commander'
 require 'skn_utils/exploring/action_service'
+require 'skn_utils/exploring/configuration'
 
 require 'rspec'
 require 'yaml'
@@ -21,7 +22,7 @@ RSpec.configure do |config|
   config.filter_run :focus
   config.run_all_when_everything_filtered = true
 
-  config.disable_monkey_patching!  # -- breaks rspec runtime
+  # config.disable_monkey_patching!  # -- breaks rspec runtime
   config.warnings = true
 
   if config.files_to_run.one?
