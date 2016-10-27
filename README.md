@@ -25,13 +25,13 @@ into the input params key ':enable_serialization' set to true.  It defaults to f
 ### New Features
 --------------------------------
 
+    10/2016  V2.0.6  
+    Added an SknUtils::NullObject and SknUtils::nullable?(value) extracted from [Avdi Grimm's Confident Code](https://gist.github.com/jschoolcraft/979827)
+    The NullObject class has great all around utility, check out it's specs!        
+
     08/2016  V2.0.3  
     Added an exploritory ActionService class and RSpec test, triggered by reading [Kamil Lelonek](https://blog.lelonek.me/what-service-objects-are-not-7abef8aa2f99#.p64vudxq4)
     I don't support his approach, but the CreateTask class caught my attention as a Rubyist.        
-
-    02/2015  V2.0.2  
-    Added Jim Gay's Direction module, from his [Eastward Video](http://confreaks.tv/videos/rubyconf2014-eastward-ho-a-clear-path-through-ruby-with-oo)
-    which allows to use :command instead of :Forwardable to implement a portion of the 'Eastward' methodology.        
 
     12/2015  V2.0  
 	All references to ActiveRecord or Rails has been removed to allow use in non-Rails environments
