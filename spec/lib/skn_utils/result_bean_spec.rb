@@ -1,6 +1,25 @@
 ##
 # spec/lib/skn_utils/result_bean_spec.rb
 #
+class MyObject
+
+  attr_accessor :some_instance_value
+
+  def initialize(parms)
+    @some_instance_value = parms[:value]
+  end
+
+  def say(str)
+    "saying #{str}!"
+  end
+
+  def to_h
+    hsh = {msg: "You called #{__method__} on me!"}
+    puts hsh
+    hsh
+  end
+
+end
 
 RSpec.describe SknUtils::ResultBean, "Result Bean class - Basic usage." do
   let(:object) {
@@ -10,6 +29,7 @@ RSpec.describe SknUtils::ResultBean, "Result Bean class - Basic usage." do
                              four: {any_key: "any value"}, 
                              five: [],
                              six: [{four: 4, five: 5, six: {seven: 7, eight: "eight" }},
+                                   MyObject.new(value: ['MyObject Testing', 'Looking for Modifications']),
                                    {four: 4, five: 5, six: {nine: 9, ten: "ten" }}
                                   ]
                             })

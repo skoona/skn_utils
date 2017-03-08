@@ -18,8 +18,9 @@ for easy serialization using standard ruby Hash serialization methods.
 This nesting action is controlled by the value of the options key ':depth'. 
 The key :depth defaults to :multi, and has options of :single, :multi, or :multi_with_arrays
   
-The ability of the resulting Object to be Marshalled(dump/load) can be preserved by merging configuration options 
-into the input params key ':enable_serialization' set to true.  It defaults to false for speed purposes
+The ability of the resulting Object to be Marshaled(dump/load) can be preserved by merging configuration options
+into the input params key ':enable_serialization' set to true.  It defaults to false for speed purposes.  A subclass with
+the nesting configuration is also provided as the preferred method of managing depth.
 
 
 ### New Features

@@ -95,20 +95,12 @@ module SknUtils
     #:nodoc:    
     def attribute?(attr)
       return false unless  instance_variable_names.include?("@#{attr.to_s}")
-      if attr.is_a? Symbol        
-       ![ "", " ", nil, [],[""], [" "], {} ].include?( send(attr) )
-      else
-        ![ "", " ", nil, [],[""], [" "], {} ].include?( send(attr.to_sym) )
-      end
+     ![ "", " ", nil, [],[""], [" "], {} ].include?( send(attr) )
     end
 
     #:nodoc:
     def clear_attribute(attr)
-      if attr.is_a? Symbol
-        instance_variable_set("@#{attr.to_s}", nil)
-      else
-        instance_variable_set("@#{attr}", nil)
-      end
+      instance_variable_set("@#{attr.to_s}", nil)
     end
 
     # Determines operable Options in effect for this instance

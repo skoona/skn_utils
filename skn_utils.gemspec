@@ -46,7 +46,8 @@ EOF
   spec.add_development_dependency "rake", ">= 0"
   spec.add_development_dependency "rspec", '~> 3.0'
   spec.add_development_dependency "pry", ">= 0"
-  
+  spec.add_development_dependency "simplecov", ">= 0"
+
   ## Make sure you can build the gem on older versions of RubyGems too:
   spec.rubygems_version = "1.6.2"
   spec.required_rubygems_version = Gem::Requirement.new(">= 0") if spec.respond_to? :required_rubygems_version=
