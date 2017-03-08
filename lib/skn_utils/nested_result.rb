@@ -98,10 +98,13 @@ module SknUtils
     end
 
     def delete_field(sym)
-      self.class.send(:remove_method, "#{sym.to_s}=".to_sym, sym.to_sym) if self.class.method_defined?(sym.to_sym)
+      singleton_class.send(:remove_method, "#{sym.to_s}=".to_sym, sym.to_sym) if singleton_class.method_defined?(sym.to_sym)
       container.delete(sym.to_sym)
     end
 
+    ##
+    # Ruby basic Class methods
+    #
     def ==(other)
       return false unless other.is_a?(NestedResult)
       self.to_hash.eql?(other.to_hash)
@@ -117,28 +120,47 @@ module SknUtils
       self.to_hash.hash
     end
 
-  protected
-
-    def container
-      @container ||= {}
-    end
 
     ##
     # Marshalling Support
     ##
 
+    ##
+    # YAML/Psych load support, chance to re-initialize value methods
     #
-    # Output a String representing this class
+    # encode_with() hooking into Yaml/Psych.dump for coder: #<Psych::Coder:0x007f8677cdec90 @map={"container"=>{:one=>"one", :two=>"two", :three=>{:four=>4, :five=>5, :six=>{:seven=>7, :eight=>"eight"}, :seven=>false}, :four=>{:any_key=>#<Tuple:0x007f8677ce6d28 @first="foo", @second="bar">}, :five=>[4, 5, 6], :six=>[{:four=>4, :five=>5, :six=>{:seven=>7, :eight=>"eight"}}, {:four=>4, :five=>5, :six=>{:nine=>9, :ten=>"ten"}}, #<Tuple:0x007f8677ce68c8 @first="another", @second="tuple">], :seven=>#<Tuple:0x007f8677ce65f8 @first="hello", @second="world">}}, @seq=[], @implicit=false, @type=:map, @tag="!ruby/object:SknUtils::NestedResult", @style=1, @scalar=nil, @object=nil>.
+    # init_with() hooking into Yaml/Psych.load for coder: #<Psych::Coder:0x007f86780e5b68 @map={"container"=>{:one=>"one", :two=>"two", :three=>{:four=>4, :five=>5, :six=>{:seven=>7, :eight=>"eight"}, :seven=>false}, :four=>{:any_key=>#<Tuple:0x007f8677ccc270 @first="foo", @second="bar">}, :five=>[4, 5, 6], :six=>[{:four=>4, :five=>5, :six=>{:seven=>7, :eight=>"eight"}}, {:four=>4, :five=>5, :six=>{:nine=>9, :ten=>"ten"}}, #<Tuple:0x007f86780e64c8 @first="another", @second="tuple">], :seven=>#<Tuple:0x007f86780e6018 @first="hello", @second="world">}}, @seq=[], @implicit=false, @type=:map, @tag="!ruby/object:SknUtils::NestedResult", @style=1, @scalar=nil, @object=nil>.
+
+    def init_with(coder)
+      case coder.tag
+        when '!ruby/object:SknUtils::NestedResult'
+          initialize_from_hash( coder.map['container'] )
+      end
+    end
+
+    def encode_with(coder)
+      coder['container'] = self.to_h
+    end
+
+    protected
+
+    ##
+    # Marshal.load()/.dump() support, chance to re-initialize value methods
+    #
     #:nodoc:
-    def _dump(depth=-1)
-      Marshal.dump(attributes, depth)
+    def marshal_dump
+      self.to_h
     end
 
     #
     # Using the String from above create and return an instance of this class
     #:nodoc:
-    def self._load(str)
-      NestedResult.new(Marshal.load(str))
+    def marshal_load(hash)
+      initialize_from_hash(hash)
+    end
+
+    def container
+      @container ||= {}
     end
 
     # Support the regular respond_to? method by
@@ -146,7 +168,7 @@ module SknUtils
     #:nodoc:
     def respond_to_missing?(method, incl_private=false)
       method_nsym = method.to_s[0..-2].to_sym
-      container[:method.to_sym] || container[:method_nsym] || super
+      container[method.to_sym] || container[method_nsym] || super
     end
 
     # return a hash of all attributes and their current values
@@ -202,12 +224,12 @@ module SknUtils
     # #method_missing seems to be faster than
     #  dynamically defined accessor methods
     def enable_dot_notation(name)
-      unless self.class.method_defined?(name)
-        self.class.send(:define_method, name) do
+      unless singleton_class.method_defined?(name)
+        singleton_class.send(:define_method, name) do
             container[name]
         end
 
-        self.class.send(:define_method, "#{name}=".to_sym) do |x|
+        singleton_class.send(:define_method, "#{name}=".to_sym) do |x|
             container[name] = x
         end
       end
@@ -219,14 +241,51 @@ module SknUtils
         case v
           when Array
             value = v.map {|ele| ele.is_a?(Hash) ? NestedResult.new(ele) : ele}
-            @container.store(k.to_sym, value)
+            container.store(k.to_sym, value)
           when Hash
-            @container.store(k.to_sym, NestedResult.new(v))
+            container.store(k.to_sym, NestedResult.new(v))
           else
-            @container.store(k.to_sym, v)
+            container.store(k.to_sym, v)
         end
       end
     end
 
   end # end class
 end # end module
+
+
+# YAML.load(str) will trigger #init_with for each type it encounters when loading
+# Psych.dump ==> "--- !ruby/object:SknUtils::NestedResult\ncontainer:\n  :one: 1\n  :two: two\n"
+#
+#
+# [2] pry(main)> ay = Psych.dump a
+# respond_to_missing?() checking for method: :encode_with existence.
+#   => "--- !ruby/object:SknUtils::NestedResult\ncontainer:\n  :one: 1\n  :two: two\n"
+# [3] pry(main)> az = Psych.load ay
+# respond_to_missing?() checking for method: :init_with existence.
+# respond_to_missing?() checking for method: :yaml_initialize existence.
+#   => #<SknUtils::NestedResult:0x007fe410993238 @container={:one=>1, :two=>"two"}>
+
+
+# YAML RTM? querys
+# [:encode_with, :init_with].include?(method)
+
+
+# can be accessed just like a hash
+# respond_to_missing?() checking for method: :encode_with existence.
+#     respond_to_missing?() checking for method: :encode_with existence.
+#     respond_to_missing?() checking for method: :encode_with existence.
+#     respond_to_missing?() checking for method: :encode_with existence.
+#     respond_to_missing?() checking for method: :encode_with existence.
+#     respond_to_missing?() checking for method: :encode_with existence.
+#     respond_to_missing?() checking for method: :encode_with existence.
+#     respond_to_missing?() checking for method: :encode_with existence.
+#     init_with() hooking into Yaml/Psych.load for codes: {:seven=>7, :eight=>"eight"}.
+#     init_with() hooking into Yaml/Psych.load for codes: {:four=>4, :five=>5, :six=>#<SknUtils::NestedResult:0x007fba101740e0 @container={:seven=>7, :eight=>"eight"}>, :seven=>false}.
+#     init_with() hooking into Yaml/Psych.load for codes: {:any_key=>#<Tuple:0x007fba101643e8 @first="foo", @second="bar">}.
+#     init_with() hooking into Yaml/Psych.load for codes: {:seven=>7, :eight=>"eight"}.
+#     init_with() hooking into Yaml/Psych.load for codes: {:four=>4, :five=>5, :six=>#<SknUtils::NestedResult:0x007fba1014f880 @container={:seven=>7, :eight=>"eight"}>}.
+#     init_with() hooking into Yaml/Psych.load for codes: {:nine=>9, :ten=>"ten"}.
+#     init_with() hooking into Yaml/Psych.load for codes: {:four=>4, :five=>5, :six=>#<SknUtils::NestedResult:0x007fba1014cd60 @container={:nine=>9, :ten=>"ten"}>}.
+#     init_with() hooking into Yaml/Psych.load for codes: {:one=>"one", :two=>"two", :three=>#<SknUtils::NestedResult:0x007fba10175058 @container={:four=>4, :five=>5, :six=>#<SknUtils::NestedResult:0x007fba101740e0 @container={:seven=>7, :eight=>"eight"}>, :seven=>false}>, :four=>#<SknUtils::NestedResult:0x007fba101664b8 @container={:any_key=>#<Tuple:0x007fba101643e8 @first="foo", @second="bar">}>, :five=>[4, 5, 6], :six=>[#<SknUtils::NestedResult:0x007fba10154628 @container={:four=>4, :five=>5, :six=>#<SknUtils::NestedResult:0x007fba1014f880 @container={:seven=>7, :eight=>"eight"}>}>, #<SknUtils::NestedResult:0x007fba1014d738 @container={:four=>4, :five=>5, :six=>#<SknUtils::NestedResult:0x007fba1014cd60 @container={:nine=>9, :ten=>"ten"}>}>, #<Tuple:0x007fba10146d48 @first="another", @second="tuple">], :seven=>#<Tuple:0x007fba10145a60 @first="hello", @second="world">}.
+
