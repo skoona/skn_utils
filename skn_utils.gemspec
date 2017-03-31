@@ -8,15 +8,22 @@ Gem::Specification.new do |spec|
   spec.version       = SknUtils::VERSION
   spec.author        = 'James Scott Jr'
   spec.email         = 'skoona@gmail.com'  
-  spec.summary       = <<EOF
+  spec.summary       = <<-EOF
 SknUtils contains a small collection of Ruby utilities, the first being a NestedResult a key/value container.
 EOF
 
-  spec.description   = <<EOF
-The intent of NestedResult class is to be a container of data results or key/value pairs, with easy access to its contents, and on-demand transformation back to the hash (#to_hash).
+  spec.description   = <<-EOF
+The intent of the NestedResult class is to be a container of data results or key/value pairs, 
+with easy access to its contents, and on-demand transformation back to the hash (#to_hash).
+
 Review the RSpec tests, and or review the README for more details.
 EOF
+  spec.post_install_message = <<-EOF
+This version does not include ResultBean, PageControls, or ValueBean classes.  
+SknUtils::NestedResult class replaces those original classes and their function.  
 
+Please update your existing code to make the above change or use the prior version 2.0.7
+EOF
   spec.homepage      = "https://github.com/skoona/skn_utils"
   spec.license       = "MIT"
   spec.platform      = Gem::Platform::RUBY
