@@ -62,7 +62,7 @@ Ruby Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated
     SknUtils::NestedResult                # >= V 3.0.0 Primary Key/Value Container with Dot/Hash notiation support.
 
 
-    *** <= V 2.0.6 Depreciated, will be removed in next release ***
+    *** <= V 2.0.6 Depreciated, HAS been removed ***
 
     Inherit from NestedResultBase or instantiate an pre-built Class:
       SknUtils::ResultBean                # => Not Serializable and follows hash values only.
