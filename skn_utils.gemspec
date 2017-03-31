@@ -22,7 +22,7 @@ EOF
 This version does not include ResultBean, PageControls, or ValueBean classes.  
 SknUtils::NestedResult class replaces those original classes and their function.  
 
-Please update your existing code to make the above change or use the prior version 2.0.7
+Please update your existing code to make the above change or use the prior version 2.0.6
 EOF
   spec.homepage      = "https://github.com/skoona/skn_utils"
   spec.license       = "MIT"
