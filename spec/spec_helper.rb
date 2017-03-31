@@ -6,7 +6,6 @@ require 'skn_utils/exploring/action_service'
 require 'skn_utils/exploring/configuration'
 
 require 'rspec'
-require 'yaml'
 require 'psych'
 require 'json'
 
