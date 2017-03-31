@@ -1,7 +1,7 @@
 ##
 # spec/lib/skn_utils/result_bean_spec.rb
 #
-class MyObject
+class SknUtils::MyObject
 
   attr_accessor :some_instance_value
 
@@ -29,7 +29,7 @@ RSpec.describe SknUtils::ResultBean, "Result Bean class - Basic usage." do
                              four: {any_key: "any value"}, 
                              five: [],
                              six: [{four: 4, five: 5, six: {seven: 7, eight: "eight" }},
-                                   MyObject.new(value: ['MyObject Testing', 'Looking for Modifications']),
+                                   SknUtils::MyObject.new(value: ['MyObject Testing', 'Looking for Modifications']),
                                    {four: 4, five: 5, six: {nine: 9, ten: "ten" }}
                                   ]
                             })

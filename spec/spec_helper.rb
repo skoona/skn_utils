@@ -7,6 +7,8 @@ require 'skn_utils/exploring/configuration'
 
 require 'rspec'
 require 'yaml'
+require 'psych'
+require 'json'
 
 # Shared Examples and Support Routines
 Dir["./spec/support/**/*.rb"].sort.each { |f| require f}

@@ -1,30 +1,26 @@
+
 [![Gem Version](https://badge.fury.io/rb/skn_utils.svg)](http://badge.fury.io/rb/skn_utils)
 
-# SknUtils 
-Ruby Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated at runtime with an input hash.  This library creates 
-an Object with instance variables and associated getters and setters for Dot or Hash notational access to each instance variable.  Additional 
-instance variables can be added post-create by 'obj.my_new_var = "some value"', or simply assigning it.  
+# SknUtils
+#### SknUtils::NestedResult class; dynamic key/value container
+The intent of this gem is to be a container of data results or key/value pairs, with easy access to its contents, and on-demand transformation back to the hash (#to_hash).
+
+Ruby Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated at runtime with an input hash.  This library creates
+ an Object with Dot or Hash notational accessors to each key's value.  Additional key/value pairs can be added post-create
+ by 'obj.my_new_var = "some value"', or simply assigning it.
+
+* Transforms the initialization hash into accessable object instance values, with their keys as method names.
+* If the key's value is also a hash, it too will become an Object.
+* if the key's value is a Array of Hashes, or Array of Arrays of Hashes, each element of the Arrays will become an Object.
+* The current key/value (including nested) pairs are returned via #to_hash or #to_json when and if needed.
 
 
-The intent of this gem is to be a container of data results or value bean, with easy access to its contents with on-demand transformation back to a hash (#to_hash) 
-for easy serialization using standard ruby Hash serialization methods. 
-
-
-* Transforms the initialization hash into object instance variables, with their Keys as the method names.
-* If the key's value is also a hash, it too can optionally become an Object.
-* if the key's value is a Array of Hashes, each element of the Array can optionally become an Object.
-
-  
-This nesting action is controlled by the value of the options key ':depth'. 
-The key :depth defaults to :multi, and has options of :single, :multi, or :multi_with_arrays
-  
-The ability of the resulting Object to be Marshaled(dump/load) can be preserved by merging configuration options
-into the input params key ':enable_serialization' set to true.  It defaults to false for speed purposes.  A subclass with
-the nesting configuration is also provided as the preferred method of managing depth.
-
-
-### New Features
---------------------------------
+## New Features
+    03/2017  V3.0.0
+    Added SknUtils::NestedResult to replace, or be an alternate, to ResultBean, GenericBean, PageControls, ValueBean, and AttributeHelper.
+    NestedResult overcome issues with serialization via Marshal and Yaml/Psych.
+    NestedResult will properly encode all hash based key/value pairs of input and decodes it via #to_h or #to_json
+    NestedResult encodes everything given no matter how deeply its nested, unlike the prior version where you had control over nesting.
 
     10/2016  V2.0.6  
     Added an SknUtils::NullObject and SknUtils::nullable?(value) extracted from [Avdi Grimm's Confident Code](https://gist.github.com/jschoolcraft/979827)
@@ -43,20 +39,16 @@ the nesting configuration is also provided as the preferred method of managing d
 	Last Version to depend on Rails (ActiveModel) for #to_json and #to_xml serialization
 
 
-### Configuration Options
---------------------------------
-
-    Include in initialization hash
-      :enable_serialization = false     -- [ true | false ], for speed, omits creation of attr_accessor
-      :depth = :multi                   -- [ :single | :multi | :multi_with_arrays ]
+## Configuration Options
+    None required other than initialization hash
 
 
-### Public Methods
---------------------------------
-
+## Public Methods
     Each concrete Class supports the following utility methods:
-      #to_hash                       -- returns a hash of all user attributes
-      #to_hash(true)                 -- returns a hash of all user and internal attributes -- use for serialization
+      #to_hash                       -- returns a hash of current key/value pairs, including nested
+      #to_json                       -- returns a json string of current key/value pairs, including nested
+      #hash_from(:base_key)          -- exports the internal hash starting with this base level key
+      #obj.obj2.hash_from(:base)     -- exports the internal hash starting from this nested base level key
       #[]                            -- returns value of attr, when #[<attr_name_symbol>]
       #[]=(attr, value)              -- assigns value to existing attr, or creates a new key/value pair
       #<attr>?                       -- detects true/false presence? of attr, and non-blank existance of attr's value; when #address?
@@ -64,45 +56,44 @@ the nesting configuration is also provided as the preferred method of managing d
       #<attr> = (value)              -- assigns value to existing attr, or creates a new key/value pair
       -- Where <attr> is a key value from the initial hash, or a key that was/will be dynamically added      
 
-      #depth_level                   -- returns parsing depth level, see :depth
-      #serialization_required?       -- returns true/false if serialization is enabled
-      #clear_<attr>                  -- assigns nil to existing attr, when #clear_attr
-      
 
-### Public Components
---------------------------------
+
+## Public Components
+    SknUtils::NestedResult                # >= V 3.0.0 Primary Key/Value Container with Dot/Hash notiation support.
+
+
+    *** <= V 2.0.6 Depreciated, will be removed in next release ***
 
     Inherit from NestedResultBase or instantiate an pre-built Class:
-      SknUtils::ResultBean               # => Not Serializable and follows hash values only.
-      SknUtils::PageControls             # => Serializable and follows hash values and arrays of hashes.
-      SknUtils::GenericBean              # => Serializable and follows hash values only.
-      SknUtils::ValueBean                # => Serializable and DOES NOT follows hash values.
-    or Include AttributeHelpers          # => Add getter/setters, and hash notation access to instance vars of any object.
+      SknUtils::ResultBean                # => Not Serializable and follows hash values only.
+      SknUtils::PageControls              # => Serializable and follows hash values and arrays of hashes.
+      SknUtils::GenericBean               # => Serializable and follows hash values only.
+      SknUtils::ValueBean                 # => Serializable and DOES NOT follows hash values.
+    or Include SknUtils::AttributeHelpers # => Adds getter/setters, and hash notation access to instance vars of any object.
 
 
 ## Basic features include:
 ```ruby
- - provides the hash or dot notation methods of accessing values from object created; i.e
-     'obj = SknUtils::ResultBean.new({value1: "some value", value2: {one: 1, two: "two"}}) 
-     'x = obj.value1' or 'x = obj.value2.one'
-     'x = obj["value1"]'
-     'x = obj[:value1]'
+ - provides the hash or dot notation methods of accessing values:
 
- - enables serialization by avoiding the use of ''singleton_class'' methods, #attr_accessor, which breaks Serializers:
-    Serializer supports #to_hash, and standard Marshall''ing.  Notice use of #to_hash to convert object back to a Ruby Hash before
-    using #to_json and #to_xml; presumed to be methods enabled on the standard Ruby Hash class.
+     $ obj = SknUtils::NestedResult.new({value1: "some value", value2: {one: 1, two: "two"}})
+     $ x = obj.value1
+     $ x = obj.value2.one
+     $ x = obj["value1"]
+     $ x = obj[:value1]
 
-    person = SknUtils::PageControls.new({name: "Bob"})
-    person.to_hash             # => {"name"=>"Bob"}
-    person.to_hash.to_json     # => "{\"name\":\"Bob\"}"
-    person.to_hash.to_xml      # => "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<page-controls>\n  <name>Bob</name>\n</page-controls>\n"
-    dmp = Marshal.dump(person) # => "\x04\bo:\x1ASknUtils::PageControls\x06:\n@nameI\"\bBob\x06:\x06ET"
-    person = Marshal.load(dmp) # => #<SknUtils::PageControls:0x007faede906d40 @name="Bob">
+ - enables serialization:
+    Internally supports #to_hash and #to_json
 
-    ***GenericBean designed to automatically handles the setup for serialization and multi level without arrays 
+    $ person = SknUtils::NestedResult.new({name: "Bob"})
+    $ person.to_hash             # => {"name"=>"Bob"}
+    $ person.to_json             # => "{\"name\":\"Bob\"}"
+    $ dmp = Marshal.dump(person) # => "\x04\bo:\x1ASknUtils::NestedResult\x06:\n@nameI\"\bBob\x06:\x06ET"
+    $ person2 = Marshal.load(dmp) # => #<SknUtils::NestedResult:0x007faede906d40 @name="Bob">
 
  - post create additions:
-    'obj = SknUtils::ResultBean.new({value1: "some value", value2: {one: 1, two: "two"}}) 
+
+    'obj = SknUtils::NestedResult.new({value1: "some value", value2: {one: 1, two: "two"}})
     'x = obj.one'                          --causes NoMethodError
     'x = obj.one = 'some other value'      --creates a new instance value with accessors
     'x = obj.one = {key1: 1, two: "two"}'  --creates a new ***bean as the value of obj.one
@@ -110,129 +101,92 @@ the nesting configuration is also provided as the preferred method of managing d
     'y = obj.one[:two]                     --returns "two"
     'y = obj.one['two']                    --returns "two"
 
- - supports predicates <attr>? and clear_<attr>? method patterns:	
-    'obj = SknUtils::PageControls.new({name: "Something", phone: "2609998888"})'
-    'obj.name?'       # => true    true or false, like obj.name.present?
-    'obj.clear_name'  # => nil     sets :name to nil
+ - supports predicates <attr>? method patterns:  target must exist and have a non-empty/valid value
+
+    $ obj = SknUtils::NestedResult.new({name: "Something", active: false, phone: "2609998888"})'
+    $ obj.name?'       # => true         -- true or false, like obj.name.present?
+    $ obj.active?      # => true         -- your asking if method exist with a valid value, not what the value is!
+    $ obj.street?      # => false
 ```
 
-The combination of this NestedResultBase(dot notation class) and AttributeHelpers(hash notation module), produces these effects given the same params hash:
 
-    drb = SknUtils::ResultBean.new(params)                          Basic dot notation: effect of :depth
+## Usage:
+
+* The NestedResult produces these effects when given a params hash;
+* Follow VALUES that are Hashes, Arrays of Hashes, and Arrays of Arrays of Hashes
+```ruby
+    drb = SknUtils::NestedResult.new(params)                          Basic dot notation:
     ----------------------------------------------------      -----------------------------------------------------------------
 
-(DOES NOT FOLLOW Values) :depth => :single
-```ruby
     * params = {one: 1,                                         drb.one      = 1
-                two: { one: 1,                                  drb.two      = {one: 1, two: 'two}
-                     two: "two"                               drb.two.two  = NoMethodError
-                     }, 
-                three: [ {one: 'one', two: 2},                  drb.three    = [{one: 'one', two: 2},{three: 'three', four: 4}]
-                         {three: 'three', four: 4}              drb.three[1] = {three: 'three', four: 4}
-                       ]                                        drb.three[1].four = NoMethodError
+                two: { one: 1, two: "two"},                     drb.two      = <SknUtils::NestedResult>
+                                                                drb.two.two  = 'two'
+
+                three: [ {one: 'one', two: 2},                  drb.three.first.one  = 'one'
+                         {three: 'three', four: 4}              drb.three[1].four = 4
+                       ],                                       drb.three.last.three = 'three'
+
+                four: [
+                        [ {one: 'one', two: 2},                 drb.four.first.first.one  = 'one'
+                          {three: 'three', four: 4} ],          drb.four.first.last.four = 4
+                        [ { 5: 'five', 6: 'six'},               drb.four[1][0][5] = 'five'     # number keys require hash notation :[]
+                          {five: '5', six: 6} ]                 drb.four[1].last.six = 6
+                      ],
+           'five' => [1, 2, 3]                                  drb.five = [1, 2, 3]
+                6 => 'number key'                               drb[6] = 'number key'
                }      
 ```
 
-(Follow VALUES that are Hashes only.) :depth => :multi
+* Expected usage
 ```ruby
-    * params = {one: 1,                                         drb.one      = 1
-                two: { one: 1,                                  drb.two      = <SknUtils::ResultBean>
-                	       two: "two"                               drb.two.two  = 'two'
-                     }, 
-                three: [ {one: 'one', two: 2},                  drb.three    = [{one: 'one', two: 2},{three: 'three', four: 4}]
-                         {three: 'three', four: 4}              drb.three[1] = {three: 'three', four: 4}
-                       ]                                        drb.three[1].four = NoMethodError
-	           }
-```
- 
-(Follow VALUES that are Hashes and/or Arrays of Hashes) :depth => :multi_with_arrays
-```ruby
-    * params = {one: 1,                                         drb.one      = 1
-                two: { one: 1,                                  drb.two      = <SknUtils::ResultBean>
-                       two: "two"                               drb.two.two  = 'two'
-                     }, 
-                three: [ {one: 'one', two: 2},                  drb.three    = [<SknUtils::ResultBean>,<SknUtils::ResultBean>]
-                		     {three: 'three', four: 4}                drb.three[1] = <SknUtils::ResultBean>
-                       ]                                        drb.three[1].four = 4
-               }      
- 
-```
-# Usage: 
+       result =  SknUtils::NestedResult.new({
+                           success: true,
+                           message: "",
+                           payload: {package: 'of key/value pairs from operations'}
+       })
+       ...
 
-(DOES NOT FOLLOW Values)
-```ruby
-       class SmallPackage < SknUtils::NestedResultBase
-          def initialize(params={})
-            super( params.merge({depth: :single}) )    # override default of :multi level
-          end
-       end
-```
-
-(Follow VALUES that are Hashes only.)
-```ruby
-       class MyPackage < SknUtils::NestedResultBase
-          # defaults to :multi level
-       end
-       
-    -- or --
-    
-       class MyPackage < SknUtils::NestedResultBase
-          def initialize(params={})
-            # your other init stuff here
-            super(params)    # default taken 
-          end
-       end
-       
-    -- or --
-    
-       class MyPackage < SknUtils::NestedResultBase
-          def initialize(params={})
-            # your other init stuff here
-            super( params.merge({depth: :multi}) )    # Specified
-          end
-       end
-       
-    ** - or -- enable serialization and default to multi
-       class MyPackage < SknUtils::NestedResultBase
-          def initialize(params={})
-            super( params.merge({enable_serialization: true}) )    # Specified with Serialization Enabled
-          end
-       end
-```
-
-(Follow VALUES that are Hashes and/or Arrays of Hashes, and enable Serializers)
-```ruby
-       class MyPackage < SknUtils::NestedResultBase
-          def initialize(params={})
-            super( params.merge({depth: :multi_with_arrays, enable_serialization: true}) )    # override defaults
-          end
+       if result.success && result.payload.package?
+        # do something with result.payload
        end
 ```
 
 
-NOTE: Cannot be Marshalled/Serialized unless input params.merge({enable_serialization: true}) -- default is false
-Use GenericBean or PageControls if serialization is needed, they initialize with this value true.
+* Wrap additional methods around the core NestedResult feature set
+```ruby
+       class MyPackage < SknUtils::NestedResult
+          def initialize(params={})
+            super
+          end
+
+          def additional_method
+            # do something
+          end
+       end
+```
+
 
 ## Installation
-----------------
 
 runtime prereqs: 
+    V3+ None
     V2+ None
     V1+ gem 'active_model', '~> 3.0'
 
-Add this line to your application's Gemfile:
 
+Add this line to your application's Gemfile:
 ```ruby
 gem 'skn_utils'
 ```
 
-And then execute:
 
+And then execute:
     $ bundle
 
-Or install it yourself as:
 
+Or install it yourself as:
     $ gem install skn_utils
+
 
 ## Build    
 
@@ -245,18 +199,22 @@ Or install it yourself as:
 7. $ gem install skn_utils
 * Done
 
+
 ## Console Workout    
 
 Start with building gem first.
 ```bash    
 $ cd skn_utils
-$ bundle exec pry
-[1] pry(main)> require 'skn_utils'    
-[2] pry(main)> rb = SknUtils::ResultBean.new({sample: [{one: "one", two: "two"},{one: 1, two: 2}] })
-[3] pry(main)> pg = SknUtils::PageControls.new({sample: [{one: "one", two: "two"},{one: 1, two: 2}] }) 
-[4] pry(main)> pg.sample.first.one          # Tip :multi_with_arrays
-[5] pry(main)> rb.sample.first.one          # Tip :multi without arrays you will get a NoMethodError
-[6] pry(main)> rb.sample.first[:one]        
+$ bin/console
+
+[1] pry(main)> rb = SknUtils::NestedResult.new({sample: [{one: "one", two: "two"},{one: 1, two: 2}] })
+[2] pry(main)> pg = SknUtils::NestedResult.new({sample: [{three: 3, four: 4},{five: 'five', two: 'two'}] })
+[3] pry(main)> pg.sample.first.three
+[4] pry(main)> rb.sample.first.one
+[5] pry(main)> rb.sample.first[:one]
+[6] pry(main)> rb.hash_from(:sample)
+[7] pry(main)> rb.sample?
+[8] pry(main)> rb.sample[0].one?
     
 [n] pry(main)> exit
 * Done

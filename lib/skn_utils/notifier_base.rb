@@ -19,7 +19,7 @@ class NotifierBase
     @listeners.delete(l)
   end
 
-  def self.property(*properties)
+  def self.attribute(*properties)
     properties.each do |prop|
       define_method(prop) {
         instance_variable_get("@#{prop}")
@@ -28,31 +28,31 @@ class NotifierBase
         old_value = instance_variable_get("@#{prop}")
         return if (value == old_value)
         @listeners.each { |listener|
-          listener.property_changed(prop, old_value, value)
+          listener.attribute_changed(prop, old_value, value)
         }
         instance_variable_set("@#{prop}", value)
       end
     end # loop on properties
-  end # end of property method
+  end # end of attribute method
 
 end # end of NotifierBase class
 
 
 # Create a bean from that base
 class TestBean < NotifierBase
-  property :name, :firstname
+  attribute :name, :firstname
 end
 
 class LoggingPropertyChangeListener
-  def property_changed(property, old_value, new_value)
-    print property, " changed from ",
+  def attribute_changed(attribute, old_value, new_value)
+    print attribute, " changed from ",
           old_value, " to ",
           new_value, "\n"
   end
 end
 
 class SimpleBean < NotifierBase
-  property :name, :firstname
+  attribute :name, :firstname
 
   def impotent_name=(new_name)
     @name = new_name

@@ -1,19 +1,27 @@
 ##
 # <project.root>/lib/skn_utils/nested_result.rb
 #
-# NestedResult Value Container/Class for Ruby
+# SknUtils::NestedResult Value Container/Class for Ruby with Indifferent Hash and/or Dot.notation access
 #
 # Description:
-# Creates an Object with instance variables and associated getters and setters for each hash input key.
-#   If the key's value is also a hash itself, it too will become an Object.
-#   if the key's value is a Array of Hashes, each hash element of the Array will become an Object; non-hash object are left as-is
-#   Transforms entire input hash contents into dot.notation accessible object
+#
+# Creates an Object with attribute methods for dot.notation and hash.notation access
+# for each hash input key/value pair.
+#
+#   If the key's value is an hash itself, it will become an NestedResult Object.
+#   if the key's value is an Array of Hashes, each hash element of the Array will
+#      become an Object; non-hash object are left as-is
+#   if the key's value is an Array of Arrays-of- Hash/Object, each hash element of each Array will
+#      become an Object; non-hash object are left as-is.  This array of array of arrays
+#      goes on to the end.
+#
+#   Transforms entire input hash contents into dot.notation and hash.notation accessible key/value pairs.
 #     - hash
 #     - array of hashes
 #     - non hash element values are not modified,
 #       whether in an array or the basic value in a key/value pair
 #
-# The ability of the resulting Object to be Marshaled(dump/load) is preserved
+# The ability of the resulting Object to be YAML/Psych'ed, or Marshaled(dump/load) is preserved
 #
 ##
 # Transforms entire input hash contents into dot.notation accessible object
@@ -25,47 +33,63 @@
 # This module provides
 #
 # Simple Initialization Pattern
-#  person = Utility::NestedResult.new( {name: "Bob"} )
+#  person = SknUtils::NestedResult.new( {name: "Bob", title: {day: 'Analyst', night: 'Fireman'}} )
 #
 # Serializers:
 #    person.to_hash
-#      => {"name"=>"Bob"}
+#      => {name: 'Bob', title: {day: 'Analyst', night: 'Fireman'}}
 #    person.to_json
-#      => "{\"name\":\"Bob\"}"
+#      => "{\"name\":\"Bob\", \"title\":{\"day\":\"Analyst\", \"night\":\"Fireman\"}}"
 #
-# Post create addition on new key/values
+# Dynamic addition of new key/values after initialization
 #    person.address = 'Fort Wayne Indiana'
 #    person.address
 #      => 'Fort Wayne Indiana'
 #
-# Support <attr>? and method patterns, and delete_field(:attr) method
-#  example:
-#    person.name?
-#      => true          true or false, like obj.name.present?
-#    person.name_not_found
-#      => nil           sets :name to nil
-#
 # dot.notation feature for all instance variables
-#   person.name
-#     => "Bob"
+#   person.title.day
+#     => "Analyst"
 #   person.name = "James"
 #     => "James"
 #
 # InDifferent String/Symbol hash[notation] feature for all instance variables
-#   person['name']
-#     => "Bob"
+#   person['title']['day']
+#     => "Analyst"
 #   person['name'] = "James"
 #     => "James"
 #   person[:name]
 #     => "James"
 #   person[:name] = "Bob"
 #     => "Bob"
+#
+# Supports <attr>? predicate method patterns, and delete_field(:attr) method
+#  example:
+#    person.title.night?
+#      => true                    true or false, like obj.name.present?
+#    person.delete_field(:name)   only first/root level attributes can be deleted
+#      => 'Bob'                   returns last value of deleted key
+#    person.name_not_found
+#      => NoMethodFound           raises exception if key is not found
+#
+# Exporting hash from any key starting point
+#   person.hash_from(:name)
+#     => {name: 'Bob'}            the entire hash tree from that starting point
+##
+# Advanced Methods
+#  #to_hash                          - returns copy of input hash
+#  #to_json(*args)                   - converts input hash into JSON
+#  #keys                             - returns the first-level keys of input hash
+#  #delete_field(attr_sym)           - removes attribute/key and returns it's former value
+#  #hash_from(starting_attr_sym)     - (Protected Method) returns remaining hash starting from key provided
+#
 ##
 # Known Issues
-# - Using instance variables as the container is misleading as instance variables have
-#    restriction on key names.
+# - Fixnum keys work as keys with the exception of #respond_to?() which does not support them
+# - Entries with Fixnums or object-instance keys are accessible only via #[]=(), #[] Hash.notation
+#     methods and not the dot.notation feature
 #
-#
+###################################################################################################
+
 module SknUtils
   class NestedResult
 
@@ -74,6 +98,26 @@ module SknUtils
       initialize_from_hash(params)
     end
 
+    def [](attr)
+      container[key_as_sym(attr)]
+    end
+
+    #Feature: if a new attribute is added, on first read method_missing will create getters/setters
+    def []=(attr, value)
+      container.store(key_as_sym(attr), value)
+    end
+
+    def delete_field(name)      # protect public methods
+      sym = key_as_sym(name)
+      unless !sym.is_a?(Symbol) || self.class.method_defined?(sym)
+        singleton_class.send(:remove_method, "#{sym.to_s}=".to_sym, sym) rescue nil
+        container.delete(sym)
+      end
+    end
+
+    #
+    # Exporters
+    #
     def to_hash
       attributes
     end
@@ -84,53 +128,68 @@ module SknUtils
       attributes.to_json(*args)
     end
 
-    def to_s(*args)
-      attributes.to_s(*args)
+    #
+    # Returns a string containing a detailed summary of the keys and values.
+    #
+    InspectKey = :__inspect_key__ # :nodoc:
+    def inspect
+      package = to_hash
+      str = "#<#{self.class}"
+
+      ids = (Thread.current[InspectKey] ||= [])
+      if ids.include?(object_id)
+        return str << ' ...>'
+      end
+
+      ids << object_id
+      begin
+        first = true
+        for k,v in package
+          str << "," unless first
+          first = false
+          str << " #{k}=#{v.inspect}"
+        end
+        return str << '>'
+      ensure
+        ids.pop
+      end
     end
 
-    # Hash notation
-    def [](attr)
-      container[attr.to_sym]
-    end
+    alias_method :to_s, :inspect
 
-    def []=(attr, value)
-      container.store(attr.to_sym, value)
-    end
-
-    def delete_field(sym)
-      singleton_class.send(:remove_method, "#{sym.to_s}=".to_sym, sym.to_sym) if singleton_class.method_defined?(sym.to_sym)
-      container.delete(sym.to_sym)
-    end
 
     ##
     # Ruby basic Class methods
     #
     def ==(other)
       return false unless other.is_a?(NestedResult)
-      self.to_hash.eql?(other.to_hash)
+      to_hash.eql?(other.to_hash)
     end
     alias_method :===, :==
 
     def eql?(other)
       return false unless other.is_a?(NestedResult)
-      self.to_hash.eql?(other.to_hash)
+      to_hash.eql?(other.to_hash)
     end
 
     def hash
-      self.to_hash.hash
+      to_hash.hash
     end
 
-
-    ##
-    # Marshalling Support
-    ##
+    # Feature: returns keys from root input Hash
+    def keys
+      container.keys
+    end
 
     ##
     # YAML/Psych load support, chance to re-initialize value methods
     #
-    # encode_with() hooking into Yaml/Psych.dump for coder: #<Psych::Coder:0x007f8677cdec90 @map={"container"=>{:one=>"one", :two=>"two", :three=>{:four=>4, :five=>5, :six=>{:seven=>7, :eight=>"eight"}, :seven=>false}, :four=>{:any_key=>#<Tuple:0x007f8677ce6d28 @first="foo", @second="bar">}, :five=>[4, 5, 6], :six=>[{:four=>4, :five=>5, :six=>{:seven=>7, :eight=>"eight"}}, {:four=>4, :five=>5, :six=>{:nine=>9, :ten=>"ten"}}, #<Tuple:0x007f8677ce68c8 @first="another", @second="tuple">], :seven=>#<Tuple:0x007f8677ce65f8 @first="hello", @second="world">}}, @seq=[], @implicit=false, @type=:map, @tag="!ruby/object:SknUtils::NestedResult", @style=1, @scalar=nil, @object=nil>.
-    # init_with() hooking into Yaml/Psych.load for coder: #<Psych::Coder:0x007f86780e5b68 @map={"container"=>{:one=>"one", :two=>"two", :three=>{:four=>4, :five=>5, :six=>{:seven=>7, :eight=>"eight"}, :seven=>false}, :four=>{:any_key=>#<Tuple:0x007f8677ccc270 @first="foo", @second="bar">}, :five=>[4, 5, 6], :six=>[{:four=>4, :five=>5, :six=>{:seven=>7, :eight=>"eight"}}, {:four=>4, :five=>5, :six=>{:nine=>9, :ten=>"ten"}}, #<Tuple:0x007f86780e64c8 @first="another", @second="tuple">], :seven=>#<Tuple:0x007f86780e6018 @first="hello", @second="world">}}, @seq=[], @implicit=false, @type=:map, @tag="!ruby/object:SknUtils::NestedResult", @style=1, @scalar=nil, @object=nil>.
+    # Use our unwrapped/original input Hash when yaml'ing
+    def encode_with(coder)
+      coder['container'] = self.to_h
+    end
 
+    # Use our hash from above to fully re-initialize this instance
     def init_with(coder)
       case coder.tag
         when '!ruby/object:SknUtils::NestedResult'
@@ -138,117 +197,149 @@ module SknUtils
       end
     end
 
-    def encode_with(coder)
-      coder['container'] = self.to_h
-    end
-
     protected
 
     ##
     # Marshal.load()/.dump() support, chance to re-initialize value methods
     #
-    #:nodoc:
     def marshal_dump
-      self.to_h
+      to_hash
     end
 
-    #
     # Using the String from above create and return an instance of this class
-    #:nodoc:
     def marshal_load(hash)
       initialize_from_hash(hash)
+    end
+
+    def respond_to_missing?(method, incl_private=false)
+      method_nsym = method.is_a?(Symbol) ? method.to_s[0..-2].to_sym : method
+      container[key_as_sym(method)] || container[method_nsym] || super
+    end
+
+    private
+
+    # Feature: attribute must exist and have a non-blank value to cause this method to return true
+    def attribute?(attr)
+      return false unless container.key?(key_as_sym(attr))
+      ![ "", " ", nil, [],[""], [" "], NestedResult.new({}), [[]]].any? {|a| a == container[key_as_sym(attr)] }
+    end
+
+    # Feature:  returns a hash of all attributes and their current values
+    def attributes
+      hash_from(container)
     end
 
     def container
       @container ||= {}
     end
 
-    # Support the regular respond_to? method by
-    # answering for any attr that method missing can actually handle
-    #:nodoc:
-    def respond_to_missing?(method, incl_private=false)
-      method_nsym = method.to_s[0..-2].to_sym
-      container[method.to_sym] || container[method_nsym] || super
-    end
-
-    # return a hash of all attributes and their current values
-    # including nested arrays of hashes/objects
-    #:nodoc:
-    def attributes
-      container.keys.each_with_object({}) do |attr,collector|
-        value = container[attr]
+    # returns hash from any root key starting point: object.root_key
+    # - protected to reasonably ensure key is a symbol
+    def hash_from(sym)
+      starting_sym = key_as_sym(sym)
+      bundle = starting_sym == container ? container : { starting_sym => container[starting_sym] }
+      bundle.keys.each_with_object({}) do |attr,collector|
+        value = bundle[attr]
         case value
           when Array
-            value = value.map {|ele| ele.is_a?(NestedResult) ? ele.to_h : ele }
+            value = value.map {|ele| array_to_hash(ele) }
           when NestedResult
-            value = value.attributes
+            value = value.to_hash
         end
         collector[attr] = value                                                          # new copy
       end
     end
 
-    # Determines the true existence of an attribute and then its non-blank or empty value
-    # - attribute must exist and have a non-blank value to cause this method to return true
-    #:nodoc:
-    def attribute?(attr)
-      return false unless container.key?(attr)
-      ![ "", " ", nil, [],[""], [" "], {}].include?(container[attr])
-    end
-
-    ##
-    # Adds the attr?() method pattern.  all attributes will respond to attr?: example - obj.name? with true or false
-    # Handles getter for any instance_variable currently defined - create attr_accessor to prevent second call to mm
-    # Handles setter for any instance_variable currently defined - create attr_accessor to prevent second call to mm
-    # Handles new key/value assignment
-    #
-    #:nodoc:
-    def method_missing(method, *args, &block)
-      method_sym = method.to_sym
-      method_nsym = method.to_s[0..-2].to_sym
-
-      if method.to_s.end_with?('?')                                              # order of tests is significant,
-        attribute?(method_nsym)
-
-      elsif method.to_s.end_with?("=") and container[method_nsym].nil?           # add new key/value pair, transform value if Hash or Array
-        initialize_from_hash({method_nsym => args.first})                        # concerned about args list; maybe args.first is better invocation
-
-      elsif container.key?(method_sym)
-        enable_dot_notation(method_sym)                                          # Add Reader/Writer one first need
-        container[method_sym]
-
-      else
-        nil                                                                      # by team request, return nil vs NoMethodError
-      end
-    end
-
-    # #method_missing seems to be faster than
-    #  dynamically defined accessor methods
-    def enable_dot_notation(name)
-      unless singleton_class.method_defined?(name)
+    # Feature: enables dot.notation and creates matching getter/setters
+    def enable_dot_notation(sym)
+      name = key_as_sym(sym)
+      unless !name.is_a?(Symbol) || singleton_class.method_defined?(name)
         singleton_class.send(:define_method, name) do
-            container[name]
+          container[name]
         end
 
-        singleton_class.send(:define_method, "#{name}=".to_sym) do |x|
-            container[name] = x
+        singleton_class.send(:define_method, "#{name.to_s}=".to_sym) do |x|
+          container[name] = x
         end
       end
+      name
     end
 
     def initialize_from_hash(hash)
       hash.each_pair do |k,v|
-        enable_dot_notation(k.to_sym)
+        key = key_as_sym(k)
+        enable_dot_notation(key)
         case v
           when Array
-            value = v.map {|ele| ele.is_a?(Hash) ? NestedResult.new(ele) : ele}
-            container.store(k.to_sym, value)
+            value = v.map { |element| translate_value(element) }
+            container.store(key, value)
           when Hash
-            container.store(k.to_sym, NestedResult.new(v))
+            container.store(key, NestedResult.new(v))
           else
-            container.store(k.to_sym, v)
+            container.store(key, v)
         end
       end
     end
+
+    # Feature: unwrap array of array-of-hashes/object
+    def array_to_hash(array)
+      case array
+        when Array
+          array.map { |element| array_to_hash(element) }
+        when NestedResult
+          array.to_hash
+        else
+          array
+      end
+    end
+
+    # Feature: wrap array of array-of-hashes/object
+    def translate_value(value)
+      case value
+        when Array
+          value.map { |element| translate_value(element) }
+        when Hash
+          NestedResult.new(value)
+        else
+          value
+      end
+    end
+
+    def key_as_sym(key)
+      case key
+        when Symbol
+          key
+        when String
+          key.to_sym
+        else
+          key # no change, allows Fixnum and Object instances
+      end
+    end
+
+    # Feature: post-assign key/value pair, <attr>?? predicate, create getter/setter on first access
+    def method_missing(method, *args, &block)
+      method_sym = key_as_sym(method)
+      method_nsym = method_sym.is_a?(Symbol) ? method.to_s[0..-2].to_sym : method
+
+
+      if method.to_s.end_with?("=") and container[method_nsym].nil?           # add new key/value pair, transform value if Hash or Array
+        initialize_from_hash({method_nsym => args.first})
+
+      elsif container.key?(method_sym)
+        puts "#{__method__}() method: #{method}"
+        enable_dot_notation(method_sym)                                          # Add Reader/Writer one first need
+        container[method_sym]
+
+      elsif method.to_s.end_with?('?')                                           # order of tests is significant,
+        attribute?(method_nsym)
+
+      else
+        e = NoMethodError.new "undefined method `#{method}' for #{self.class.name}", method, args
+        e.set_backtrace caller(1)
+        raise e
+
+      end
+    end # end method_missing: errors from enable_dot..., initialize_hash..., and attribute? are possible
 
   end # end class
 end # end module

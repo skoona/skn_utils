@@ -11,14 +11,14 @@ module SknUtils
       module_function
 
       def option_defaults
-        @@option_defaults ||= {one: 1, two: 2, three: 3}
+        @option_defaults ||= {one: 1, two: 2, three: 3}
       end
       def option_defaults=(parms)
-        @@option_defaults = parms
+        @option_defaults = parms
       end
 
       def reset!
-        @@configuration = Options.new(option_defaults)
+        @configuration = Options.new(option_defaults)
         true
       end
 
@@ -27,9 +27,9 @@ module SknUtils
       end
 
       def configure         # Initialize with both the configuration keys and default values
-        @@configuration || reset!
-        yield(@@configuration) if block_given?
-        @@configuration
+        @configuration || reset!
+        yield(@configuration) if block_given?
+        @configuration
       end
 
       private
