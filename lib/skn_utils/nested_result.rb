@@ -95,7 +95,7 @@ module SknUtils
 
     def initialize(params={})
       @container =  {}
-      initialize_from_hash(params)
+      initialize_for_speed(params)
     end
 
     def [](attr)
@@ -131,32 +131,9 @@ module SknUtils
     #
     # Returns a string containing a detailed summary of the keys and values.
     #
-    InspectKey = :__inspect_key__ # :nodoc:
-    def inspect
-      package = to_hash
-      str = "#<#{self.class}"
-
-      ids = (Thread.current[InspectKey] ||= [])
-      if ids.include?(object_id)
-        return str << ' ...>'
-      end
-
-      ids << object_id
-      begin
-        first = true
-        for k,v in package
-          str << "," unless first
-          first = false
-          str << " #{k}=#{v.inspect}"
-        end
-        return str << '>'
-      ensure
-        ids.pop
-      end
+    def to_s
+      attributes.to_s
     end
-
-    alias_method :to_s, :inspect
-
 
     ##
     # Ruby basic Class methods
@@ -186,14 +163,14 @@ module SknUtils
     #
     # Use our unwrapped/original input Hash when yaml'ing
     def encode_with(coder)
-      coder['container'] = self.to_h
+      coder['container'] = attributes
     end
 
     # Use our hash from above to fully re-initialize this instance
     def init_with(coder)
       case coder.tag
-        when '!ruby/object:SknUtils::NestedResult'
-          initialize_from_hash( coder.map['container'] )
+        when '!ruby/object:SknUtils::NestedResult', "!ruby/object:#{self.class.name}"
+          initialize_for_speed( coder.map['container'] )
       end
     end
 
@@ -208,7 +185,7 @@ module SknUtils
 
     # Using the String from above create and return an instance of this class
     def marshal_load(hash)
-      initialize_from_hash(hash)
+      initialize_for_speed(hash)
     end
 
     def respond_to_missing?(method, incl_private=false)
@@ -237,14 +214,14 @@ module SknUtils
     # - protected to reasonably ensure key is a symbol
     def hash_from(sym)
       starting_sym = key_as_sym(sym)
-      bundle = starting_sym == container ? container : { starting_sym => container[starting_sym] }
+      bundle = ((starting_sym == container) ? container : { starting_sym => container[starting_sym] })
       bundle.keys.each_with_object({}) do |attr,collector|
         value = bundle[attr]
         case value
-          when Array
-            value = value.map {|ele| array_to_hash(ele) }
           when NestedResult
             value = value.to_hash
+          when Array
+            value = value.map {|ele| array_to_hash(ele) }
         end
         collector[attr] = value                                                          # new copy
       end
@@ -263,6 +240,22 @@ module SknUtils
         end
       end
       name
+    end
+
+    # Don't create methods until first access
+    def initialize_for_speed(hash)
+      hash.each_pair do |k,v|
+        key = key_as_sym(k)
+        case v
+          when Array
+            value = v.map { |element| translate_value(element) }
+            container.store(key, value)
+          when Hash
+            container.store(key, NestedResult.new(v))
+          else
+            container.store(key, v)
+        end
+      end
     end
 
     def initialize_from_hash(hash)
@@ -284,10 +277,10 @@ module SknUtils
     # Feature: unwrap array of array-of-hashes/object
     def array_to_hash(array)
       case array
-        when Array
-          array.map { |element| array_to_hash(element) }
         when NestedResult
           array.to_hash
+        when Array
+          array.map { |element| array_to_hash(element) }
         else
           array
       end
@@ -296,10 +289,10 @@ module SknUtils
     # Feature: wrap array of array-of-hashes/object
     def translate_value(value)
       case value
-        when Array
-          value.map { |element| translate_value(element) }
         when Hash
           NestedResult.new(value)
+        when Array
+          value.map { |element| translate_value(element) }
         else
           value
       end
@@ -322,18 +315,16 @@ module SknUtils
       method_nsym = method_sym.is_a?(Symbol) ? method.to_s[0..-2].to_sym : method
 
 
-      if method.to_s.end_with?("=") and container[method_nsym].nil?           # add new key/value pair, transform value if Hash or Array
+      if method.to_s.end_with?("=")                                    # add new key/value pair, transform value if Hash or Array
         initialize_from_hash({method_nsym => args.first})
 
       elsif container.key?(method_sym)
-        puts "#{__method__}() method: #{method}"
-        enable_dot_notation(method_sym)                                          # Add Reader/Writer one first need
-        container[method_sym]
+        container[enable_dot_notation(method_sym)]                # Add Reader/Writer one first need
 
-      elsif method.to_s.end_with?('?')                                           # order of tests is significant,
+      elsif method.to_s.end_with?('?')                                # order of tests is significant,
         attribute?(method_nsym)
 
-      else
+      else # TODO: replace following with nil to match OpenStruct behavior when key not found
         e = NoMethodError.new "undefined method `#{method}' for #{self.class.name}", method, args
         e.set_backtrace caller(1)
         raise e
@@ -343,40 +334,3 @@ module SknUtils
 
   end # end class
 end # end module
-
-
-# YAML.load(str) will trigger #init_with for each type it encounters when loading
-# Psych.dump ==> "--- !ruby/object:SknUtils::NestedResult\ncontainer:\n  :one: 1\n  :two: two\n"
-#
-#
-# [2] pry(main)> ay = Psych.dump a
-# respond_to_missing?() checking for method: :encode_with existence.
-#   => "--- !ruby/object:SknUtils::NestedResult\ncontainer:\n  :one: 1\n  :two: two\n"
-# [3] pry(main)> az = Psych.load ay
-# respond_to_missing?() checking for method: :init_with existence.
-# respond_to_missing?() checking for method: :yaml_initialize existence.
-#   => #<SknUtils::NestedResult:0x007fe410993238 @container={:one=>1, :two=>"two"}>
-
-
-# YAML RTM? querys
-# [:encode_with, :init_with].include?(method)
-
-
-# can be accessed just like a hash
-# respond_to_missing?() checking for method: :encode_with existence.
-#     respond_to_missing?() checking for method: :encode_with existence.
-#     respond_to_missing?() checking for method: :encode_with existence.
-#     respond_to_missing?() checking for method: :encode_with existence.
-#     respond_to_missing?() checking for method: :encode_with existence.
-#     respond_to_missing?() checking for method: :encode_with existence.
-#     respond_to_missing?() checking for method: :encode_with existence.
-#     respond_to_missing?() checking for method: :encode_with existence.
-#     init_with() hooking into Yaml/Psych.load for codes: {:seven=>7, :eight=>"eight"}.
-#     init_with() hooking into Yaml/Psych.load for codes: {:four=>4, :five=>5, :six=>#<SknUtils::NestedResult:0x007fba101740e0 @container={:seven=>7, :eight=>"eight"}>, :seven=>false}.
-#     init_with() hooking into Yaml/Psych.load for codes: {:any_key=>#<Tuple:0x007fba101643e8 @first="foo", @second="bar">}.
-#     init_with() hooking into Yaml/Psych.load for codes: {:seven=>7, :eight=>"eight"}.
-#     init_with() hooking into Yaml/Psych.load for codes: {:four=>4, :five=>5, :six=>#<SknUtils::NestedResult:0x007fba1014f880 @container={:seven=>7, :eight=>"eight"}>}.
-#     init_with() hooking into Yaml/Psych.load for codes: {:nine=>9, :ten=>"ten"}.
-#     init_with() hooking into Yaml/Psych.load for codes: {:four=>4, :five=>5, :six=>#<SknUtils::NestedResult:0x007fba1014cd60 @container={:nine=>9, :ten=>"ten"}>}.
-#     init_with() hooking into Yaml/Psych.load for codes: {:one=>"one", :two=>"two", :three=>#<SknUtils::NestedResult:0x007fba10175058 @container={:four=>4, :five=>5, :six=>#<SknUtils::NestedResult:0x007fba101740e0 @container={:seven=>7, :eight=>"eight"}>, :seven=>false}>, :four=>#<SknUtils::NestedResult:0x007fba101664b8 @container={:any_key=>#<Tuple:0x007fba101643e8 @first="foo", @second="bar">}>, :five=>[4, 5, 6], :six=>[#<SknUtils::NestedResult:0x007fba10154628 @container={:four=>4, :five=>5, :six=>#<SknUtils::NestedResult:0x007fba1014f880 @container={:seven=>7, :eight=>"eight"}>}>, #<SknUtils::NestedResult:0x007fba1014d738 @container={:four=>4, :five=>5, :six=>#<SknUtils::NestedResult:0x007fba1014cd60 @container={:nine=>9, :ten=>"ten"}>}>, #<Tuple:0x007fba10146d48 @first="another", @second="tuple">], :seven=>#<Tuple:0x007fba10145a60 @first="hello", @second="world">}.
-

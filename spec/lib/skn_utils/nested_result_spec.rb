@@ -22,6 +22,18 @@ class MyObject
 
 end
 
+class IFeature < SknUtils::NestedResult
+  def initialize(parms={})
+    super(parms)
+    # @some_value = 'Three'
+  end
+
+  def say(val='hello')
+    "Three #{val}s"
+  end
+end
+
+
 RSpec.shared_examples 'plain old ruby object' do
 
   context "Core Operations " do
@@ -165,6 +177,19 @@ end
 
 
 RSpec.describe SknUtils::NestedResult, 'NestedResult class - Basic usage.' do
+  let(:ifeature) do
+    IFeature.new(one: 'one', 4201 => 'Account Code',
+                               two: 'two',
+                               three: { four: 4, five: 5, six: { seven: 7, eight: 'eight' }, seven: false },
+                               four: { any_key: MyObject.new(value: ['MyObject Testing', 'Looking for Modifications']) },
+                               five: [4, 5, 6],
+                               six: [{ four: 4, five: 5, six: { seven: 7, eight: 'eight' } },
+                                     { four: 4, five: 5, six: { nine: 9, ten: 'ten' } },
+                                     MyObject.new(value: ['MyObject Testing', 'Looking for Modifications'])],
+                               seven: MyObject.new(value: ['MyObject Testing', 'Looking for Modifications']),
+                               eight: [[{one: 'one', two: 'two'}],[{three: 'three', four: 'four'}]])
+  end
+
   let(:object) do
     SknUtils::NestedResult.new(one: 'one', 4201 => 'Account Code',
                               two: 'two',
@@ -227,6 +252,12 @@ RSpec.describe SknUtils::NestedResult, 'NestedResult class - Basic usage.' do
     it_behaves_like 'plain old ruby object' do
       let(:bean) { object }
     end
+    it_behaves_like 'plain old ruby object' do
+      let(:bean) { ifeature }
+    end
+    it "behaves as expected when inherited" do
+      expect(ifeature.say('Person')).to eq('Three Persons')
+    end
   end
 
   context 'Marshalling to JSON' do
@@ -235,10 +266,24 @@ RSpec.describe SknUtils::NestedResult, 'NestedResult class - Basic usage.' do
     end
   end
 
+  context 'IFeature Basic Operations after Yaml marshaling' do
+    let(:dumped_object) { Psych.dump(ifeature) }
+
+    it "#encode_with exports the original hash when YAML'ed" do
+      expect(dumped_object).to include('ruby/object:IFeature')
+      expect(dumped_object[42..-1]).to_not include('ruby/object:IFeature')
+    end
+
+    it_behaves_like 'plain old ruby object' do
+      let(:bean) { Psych.load(dumped_object) }
+    end
+  end
+
   context 'Basic Operations after Yaml marshaling' do
     let(:dumped_object) { Psych.dump(object) }
 
     it "#encode_with exports the original hash when YAML'ed" do
+      expect(dumped_object).to include('ruby/object:SknUtils::NestedResult')
       expect(dumped_object[42..-1]).to_not include('ruby/object:SknUtils::NestedResult')
     end
 
