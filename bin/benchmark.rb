@@ -22,14 +22,23 @@ Benchmark.ips do |x|
   end
 
   x.report('OpenStruct class') do
-    o = OpenStructClass.new
+    o = OpenStructClass.new(foo: nil)
     o.foo = :bar
     o.foo
   end
 
   x.report('NestedResult class') do
-    o = SknUtils::NestedResult.new
-    o.foo = :bar
-    o.foo
+    n = SknUtils::NestedResult.new(foo: nil)
+    n.foo = :bar
+    n.foo
   end
 end
+
+# Warming up --------------------------------------
+#      regular class   182.079k i/100ms
+#   OpenStruct class    12.129k i/100ms
+# NestedResult class    11.075k i/100ms
+# Calculating -------------------------------------
+#      regular class      4.140M (± 2.2%) i/s -     20.757M in   5.015689s
+#   OpenStruct class    129.418k (± 2.3%) i/s -    654.966k in   5.063580s
+# NestedResult class    115.819k (± 2.3%) i/s -    586.975k in   5.070852s

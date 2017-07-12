@@ -94,8 +94,7 @@ module SknUtils
   class NestedResult
 
     def initialize(params={})
-      @container =  {}
-      initialize_for_speed(params)
+      reset_from_empty!(params)
     end
 
     def [](attr)
@@ -170,11 +169,16 @@ module SknUtils
     def init_with(coder)
       case coder.tag
         when '!ruby/object:SknUtils::NestedResult', "!ruby/object:#{self.class.name}"
-          initialize_for_speed( coder.map['container'] )
+          reset_from_empty!( coder.map['container'] )
       end
     end
 
     protected
+
+    def reset_from_empty!(params={})
+      @container =  {}
+      initialize_for_speed(params)
+    end
 
     ##
     # Marshal.load()/.dump() support, chance to re-initialize value methods
@@ -185,7 +189,7 @@ module SknUtils
 
     # Using the String from above create and return an instance of this class
     def marshal_load(hash)
-      initialize_for_speed(hash)
+      reset_from_empty!(hash)
     end
 
     def respond_to_missing?(method, incl_private=false)
@@ -316,10 +320,10 @@ module SknUtils
 
 
       if method.to_s.end_with?("=")                                    # add new key/value pair, transform value if Hash or Array
-        initialize_from_hash({method_nsym => args.first})
+        initialize_from_hash({method_nsym => args.first})         # Add Reader/Writer one first need
 
       elsif container.key?(method_sym)
-        container[enable_dot_notation(method_sym)]                # Add Reader/Writer one first need
+        container[method_sym]                                         # Add Reader/Writer one first need
 
       elsif method.to_s.end_with?('?')                                # order of tests is significant,
         attribute?(method_nsym)
