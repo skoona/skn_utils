@@ -1,5 +1,7 @@
 ENV['RAILS_ENV'] = 'test'
 
+ENV['TEST_GEM'] = 'gem'   # enable SknSettings Gem Mode Testing
+
 require 'bundler/setup'
 
 require 'simplecov'
