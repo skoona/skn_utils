@@ -9,13 +9,24 @@ Ruby Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated
  an Object with Dot or Hash notational accessors to each key's value.  Additional key/value pairs can be added post-create
  by 'obj.my_new_var = "some value"', or simply assigning it.
 
-* Transforms the initialization hash into accessable object instance values, with their keys as method names.
+* Transforms the initializating hash into accessible object instance values, with their keys as method names.
 * If the key's value is also a hash, it too will become an Object.
 * if the key's value is a Array of Hashes, or Array of Arrays of Hashes, each element of the Arrays will become an Object.
 * The current key/value (including nested) pairs are returned via #to_hash or #to_json when and if needed.
 
 
 ## New Features
+    07/2017  V3.1.4
+    Added SknSettings class for use as a replacement to the popular, but obsolete, Config.gem
+    SknSettings.load_configuration_basename!(config_file_name-only) or 'Rails.env.to_s' value, will load all the yml files in this order:
+    ./config/settings.yml
+    ./config/settings/<name>.yml
+    ./config/settings/<name>.local.yml
+    and deep_merge the results.  Ya might have to add this gem statement to your Rails Application GemFile.
+                 gem 'deep_merge', '~> 1.1', :require => 'deep_merge/rails_compat'
+    I also restored SknUtils:ResultBean and SknUtils::PageControls to the classes contained in this gem.  They are simple wrappers
+    inheriting the NestedResult class.
+
     03/2017  V3.0.0
     Added SknUtils::NestedResult to replace, or be an alternate, to ResultBean, GenericBean, PageControls, ValueBean, and AttributeHelper.
     NestedResult overcome issues with serialization via Marshal and Yaml/Psych.

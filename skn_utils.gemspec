@@ -23,6 +23,14 @@ This version does not include ResultBean, PageControls, or ValueBean classes.
 SknUtils::NestedResult class replaces those original classes and their function.  
 
 Please update your existing code to make the above change or use the prior version 2.0.6
+
+ATTENTION: **************************************************************** 
+    This version requires the following be added to your Rails Application 'Gemfile'
+    if you are using the SknSettings configuration class.
+
+    gem 'deep_merge', '~> 1.1', :require => 'deep_merge/rails_compat'
+
+    ************************************************************************
 EOF
   spec.homepage      = "https://github.com/skoona/skn_utils"
   spec.license       = "MIT"
