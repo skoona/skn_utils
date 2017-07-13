@@ -6,38 +6,41 @@ module SknUtils
   class SknConfiguration < NestedResult
 
     def initialize(params={})
-      default_mode = defined?(Rails) ? Rails.env : 'development'
-      app_mode = params.is_a?(String) ? params : params.fetch(:config_filename, default_mode)
-      load_config_basename!(load_config(app_mode))
+      default_mode = defined?(Rails) ? Rails.env : ENV.fetch('RAILS_ENV', 'development')
+      @config_filename = params.is_a?(String) ? params : params.fetch(:config_filename, default_mode)
+      @base_path = @config_filename.eql?('test') ? './spec/factories/' : './config/'
+      load_config_basename!(@config_filename)
     end
 
-    def load_config_basename!(base_name)
-      reset_from_empty!(load_config(base_name))
+    def load_config_basename!(conf)
+      reset_from_empty!(load_config(conf))
+      self
     end
 
     private
 
-    def load_config(base_name)
-      yname   = "./config/settings.yml"
-      return {} unless File.exist?(yname)
+    def load_config(conf)
+      yname   = "#{@base_path}settings.yml"
+        return {} unless File.exist?(yname)
+        f_base  = load_yml_with_erb(yname)
 
-      f_base  = load_yml_with_erb(yname)
+      yname   = "#{@base_path}settings/#{conf}.yml"
+        f_env   = load_yml_with_erb(yname) if File.exist?(yname)
+        f_base  = f_base.deeper_merge!(f_env) unless (f_env.nil? || f_env.empty?)
 
-      yname   = "./config/settings/#{base_name}.yml"
-      f_env   = load_yml_with_erb(yname) if File.exist?(yname)
-      f_base  = f_base.deep_merge(f_env) if f_env.present?
-
-      yname   = "./config/settings/#{base_name}.local.yml"
-      f_local = load_yml_with_erb(yname)  if File.exist?(yname)
-      f_base  = f_base.deep_merge(f_local) if f_local.present?
+      yname   = "#{@base_path}settings/#{conf}.local.yml"
+        f_local = load_yml_with_erb(yname)  if File.exist?(yname)
+        f_base  = f_base.deeper_merge!(f_local) unless (f_local.nil? || f_local.empty?)
 
       f_base
     end
 
     def load_yml_with_erb(yml_file)
-      fname = yml_file.end_with?('.yml') ? yml_file : "#{yml_file}.yml"
-      erb = ERB.new(File.read(fname)).result
-      erb.present? ? YAML.load(erb).to_hash : {}
+      erb = ERB.new(File.read(yml_file)).result
+      erb.empty? ? {} : Psych.load(erb)
+    rescue => e
+      puts "#{self.class.name}##{__method__} Class: #{e.class}, Message: #{e.message}"
+      {}
     end
   end
 

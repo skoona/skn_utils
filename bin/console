@@ -1,8 +1,10 @@
 #!/usr/bin/env ruby
 
 require 'bundler/setup'
-require 'skn_utils'
 require 'psych'
+require 'erb'
+require 'deep_merge/rails_compat'
+require 'skn_utils'
 
 require 'pry'
 Pry.start

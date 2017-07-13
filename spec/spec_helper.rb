@@ -1,4 +1,18 @@
-ENV['RAILS_ENV'] ||= 'test'
+ENV['RAILS_ENV'] = 'test'
+
+require 'bundler/setup'
+
+require 'simplecov'
+
+SimpleCov.start do
+  # any custom configs like groups and filters can be here at a central place
+  add_filter '/spec/'
+end
+
+require 'psych'
+require 'json'
+require 'erb'
+require 'deep_merge/rails_compat'
 
 require 'skn_utils'
 require 'skn_utils/exploring/commander'
@@ -6,8 +20,6 @@ require 'skn_utils/exploring/action_service'
 require 'skn_utils/exploring/configuration'
 
 require 'rspec'
-require 'psych'
-require 'json'
 
 # Shared Examples and Support Routines
 Dir["./spec/support/**/*.rb"].sort.each { |f| require f}

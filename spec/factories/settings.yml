@@ -1,0 +1,9 @@
+---
+Packaging:
+  pomVersion: <%= SknUtils::VERSION %>
+  isTest: false
+  isDevelopment: true
+  isStaging: false
+  isProduction: false
+  configName: development
+  short_name: skn

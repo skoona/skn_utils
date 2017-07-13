@@ -1,9 +1,10 @@
-require 'rspec'
+#
 
-describe 'My behaviour' do
+describe SknSettings, "Application Configuration" do
 
-  it 'should do something' do
-
-    true.should == false
+  it 'contains the test settings for the application' do
+    expect(SknSettings.Packaging.pomVersion).to eq SknUtils::VERSION
+    expect(SknSettings.Packaging.configName).to eq 'test.local'
+    expect(SknSettings.Packaging.isTest).to be true
   end
 end

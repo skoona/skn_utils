@@ -1,0 +1,5 @@
+---
+Packaging:
+  isTest: true
+  isDevelopment: false
+  configName: test
