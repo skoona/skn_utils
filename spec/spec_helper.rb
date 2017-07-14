@@ -11,11 +11,6 @@ SimpleCov.start do
   add_filter '/spec/'
 end
 
-require 'psych'
-require 'json'
-require 'erb'
-require 'deep_merge/rails_compat'
-
 require 'skn_utils'
 require 'skn_utils/exploring/commander'
 require 'skn_utils/exploring/action_service'

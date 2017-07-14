@@ -26,11 +26,11 @@ module SknUtils
 
       yname   = "#{@base_path}settings/#{conf}.yml"
         f_env   = load_yml_with_erb(yname) if File.exist?(yname)
-        f_base  = f_base.deeper_merge!(f_env) unless (f_env.nil? || f_env.empty?)
+        f_base  = f_base.deep_merge!(f_env) unless (f_env.nil? || f_env.empty?)
 
       yname   = "#{@base_path}settings/#{conf}.local.yml"
         f_local = load_yml_with_erb(yname)  if File.exist?(yname)
-        f_base  = f_base.deeper_merge!(f_local) unless (f_local.nil? || f_local.empty?)
+        f_base  = f_base.deep_merge!(f_local) unless (f_local.nil? || f_local.empty?)
 
       f_base
     end

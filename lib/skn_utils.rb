@@ -7,7 +7,10 @@ require 'skn_utils/notifier_base'
 require 'skn_utils/skn_configuration'
 require 'skn_utils/exploring/commander'
 require 'skn_utils/exploring/action_service'
-require 'deep_merge/rails_compat'
+require 'psych'
+require 'json'
+require 'erb'
+require 'deep_merge'
 require 'skn_settings'
 
 module SknUtils
