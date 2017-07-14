@@ -10,5 +10,6 @@ module SknUtils
     end
   end
 
+
   VERSION = Version.to_s
 end
