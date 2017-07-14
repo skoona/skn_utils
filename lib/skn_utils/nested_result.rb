@@ -173,6 +173,23 @@ module SknUtils
       end
     end
 
+    # returns hash from any root key starting point: object.root_key
+    # - protected to reasonably ensure key is a symbol
+    def hash_from(sym)
+      starting_sym = key_as_sym(sym)
+      bundle = ((starting_sym == container) ? container : { starting_sym => container[starting_sym] })
+      bundle.keys.each_with_object({}) do |attr,collector|
+        value = bundle[attr]
+        case value
+          when NestedResult
+            value = value.to_hash
+          when Array
+            value = value.map {|ele| array_to_hash(ele) }
+        end
+        collector[attr] = value                                                          # new copy
+      end
+    end
+
     protected
 
     def reset_from_empty!(params={})
@@ -212,23 +229,6 @@ module SknUtils
 
     def container
       @container ||= {}
-    end
-
-    # returns hash from any root key starting point: object.root_key
-    # - protected to reasonably ensure key is a symbol
-    def hash_from(sym)
-      starting_sym = key_as_sym(sym)
-      bundle = ((starting_sym == container) ? container : { starting_sym => container[starting_sym] })
-      bundle.keys.each_with_object({}) do |attr,collector|
-        value = bundle[attr]
-        case value
-          when NestedResult
-            value = value.to_hash
-          when Array
-            value = value.map {|ele| array_to_hash(ele) }
-        end
-        collector[attr] = value                                                          # new copy
-      end
     end
 
     # Feature: enables dot.notation and creates matching getter/setters

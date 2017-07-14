@@ -16,16 +16,14 @@ Ruby Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated
 
 
 ## New Features
-    07/2017  V3.1.4
+    07/2017  V3.1.5
     Added SknSettings class for use as a replacement to the popular, but obsolete, Config.gem
     SknSettings.load_configuration_basename!(config_file_name-only) or 'Rails.env.to_s' value, will load all the yml files in this order:
     ./config/settings.yml
-    ./config/settings/<name>.yml
-    ./config/settings/<name>.local.yml
-    and deep_merge the results.  Ya might have to add this gem statement to your Rails Application GemFile.
-                 gem 'deep_merge', '~> 1.1', :require => 'deep_merge/rails_compat'
+    ./config/settings/<config_name>.yml
+    ./config/settings/<config_name>.local.yml
     I also restored SknUtils:ResultBean and SknUtils::PageControls to the classes contained in this gem.  They are simple wrappers
-    inheriting the NestedResult class.
+    inheriting the NestedResult class.  Also added SknHash class as a wrapper without the SknUtils namespace required or exposed
 
     03/2017  V3.0.0
     Added SknUtils::NestedResult to replace, or be an alternate, to ResultBean, GenericBean, PageControls, ValueBean, and AttributeHelper.
@@ -54,33 +52,47 @@ Ruby Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated
     None required other than initialization hash
 
 
-## Public Methods
+## Public Methods: SknSettings ONLY
+    SknSettings is global constant containing an initialized Object of SknUtils::SknConfiguration using defaults
+    To change the 'development'.yml default please use the following method early or in the case of Rails in 'application.rb
+      #load_config_basename!(config_name) -- Where config_name is the name of yml files stored in the `./config/settings` directory
+      #config_path!(path)                 -- Where path format is './<dirs>/', default is: './config/'
+                                             and contains a settings.yml file and a 'path/settings/' directory
+
+    Paths ./config and ./config/settings must exist.
+    File ./config/settings.yml must exist and contain a valid YAML file structure.
+      ./config/settings.yml                              -- Required   base
+      ./config/settings/<config_name>.yml                -- Optional   base.deep_merge!()
+      ./config/settings/<config_name>.local.yml          -- Optional   base.deep_merge!()
+
+
+## Public Methods: SknUtils::NestedResult, SknHash & SknSettings
     Each concrete Class supports the following utility methods:
       #to_hash                       -- returns a hash of current key/value pairs, including nested
       #to_json                       -- returns a json string of current key/value pairs, including nested
       #hash_from(:base_key)          -- exports the internal hash starting with this base level key
       #obj.obj2.hash_from(:base)     -- exports the internal hash starting from this nested base level key
+
       #[]                            -- returns value of attr, when #[<attr_name_symbol>]
       #[]=(attr, value)              -- assigns value to existing attr, or creates a new key/value pair
-      #<attr>?                       -- detects true/false presence? of attr, and non-blank existance of attr's value; when #address?
       #<attr>                        -- returns value of named attribute
       #<attr> = (value)              -- assigns value to existing attr, or creates a new key/value pair
-      -- Where <attr> is a key value from the initial hash, or a key that was/will be dynamically added      
+      -- Where <attr> is a key value from the initial hash, or a key that was/will be dynamically added
 
+      #keys                          -- returns array of symbol #keys from current nested level
+      #==                            -- alias to #===
+      #===                           -- returns true/false from camparison of the two objects
+      #eql?                          -- returns true/false from camparison of the two objects
+      #<attr>?                       -- detects true/false presence? of attr, and non-blank existance of attr's value; when #address?
 
 
 ## Public Components
-    SknUtils::NestedResult                # >= V 3.0.0 Primary Key/Value Container with Dot/Hash notiation support.
+    SknUtils::NestedResult           # >= V 3.0.0 Primary Key/Value Container with Dot/Hash notiation support.
+    SknSettings                      # Application Configuration class, Key/Value Container with Dot/Hash notiation support.
 
-
-    *** <= V 2.0.6 Depreciated, HAS been removed ***
-
-    Inherit from NestedResultBase or instantiate an pre-built Class:
-      SknUtils::ResultBean                # => Not Serializable and follows hash values only.
-      SknUtils::PageControls              # => Serializable and follows hash values and arrays of hashes.
-      SknUtils::GenericBean               # => Serializable and follows hash values only.
-      SknUtils::ValueBean                 # => Serializable and DOES NOT follows hash values.
-    or Include SknUtils::AttributeHelpers # => Adds getter/setters, and hash notation access to instance vars of any object.
+    SknHash                          # Wrapper for name only, WITHOUT SknUtils namespace, inherits from SknUtils::NestedResult
+    SknUtils::ResultBean             # Wrapper for name only, inherits from SknUtils::NestedResult
+    SknUtils::PageControls           # Wrapper for name only, inherits from SknUtils::NestedResult
 
 
 ## Basic features include:
@@ -192,7 +204,7 @@ gem 'skn_utils'
 
 
 And then execute:
-    $ bundle
+    $ bundle install
 
 
 Or install it yourself as:
@@ -219,14 +231,20 @@ $ cd skn_utils
 $ bin/console
 
 [1] pry(main)> rb = SknUtils::NestedResult.new({sample: [{one: "one", two: "two"},{one: 1, two: 2}] })
-[2] pry(main)> pg = SknUtils::NestedResult.new({sample: [{three: 3, four: 4},{five: 'five', two: 'two'}] })
+[2] pry(main)> pg = SknHash.new({sample: [{three: 3, four: 4},{five: 'five', two: 'two'}] })
 [3] pry(main)> pg.sample.first.three
 [4] pry(main)> rb.sample.first.one
 [5] pry(main)> rb.sample.first[:one]
 [6] pry(main)> rb.hash_from(:sample)
 [7] pry(main)> rb.sample?
 [8] pry(main)> rb.sample[0].one?
-    
+...
+[10] pry(main)> cfg = SknSettings
+[11] pry(main)> cfg.config_path!('./spec/factories/')
+[12] pry(main)> cfg.load_config_basename!('test')
+[13] pry(main)> cfg.keys
+[14] pry(main)> cfg.Packaging.keys
+
 [n] pry(main)> exit
 * Done
 ```

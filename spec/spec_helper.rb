@@ -18,9 +18,6 @@ require 'skn_utils/exploring/configuration'
 
 require 'rspec'
 
-# Shared Examples and Support Routines
-Dir["./spec/support/**/*.rb"].sort.each { |f| require f}
-
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
   Kernel.srand config.seed

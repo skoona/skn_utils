@@ -19,16 +19,16 @@ with easy access to its contents, and on-demand transformation back to the hash 
 Review the RSpec tests, and or review the README for more details.
 EOF
   spec.post_install_message = <<-EOF
-This version does not include ResultBean, PageControls, or ValueBean classes.  
-SknUtils::NestedResult class replaces those original classes and their function.  
+This version includes modified version of SknUtils::ResultBean, SknUtils::PageControls classes, which inherit from  
+SknUtils::NestedResult class.  SknUtils::NestedResult replaces those original classes and their function.  
 
 Please update your existing code to make the above change or use the prior version 2.0.6
 
 ATTENTION: **************************************************************** 
-    This version requires the following be added to your Rails Application 'Gemfile'
+    This version may require the following be added to your Rails Application 'Gemfile',
     if you are using the SknSettings configuration class.
 
-    gem 'deep_merge', '~> 1.1', :require => 'deep_merge/rails_compat'
+    gem 'deep_merge', '~> 1.1'
 
     ************************************************************************
 EOF

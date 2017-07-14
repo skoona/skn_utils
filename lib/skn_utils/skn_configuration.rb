@@ -17,6 +17,10 @@ module SknUtils
       self
     end
 
+    def config_path!(fpath)
+      @base_path = fpath if File.exist?("#{fpath}settings.yml")
+    end
+
     private
 
     def load_config(conf)

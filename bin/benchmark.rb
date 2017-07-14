@@ -3,7 +3,6 @@
 require 'bundler/setup'
 require 'skn_utils'
 require 'ostruct'
-require 'psych'
 require 'benchmark/ips'
 
 Benchmark.ips do |x|

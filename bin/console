@@ -1,9 +1,6 @@
 #!/usr/bin/env ruby
 
 require 'bundler/setup'
-require 'psych'
-require 'erb'
-require 'deep_merge/rails_compat'
 require 'skn_utils'
 
 require 'pry'

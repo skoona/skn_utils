@@ -10,7 +10,10 @@ require 'skn_utils/exploring/action_service'
 require 'psych'
 require 'json'
 require 'erb'
-require 'deep_merge'
+unless defined?(Rails)
+ require 'deep_merge'
+end
+require 'skn_hash'
 require 'skn_settings'
 
 module SknUtils
