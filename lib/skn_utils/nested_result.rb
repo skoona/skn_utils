@@ -192,9 +192,10 @@ module SknUtils
 
   protected
 
-    def reset_from_empty!(params={})
+    def reset_from_empty!(params={}, speed=true)
       @container =  {}
-      initialize_for_speed(params)
+      speed ? initialize_for_speed(params) :
+          initialize_from_hash(params)
     end
 
     ##
