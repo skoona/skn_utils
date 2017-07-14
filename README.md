@@ -77,13 +77,13 @@ Ruby Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated
       #[]=(attr, value)              -- assigns value to existing attr, or creates a new key/value pair
       #<attr>                        -- returns value of named attribute
       #<attr> = (value)              -- assigns value to existing attr, or creates a new key/value pair
+      #<attr>?                       -- detects true/false presence? of attr, and non-blank existance of attr's value; when #address?
       -- Where <attr> is a key value from the initial hash, or a key that was/will be dynamically added
 
       #keys                          -- returns array of symbol #keys from current nested level
-      #==                            -- alias to #===
-      #===                           -- returns true/false from camparison of the two objects
-      #eql?                          -- returns true/false from camparison of the two objects
-      #<attr>?                       -- detects true/false presence? of attr, and non-blank existance of attr's value; when #address?
+      #==(other)                            -- alias to #===
+      #===(other)                           -- returns true/false from camparison of the two objects
+      #eql?(other)                          -- returns true/false from camparison of the two objects
 
 
 ## Public Components

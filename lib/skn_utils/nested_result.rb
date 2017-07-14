@@ -190,7 +190,7 @@ module SknUtils
       end
     end
 
-    protected
+  protected
 
     def reset_from_empty!(params={})
       @container =  {}
@@ -214,7 +214,7 @@ module SknUtils
       container[key_as_sym(method)] || container[method_nsym] || super
     end
 
-    private
+  private
 
     # Feature: attribute must exist and have a non-blank value to cause this method to return true
     def attribute?(attr)
