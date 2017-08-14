@@ -236,7 +236,7 @@ RSpec.describe SknUtils::Lists::LinkedList, "Singular LinkedList " do
     let(:alpha_list) { described_class.new('Z', 'K', 'S', 'n', 's', 'z', 'k', 'N', 'o', 'A') }
     let(:hash_list)  { described_class.new({key: 'Z'}, {key: 'K'}, {key: 'S'}, {key: 'n'}, {key: 's'},
                                            {key: 'z'}, {key: 'k'}, {key: 'N'}, {key: 'o'}, {key: 'A'}
-    ) {|a,b| a[:key] >= b[:key] }
+                                          ) {|a| a[:key]}
     }
 
     it "#sort! redefines numeric list in asending order" do

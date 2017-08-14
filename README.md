@@ -91,7 +91,7 @@ Ruby Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated
       #size                        -- returns total count of elements in the list
       #sort!(:direction, &block)   -- Sort existing list in place using :direction (:asc,:desc, :default) symbol
                                       if block is given, overrides :direction and uses custom proc to compare values
-                                      block format is:  {|a,b| a >= b }
+                                      block format is:  {|a,b| a >= b };  example: 'll.sort(:default) {|a,b| a <= b}'
 
     Modification: returns number of elements in the list after the operation
       #insert(value)                        -- inserts value after node at current positon, or appends
@@ -101,9 +101,10 @@ Ruby Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated
       #insert_after(position_value, value)  -- finds node matching position_value, then appends new node
       #remove(value)                        -- finds first node matching value, then destroys it
 
-    Initialization
-      #new(*vargs, &block)                  -- Instansiates new list and optionally creates nodes from each comma-seperated value;
-                                               also, assigns block provided as default sort condition in #sort! method
+    Initialization: optional &block to identify data key
+      #new(*vargs, &block)         -- Instansiates new list and optionally creates nodes from each comma-seperated value;
+                                      also, assigns &block as default value identifier for find and sort operations
+               compare_key_block example:  LinkedList.new({:key=>"Z"},{:key=>"S"},{:key=>"N"}) {|a| a[:key]}  
 
 
 ## Public Methods: SknSettings ONLY

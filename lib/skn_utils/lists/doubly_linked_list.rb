@@ -8,15 +8,16 @@ module SknUtils
     class DoublyLinkedList
       attr_accessor :size
 
-      def initialize(*vargs, &block)
+      def initialize(*vargs, &compare_key_proc)
         @current = nil
         @head = nil
         @tail = nil
         @size = 0
 
-        @sort_ascending  = lambda {|a_obj,b_obj| a_obj >= b_obj}
-        @sort_descending = lambda {|a_obj,b_obj| a_obj <= b_obj}
-        @sort_condition  = block_given? ? block : @sort_ascending
+        @match_value     = block_given? ? compare_key_proc : lambda {|obj| obj }
+        @sort_ascending  = lambda {|a_obj,b_obj| @match_value.call(a_obj) >= @match_value.call(b_obj)}
+        @sort_descending = lambda {|a_obj,b_obj| @match_value.call(a_obj) <= @match_value.call(b_obj)}
+        @sort_condition  = @sort_ascending
 
         vargs.each {|value| insert(value) }
         first if vargs.size > 1
@@ -105,7 +106,7 @@ module SknUtils
       # return new size
       def insert_before(position_value, value)
         target = find_by_value(position_value)
-        node = LinkNode.new(value, target, :before)
+        node = LinkNode.new(value, target, :before, &@match_value)
         @current = node if target
         self.head = node if head === target
         self.tail = node if tail.nil?
@@ -115,7 +116,7 @@ module SknUtils
       # return new size
       def insert_after(position_value, value)
         target = find_by_value(position_value)
-        node = LinkNode.new(value, target, :after)
+        node = LinkNode.new(value, target, :after, &@match_value)
         @current = node
         self.head = node if head.nil?
         self.tail = node if tail === target
@@ -164,7 +165,7 @@ module SknUtils
         position = head
         if block_given?
           while position do
-            yield position.value.dup
+            block.call( position.value.dup )
             position = position.next
             break if position === @current
           end
@@ -193,19 +194,17 @@ module SknUtils
       end
 
       # block format: sort condition : {|a_obj,b_obj| a_obj >= b_obj}
-      def sort!(direction_sym=:default, &block)
-        active_sort_condition = block_given? ? block :
-                                    (
-                                    case direction_sym
-                                      when :asc
-                                        @sort_ascending
-                                      when :desc
-                                        @sort_descending
-                                      else
-                                        @sort_condition
-                                    end
-                                    )
-        sorted = merge_sort(to_a, active_sort_condition)
+      def sort!(direction_sym=:default, &compare_sort_proc)
+        @active_sort_condition = block_given? ? compare_sort_proc :
+                                     case direction_sym
+                                       when :asc
+                                         @sort_ascending
+                                       when :desc
+                                         @sort_descending
+                                       else
+                                         @sort_condition
+                                     end
+        sorted = merge_sort(to_a)
         clear
         sorted.each {|item| insert(item) }
         size
@@ -216,7 +215,7 @@ module SknUtils
       attr_accessor :head, :tail
 
       def find_by_value(value)
-        return nil if head.nil?
+        return nil if head.nil? or value.nil?
         prior = head
         target = prior
         while target and not target.match_by_value(value)
@@ -237,23 +236,23 @@ module SknUtils
 
       # Merged Sort via Ref: http://rubyalgorithms.com/merge_sort.html
       # arr is Array to be sorted, sort_cond is Proc expecting a/b params returning true/false
-      def merge_sort(arr, sort_cond)
+      def merge_sort(arr)
         return arr if arr.size < 2
 
         middle = arr.size / 2
 
-        left = merge_sort(arr[0...middle], sort_cond)
-        right = merge_sort(arr[middle..arr.size], sort_cond)
+        left = merge_sort(arr[0...middle])
+        right = merge_sort(arr[middle..arr.size])
 
-        merge(left, right, sort_cond)
+        merge(left, right)
       end
 
-      def merge(left, right, sort_cond)
+      def merge(left, right)
         sorted = []
 
         while left.any? && right.any?
 
-          if sort_cond.call(left.first, right.first)  # replace this condition with a proc
+          if @active_sort_condition.call(left.first, right.first)
             sorted.push right.shift
           else
             sorted.push left.shift

@@ -8,10 +8,11 @@ module SknUtils
     class LinkNode
       attr_accessor :prev, :next, :value
 
-      def initialize(val, anchor_node=nil, strategy=:after)
+      def initialize(val, anchor_node=nil, strategy=:after, &cmp_key)
         @value = val
         @prev = nil
         @next = nil
+        @cmp_proc = block_given? ? cmp_key : lambda {|a| a }
 
         case strategy
           when :single # after logic
@@ -39,7 +40,7 @@ module SknUtils
       end
 
       def match_by_value(other_value)
-        self.value === other_value
+        @cmp_proc.call(value) === @cmp_proc.call(other_value)
       end
 
       # returns next node
