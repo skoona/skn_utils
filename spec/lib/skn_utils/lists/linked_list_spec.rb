@@ -45,8 +45,12 @@ RSpec.describe SknUtils::Lists::LinkedList, "Singular LinkedList " do
       expect(list.first).to eq(10)
       expect(list.nth(6)).to eq(60)
     end
+    it "#at_index(6) returns the sixth value" do
+      expect(list.at_index(6)).to eq(60)
+    end
 
   end
+
   context "Insertions" do
     it "#insert(value) indicates a value was added" do
       bsize = subject.size
@@ -107,8 +111,24 @@ RSpec.describe SknUtils::Lists::LinkedList, "Singular LinkedList " do
       expect(base).to eq([10,20, 30, 40, 50, 60, 70, 80, 90, 100])
     end
   end
+
   context "Edge cases " do
     let(:list) { described_class.new(10,20, 30, 40, 50, 60, 70, 80, 90, 100) }
+
+    it "#at_index(-999) fails and returns the current element. " do
+      expect(list.at_index(-999)).to eq(100)
+    end
+    it "#at_index(0) fails and returns the current element. " do
+      expect(list.at_index(0)).to eq(100)
+    end
+    it "#at_index(999) fails and returns the current element. " do
+      expect(list.at_index(999)).to eq(100)
+    end
+    it "#at_index(n) returns the proper element. " do
+      expect(list.at_index(1)).to eq(10)
+      expect(list.at_index(list.size / 2)).to eq(50)
+      expect(list.at_index(list.size)).to eq(100)
+    end
 
     it "#nth(-999) returns 100 instead of 10 because backward movement is not supported" do
       expect(list.nth(-999)).to eq(100)

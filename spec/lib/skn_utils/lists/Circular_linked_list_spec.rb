@@ -49,6 +49,9 @@ RSpec.describe SknUtils::Lists::CircularLinkedList, "Circular LinkedList " do
       expect(list.nth(6)).to eq(60)
       expect(list.nth(-2)).to eq(40)
     end
+    it "#at_index(6) returns the sixth value" do
+      expect(list.at_index(6)).to eq(60)
+    end
 
   end
   context "Insertions" do
@@ -114,6 +117,21 @@ RSpec.describe SknUtils::Lists::CircularLinkedList, "Circular LinkedList " do
 
   context "Edge cases " do
     let(:list) { described_class.new(10,20, 30, 40, 50, 60, 70, 80, 90, 100) }
+
+    it "#at_index(-999) fails and returns the current element. " do
+      expect(list.at_index(-999)).to eq(100)
+    end
+    it "#at_index(0) fails and returns the current element. " do
+      expect(list.at_index(0)).to eq(100)
+    end
+    it "#at_index(999) fails and returns the current element. " do
+      expect(list.at_index(999)).to eq(100)
+    end
+    it "#at_index(n) returns the proper element. " do
+      expect(list.at_index(1)).to eq(10)
+      expect(list.at_index(list.size / 2)).to eq(50)
+      expect(list.at_index(list.size)).to eq(100)
+    end
 
     it "#nth(-999) returns wraps to starting place, or last initialization value." do
       expect(list.nth(-999)).to eq(100)

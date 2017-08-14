@@ -40,6 +40,15 @@ module SknUtils
         self.value === other_value
       end
 
+      # returns next node
+      def remove!
+        next_node = @next
+        @value = nil
+        @prev = nil
+        @next = nil
+        next_node
+      end
+
       def to_s
         "Node with value: #{@value}"
       end

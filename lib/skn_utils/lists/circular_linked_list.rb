@@ -67,6 +67,12 @@ module SknUtils
         current
       end
 
+      # return node at positive index from head
+      def at_index(index)
+        find_by_index(index)
+        current
+      end
+
       def empty?
         size == 0
       end
@@ -74,6 +80,12 @@ module SknUtils
       #
       # Modifications
       #
+
+      # return new size
+      def insert(value)
+        temp = @current.value rescue nil
+        insert_after(temp, value)
+      end
 
       # return new size
       def prepend(value)
@@ -106,22 +118,14 @@ module SknUtils
         self.size += 1
       end
 
-      # return new size
-      def insert(value)
-        temp = @current.value rescue nil
-        insert_after(temp, value)
-      end
-
       # return remaining size
       def remove(value)
         target_node = find_by_value(value)
-        @current = target_node.prev if target_node and target_node.prev
-        @current.next = target_node.next if target_node and target_node.next
-        @current.next.prev = @current if @current and @current.next and @current.next.prev
         if target_node
-          target_node.prev = nil
-          target_node.next = nil
-          target_node.value = nil
+          @current = target_node.prev
+          @current.next = target_node.next
+          @current.next.prev = @current if @current and @current.next and @current.next.prev
+          target_node.remove!
         end
         self.tail = @current if tail === target_node
         self.head = @current if head === target_node
@@ -134,12 +138,8 @@ module SknUtils
         node = head
         position = head
         while node do
-          pos = node.next
-          node.value = nil
-          node.prev = nil
-          node.next = nil
+          node = node.remove!
           rc += 1
-          node = pos
           break if position === node
         end
 
@@ -162,14 +162,14 @@ module SknUtils
           while position do
             yield position.value.dup
             position = position.next
-            break if position == @current
+            break if position === @current
           end
         else
           Enumerator.new do |yielder, val|
             while position do
               yielder << position.value.dup
               position = position.next
-              break if position == @current
+              break if position === @current
             end
           end
         end
@@ -183,12 +183,13 @@ module SknUtils
         while position do
           result << position.value.dup
           position = position.next
-          break if position == @current
+          break if position === @current
         end
         result
       end
 
     private
+
       attr_accessor :head, :tail
 
       def find_by_value(value)
@@ -204,9 +205,9 @@ module SknUtils
       end
 
       def find_by_index(index)
-        return nil if head.nil?
+        return nil if head.nil? or index < 1 or index > size
         node = head
-        node = node.next while ((index -= 1) > 1 and node.next)
+        node = node.next while ((index -= 1) > 0 and node.next)
         @current = node if node
         node
       end
