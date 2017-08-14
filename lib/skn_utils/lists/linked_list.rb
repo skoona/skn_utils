@@ -171,6 +171,13 @@ module SknUtils
         result
       end
 
+      def sorted!
+        sorted = merge_sort(to_a)
+        clear
+        sorted.each {|item| insert(item) }
+        size
+      end
+
     private
 
       attr_accessor :head, :tail
@@ -193,6 +200,34 @@ module SknUtils
         node = node.next while ((index -= 1) > 0 and node.next)
         @current = node if node
         node
+      end
+
+      # Merged Sort via Ref: http://rubyalgorithms.com/merge_sort.html
+      def merge_sort(arr)
+        return arr if arr.size < 2
+
+        middle = arr.size / 2
+
+        left = merge_sort(arr[0...middle])
+        right = merge_sort(arr[middle..arr.size])
+
+        merge(left, right)
+      end
+
+      def merge(left, right)
+        sorted = []
+
+        while left.any? && right.any?
+
+          if left.first >= right.first  # replace this condition with a proc
+            sorted.push right.shift
+          else
+            sorted.push left.shift
+          end
+
+        end
+
+        sorted + left + right
       end
 
     end # end class
