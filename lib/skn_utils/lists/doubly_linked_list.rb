@@ -170,7 +170,7 @@ module SknUtils
             break if position === @current
           end
         else
-          Enumerator.new do |yielder, val|
+          Enumerator.new do |yielder|
             while position do
               yielder << position.value.dup
               position = position.next
