@@ -81,16 +81,15 @@ end
 # NestedResult class:    119896.1 i/s - 30.64x  slower
 #
 # Warming up --------------------------------------
-# LinkedList Ops      1.067k i/100ms
-#      Array Ops     35.020k i/100ms
+# LinkedList Ops     2.297k i/100ms
+#      Array Ops    34.468k i/100ms
 # Calculating -------------------------------------
-# LinkedList Ops      6.182k (±49.5%) i/s -     24.541k in   5.047128s
-#      Array Ops    390.617k (± 3.5%) i/s -      1.961M in   5.026810s
+# LinkedList Ops     17.015k (±35.2%) i/s -     71.207k in   5.100193s
+#      Array Ops    377.943k (± 7.3%) i/s -      1.896M in   5.048217s
 #
 # Comparison:
-#      Array Ops:   390617.3 i/s
-# LinkedList Ops:     6182.1 i/s - 63.19x  slower
-#
+#       Array Ops:   377942.7 i/s
+# LinkedList Ops:    17015.4 i/s - 22.21x  slower
 
 
 Benchmark.ips do |x|
@@ -108,7 +107,7 @@ Benchmark.ips do |x|
   end
 
   x.report('Array Ops') do
-    ary = vargs.dup
+    ary = Array.new(vargs)
     adders.each {|x| ary.insert(5, x)}
     value = ary.sort!
     ary.first
