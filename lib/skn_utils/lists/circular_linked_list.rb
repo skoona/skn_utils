@@ -13,6 +13,7 @@ module SknUtils
         @tail = nil
         @size = 0
         values.each {|value| insert(value) }
+        first if values.size > 1
       end
 
       #

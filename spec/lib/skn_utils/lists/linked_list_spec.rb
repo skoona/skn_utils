@@ -18,7 +18,15 @@ RSpec.describe SknUtils::Lists::LinkedList, "Singular LinkedList " do
     end
     it "can be initialized with one or more initial values" do
       list = described_class.new(10,100,100)
-      expect(list.current).to eq(100)
+      expect(list.current).to eq(10)
+    end
+    it "can be initialized with multiple values" do
+      list = described_class.new(10, 100, 1000)
+      expect(list.current).to eq(10)
+    end
+    it "can not be initialized with any array as the value." do
+      list = described_class.new([10, 100, 1000])
+      expect(list.current).to eq([10, 100, 1000])
     end
     it "is initially empty?" do
       expect(subject.empty?).to be true
@@ -36,7 +44,7 @@ RSpec.describe SknUtils::Lists::LinkedList, "Singular LinkedList " do
       expect(list.next).to eq(20)
     end
     it "#current returns the last value as a side-effect of initialization via new" do
-      expect(list.current).to eq(100)
+      expect(list.current).to eq(10)
     end
     it "#last returns the last value" do
       expect(list.last).to eq(100)
@@ -116,13 +124,13 @@ RSpec.describe SknUtils::Lists::LinkedList, "Singular LinkedList " do
     let(:list) { described_class.new(10,20, 30, 40, 50, 60, 70, 80, 90, 100) }
 
     it "#at_index(-999) fails and returns the current element. " do
-      expect(list.at_index(-999)).to eq(100)
+      expect(list.at_index(-999)).to eq(10)
     end
     it "#at_index(0) fails and returns the current element. " do
-      expect(list.at_index(0)).to eq(100)
+      expect(list.at_index(0)).to eq(10)
     end
     it "#at_index(999) fails and returns the current element. " do
-      expect(list.at_index(999)).to eq(100)
+      expect(list.at_index(999)).to eq(10)
     end
     it "#at_index(n) returns the proper element. " do
       expect(list.at_index(1)).to eq(10)
@@ -136,22 +144,22 @@ RSpec.describe SknUtils::Lists::LinkedList, "Singular LinkedList " do
       expect(only.at_index(-10)).to eq(55)
     end
 
-    it "#nth(-999) returns 100 instead of 10 because backward movement is not supported" do
-      expect(list.nth(-999)).to eq(100)
+    it "#nth(-999) returns first value because backward movement is not supported" do
+      expect(list.nth(-999)).to eq(10)
     end
     it "#nth(0) returns current value, or last initialization value." do
-      expect(list.nth(0)).to eq(100)
+      expect(list.nth(0)).to eq(10)
     end
     it "#nth(999) returns last initialization value." do
       expect(list.nth(999)).to eq(100)
     end
     it "#current equals last initialization value." do
-      expect(list.current).to eq(100)
+      expect(list.current).to eq(10)
     end
-    it "#next after initialization equals last initialization value. " do
-      expect(list.next).to eq(100)
-      expect(list.next).to eq(100)
-      expect(list.next).to eq(100)
+    it "#next after initialization returns proper order. " do
+      expect(list.next).to eq(20)
+      expect(list.next).to eq(30)
+      expect(list.next).to eq(40)
     end
     it "#first, #next, #current, #prev, #nth, and #last return same value after initialization with one value. " do
       only = described_class.new(55)

@@ -18,7 +18,7 @@ RSpec.describe SknUtils::Lists::DoublyLinkedList, "Double-Ended LinkedList " do
     end
     it "can be initialized with one or more initial values" do
       list = described_class.new(10,100,100)
-      expect(list.current).to eq(100)
+      expect(list.current).to eq(10)
     end
     it "is initially empty?" do
       expect(subject.empty?).to be true
@@ -35,11 +35,11 @@ RSpec.describe SknUtils::Lists::DoublyLinkedList, "Double-Ended LinkedList " do
       expect(list.first).to eq(10)
       expect(list.next).to eq(20)
     end
-    it "#current returns the last value as a side-effect of initialization via new" do
-      expect(list.current).to eq(100)
+    it "#current returns the first value" do
+      expect(list.current).to eq(10)
     end
     it "#prev returns the prior value" do
-      expect(list.prev).to eq(90)
+      expect(list.prev).to eq(10)
     end
     it "#last returns the last value" do
       expect(list.last).to eq(100)
@@ -119,13 +119,13 @@ RSpec.describe SknUtils::Lists::DoublyLinkedList, "Double-Ended LinkedList " do
     let(:list) { described_class.new(10,20, 30, 40, 50, 60, 70, 80, 90, 100) }
 
     it "#at_index(-999) fails and returns the current element. " do
-      expect(list.at_index(-999)).to eq(100)
+      expect(list.at_index(-999)).to eq(10)
     end
     it "#at_index(0) fails and returns the current element. " do
-      expect(list.at_index(0)).to eq(100)
+      expect(list.at_index(0)).to eq(10)
     end
     it "#at_index(999) fails and returns the current element. " do
-      expect(list.at_index(999)).to eq(100)
+      expect(list.at_index(999)).to eq(10)
     end
     it "#at_index(n) returns the proper element. " do
       expect(list.at_index(1)).to eq(10)
@@ -143,18 +143,18 @@ RSpec.describe SknUtils::Lists::DoublyLinkedList, "Double-Ended LinkedList " do
       expect(list.nth(-999)).to eq(10)
     end
     it "#nth(0) returns current value, or last initialization value." do
-      expect(list.nth(0)).to eq(100)
+      expect(list.nth(0)).to eq(10)
     end
     it "#nth(999) returns last initialization value." do
       expect(list.nth(999)).to eq(100)
     end
-    it "#current equals last initialization value." do
-      expect(list.current).to eq(100)
+    it "#current equals first initialization value." do
+      expect(list.current).to eq(10)
     end
     it "#next after initialization equals last initialization value. " do
-      expect(list.next).to eq(100)
-      expect(list.next).to eq(100)
-      expect(list.next).to eq(100)
+      expect(list.next).to eq(20)
+      expect(list.next).to eq(30)
+      expect(list.next).to eq(40)
     end
     it "#prev after first returns first value repeatably. " do
       expect(list.first).to eq(10)
