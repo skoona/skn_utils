@@ -8,13 +8,19 @@ module SknUtils
     class LinkedList
       attr_accessor :size
 
-      def initialize(*values)
+      def initialize(*vargs, &block)
+        @sort_condition = nil
         @current = nil
         @head = nil
         @tail = nil
         @size = 0
-        values.each {|value| insert(value) }
-        first if values.size > 1
+
+        @sort_ascending  = lambda {|a_obj,b_obj| a_obj >= b_obj}
+        @sort_descending = lambda {|a_obj,b_obj| a_obj <= b_obj}
+        @sort_condition  = block_given? ? block : @sort_ascending
+
+        vargs.each {|value| insert(value) }
+        first if vargs.size > 1
       end
 
       #
@@ -171,8 +177,19 @@ module SknUtils
         result
       end
 
-      def sorted!
-        sorted = merge_sort(to_a)
+      # block format: sort condition : {|a_obj,b_obj| a_obj >= b_obj}
+      def sort!(direction_sym=:default, &block)
+        active_sort_condition = block_given? ? block :
+                                     case direction_sym
+                                       when :asc
+                                         @sort_ascending
+                                       when :desc
+                                         @sort_descending
+                                       else
+                                         @sort_condition
+                                     end
+
+        sorted = merge_sort(to_a, active_sort_condition)
         clear
         sorted.each {|item| insert(item) }
         size
@@ -203,23 +220,24 @@ module SknUtils
       end
 
       # Merged Sort via Ref: http://rubyalgorithms.com/merge_sort.html
-      def merge_sort(arr)
+      # arr is Array to be sorted, sort_cond is Proc expecting a/b params returning true/false
+      def merge_sort(arr, sort_cond)
         return arr if arr.size < 2
 
         middle = arr.size / 2
 
-        left = merge_sort(arr[0...middle])
-        right = merge_sort(arr[middle..arr.size])
+        left = merge_sort(arr[0...middle], sort_cond)
+        right = merge_sort(arr[middle..arr.size], sort_cond)
 
-        merge(left, right)
+        merge(left, right, sort_cond)
       end
 
-      def merge(left, right)
+      def merge(left, right, sort_cond)
         sorted = []
 
         while left.any? && right.any?
 
-          if left.first >= right.first  # replace this condition with a proc
+          if sort_cond.call(left.first, right.first)  # replace this condition with a proc
             sorted.push right.shift
           else
             sorted.push left.shift

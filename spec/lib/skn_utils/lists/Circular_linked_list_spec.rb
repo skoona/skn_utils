@@ -236,7 +236,42 @@ RSpec.describe SknUtils::Lists::CircularLinkedList, "Circular LinkedList " do
       expect(only.nth(1)).to be nil
       expect(only.nth(-1)).to be nil
     end
+  end
 
+  context "Sort Feature" do
+    let(:num_list)   { described_class.new(100, 50, 10, 40, 80, 30, 60, 90, 70, 20, 110) }
+    let(:alpha_list) { described_class.new('Z', 'K', 'S', 'n', 's', 'z', 'k', 'N', 'o', 'A') }
+    let(:hash_list)  { described_class.new({key: 'Z'}, {key: 'K'}, {key: 'S'}, {key: 'n'}, {key: 's'},
+                                           {key: 'z'}, {key: 'k'}, {key: 'N'}, {key: 'o'}, {key: 'A'}
+    ) {|a,b| a[:key] >= b[:key] }
+    }
+
+    it "#sort! redefines numeric list in asending order" do
+      expect(num_list.sort!).to eq(11)
+      expect(num_list.to_a).to eq([10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110])
+    end
+    it "#sort!(:desc) redefines numeric list in descending order" do
+      expect(num_list.sort!(:desc)).to eq(11)
+      expect(num_list.to_a).to eq([110, 100, 90, 80, 70, 60, 50, 40, 30, 20, 10])
+    end
+    it "#sort! redefines alpha numeric list in asending order" do
+      expect(alpha_list.sort!).to eq(10)
+      expect(alpha_list.to_a).to eq(["A", "K", "N", "S", "Z", "k", "n", "o", "s", "z"])
+    end
+    it "#sort!(:desc) redefines alpha numeric list in descending order" do
+      expect(alpha_list.sort!(:desc)).to eq(10)
+      expect(alpha_list.to_a).to eq(["z", "s", "o", "n", "k", "Z", "S", "N", "K", "A"])
+    end
+    it "#sort!() redefines hash object values in default order" do
+      expect(hash_list.sort!).to eq(10)
+      expect(hash_list.to_a).to eq([{:key=>"A"}, {:key=>"K"}, {:key=>"N"}, {:key=>"S"}, {:key=>"Z"},
+                                    {:key=>"k"}, {:key=>"n"}, {:key=>"o"}, {:key=>"s"}, {:key=>"z"}])
+    end
+    it "#sort!() lambda overrides sort_condifiton and sorts hash object values in custom order" do
+      expect(hash_list.sort!() {|a,b| a[:key] <= b[:key] }).to eq(10)
+      expect(hash_list.to_a).to eq([{:key=>"z"}, {:key=>"s"}, {:key=>"o"}, {:key=>"n"}, {:key=>"k"},
+                                    {:key=>"Z"}, {:key=>"S"}, {:key=>"N"}, {:key=>"K"}, {:key=>"A"}])
+    end
   end
 
 end
