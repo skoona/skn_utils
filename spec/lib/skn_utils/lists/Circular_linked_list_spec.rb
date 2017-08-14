@@ -132,6 +132,12 @@ RSpec.describe SknUtils::Lists::CircularLinkedList, "Circular LinkedList " do
       expect(list.at_index(list.size / 2)).to eq(50)
       expect(list.at_index(list.size)).to eq(100)
     end
+    it "#at_index(n) returns the proper element for linkedlist with one element. " do
+      only = described_class.new(55)
+      expect(only.at_index(1)).to eq(55)
+      expect(only.at_index(10)).to eq(55)
+      expect(only.at_index(-10)).to eq(55)
+    end
 
     it "#nth(-999) returns wraps to starting place, or last initialization value." do
       expect(list.nth(-999)).to eq(100)

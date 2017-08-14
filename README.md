@@ -16,6 +16,10 @@ Ruby Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated
 
 
 ## New Features
+    08/2017  V3.3.0
+    Added Linked List classes which implement value based Singular, Doubly, and Circular linked lists patterns.  Value based implies
+    the internal nodes of a linked list are never returned through the public interface, only node contents or values.
+
     07/2017  V3.1.5
     Added SknSettings class for use as a replacement to the popular, but obsolete, Config.gem
     SknSettings.load_configuration_basename!(config_file_name-only) or 'Rails.env.to_s' value, will load all the yml files in this order:
@@ -48,8 +52,54 @@ Ruby Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated
 	Last Version to depend on Rails (ActiveModel) for #to_json and #to_xml serialization
 
 
+## Public Components
+    SknUtils::NestedResult           # >= V 3.0.0 Primary Key/Value Container with Dot/Hash notiation support.
+    SknSettings                      # Application Configuration class, Key/Value Container with Dot/Hash notiation support.
+
+    SknHash                          # Wrapper for name only, WITHOUT SknUtils namespace, inherits from SknUtils::NestedResult
+    SknUtils::ResultBean             # Wrapper for name only, inherits from SknUtils::NestedResult
+    SknUtils::PageControls           # Wrapper for name only, inherits from SknUtils::NestedResult
+
+    SknUtils::List::LinkedList          # List with forward (#next) navigation, and tail/open
+    SknUtils::List::DoublyLinkedList    # List with forward (#next) and backward (#prev) navigation, and head/tail open
+    SknUtils::List::CircularLinkedList  # List with forward (#next) and backward (#prev) navigation, and head/tail wrapping
+
+
 ## Configuration Options
     None required other than initialization hash
+
+
+## Public Methods: SknUtils::Lists::LinkedList, SknUtils::Lists::DoublyLinkedList, and SknUtils::Lists::CircularLinkedList
+    Each concrete Class supports the following methods:
+
+    Navigation: return related value from relative positon in list, stops on first/last node for Single/Double, wraps for Circular.
+      #first                       -- returns first value in list
+      #next                        -- returns next value from current position
+      #current                     -- returns current value
+      #prev                        -- returns previous value from current position (*not supported in Single)
+      #last                        -- returns last value from list
+      #nth(i)                      -- returns value of node at +|- positon relative to current position, (*negative not supported in Singular)
+      #at_index(i)                 -- returns value of i node relative to list's head
+
+    Enumeration
+      #each                        -- yields each value in list when block given, on Enumerator object
+      #to_a                        -- returns Array of each value in the list
+
+    State
+      #clear                       -- removes all elements and return number of elements removed
+      #empty?                      -- returns true if list has no elements, otherwise false
+      #size                        -- returns total count of elements in the list
+
+    Modification: returns number of elements in the list after the operation
+      #insert(value)                        -- inserts value after node at current positon, or appends
+      #append(value)                        -- inserts value after node at current positon
+      #prepend(value)                       -- inserts value before node at current positon
+      #insert_before(position_value, value) -- finds node matching position_value, then prepends new node
+      #insert_after(position_value, value)  -- finds node matching position_value, then appends new node
+      #remove(value)                        -- finds first node matching value, then destroys it
+
+    Initialization
+      #new(*values=nil)                     -- Instansiates new list and optionally creates nodes for each comma-seperated value.
 
 
 ## Public Methods: SknSettings ONLY
@@ -86,16 +136,7 @@ Ruby Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated
       #eql?(other)                          -- returns true/false from camparison of the two objects
 
 
-## Public Components
-    SknUtils::NestedResult           # >= V 3.0.0 Primary Key/Value Container with Dot/Hash notiation support.
-    SknSettings                      # Application Configuration class, Key/Value Container with Dot/Hash notiation support.
-
-    SknHash                          # Wrapper for name only, WITHOUT SknUtils namespace, inherits from SknUtils::NestedResult
-    SknUtils::ResultBean             # Wrapper for name only, inherits from SknUtils::NestedResult
-    SknUtils::PageControls           # Wrapper for name only, inherits from SknUtils::NestedResult
-
-
-## Basic features include:
+## NestedResult Basic features include:
 ```ruby
  - provides the hash or dot notation methods of accessing values:
 
@@ -133,7 +174,7 @@ Ruby Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated
 ```
 
 
-## Usage:
+## NestedResult Usage:
 
 * The NestedResult produces these effects when given a params hash;
 * Follow VALUES that are Hashes, Arrays of Hashes, and Arrays of Arrays of Hashes
