@@ -89,6 +89,9 @@ Ruby Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated
       #clear                       -- removes all elements and return number of elements removed
       #empty?                      -- returns true if list has no elements, otherwise false
       #size                        -- returns total count of elements in the list
+      #sort!(:direction, &block)   -- Sort existing list in place using :direction (:asc,:desc, :default) symbol
+                                      if block is given, overrides :direction and uses custom proc to compare values
+                                      block format is:  {|a,b| a >= b }
 
     Modification: returns number of elements in the list after the operation
       #insert(value)                        -- inserts value after node at current positon, or appends
@@ -99,7 +102,8 @@ Ruby Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated
       #remove(value)                        -- finds first node matching value, then destroys it
 
     Initialization
-      #new(*values=nil)                     -- Instansiates new list and optionally creates nodes for each comma-seperated value.
+      #new(*vargs, &block)                  -- Instansiates new list and optionally creates nodes from each comma-seperated value;
+                                               also, assigns block provided as default sort condition in #sort! method
 
 
 ## Public Methods: SknSettings ONLY
