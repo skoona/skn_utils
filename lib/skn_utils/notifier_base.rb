@@ -23,16 +23,16 @@ module SknUtils
     def self.attribute(*attrs)
       attrs.each do |attr|
         instance_variable_set("@#{attr}", nil)
-        define_method(attr) {
+        define_method(attr) do
           instance_variable_get("@#{attr}")
-        }
+        end
         define_method("#{attr}=") do |value|
           old_value = instance_variable_get("@#{attr}")
           return if (value == old_value)
-          @listeners.each { |listener|
-            listener.attribute_changed(attr, old_value, value)
-          }
           instance_variable_set("@#{attr}", value)
+          @listeners.each do |listener|
+            listener.attribute_changed(attr, old_value, value)
+          end
         end
       end # loop on attrs
     end # end of attribute method

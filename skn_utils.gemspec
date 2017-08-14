@@ -13,7 +13,7 @@ SknUtils contains a small collection of Ruby utilities, the first being a Nested
 EOF
 
   spec.description   = <<-EOF
-The intent of the NestedResult class is to be a container of data results or key/value pairs, 
+The intent of the NestedResult class is to be a container for data values composed of key/value pairs, 
 with easy access to its contents, and on-demand transformation back to the hash (#to_hash).
 
 Review the RSpec tests, and or review the README for more details.
@@ -24,13 +24,6 @@ SknUtils::NestedResult class.  SknUtils::NestedResult replaces those original cl
 
 Please update your existing code in consideration of the above change, or use the prior version 2.0.6.
 
-ATTENTION: **************************************************************** 
-    This version may require the following be added to your Rails Application 'Gemfile',
-    if you are using the SknSettings configuration class.
-
-    gem 'deep_merge', '~> 1.1'
-
-    ************************************************************************
 EOF
   spec.homepage      = "https://github.com/skoona/skn_utils"
   spec.license       = "MIT"
