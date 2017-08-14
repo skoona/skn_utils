@@ -5,7 +5,7 @@
 module SknUtils
   module Lists
 
-    class DNode
+    class LinkNode
       attr_accessor :prev, :next, :value
 
       def initialize(val, anchor_node=nil, strategy=:after)
@@ -14,6 +14,8 @@ module SknUtils
         @next = nil
 
         case strategy
+          when :single # after logic
+            anchor_node.next = self if anchor_node
           when :before
             @prev = anchor_node.prev if anchor_node
             @next = anchor_node

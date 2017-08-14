@@ -89,7 +89,7 @@ module SknUtils
       # return new size
       def insert_before(position_value, value)
         prior, target = find_by_value(position_value)
-        node = SNode.new(value, prior)
+        node = LinkNode.new(value, prior, :single)
         node.next = target if target
         self.head = node if head === target
         self.tail = node if tail.nil?
@@ -100,7 +100,7 @@ module SknUtils
       # return new size
       def insert_after(position_value, value)
         prior, target = find_by_value(position_value)
-        node = SNode.new(value, target)
+        node = LinkNode.new(value, target, :single)
         self.head = node if head.nil?
         self.tail = node if tail === target
         @current = node
