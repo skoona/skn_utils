@@ -203,7 +203,7 @@ module SknUtils
         return [nil,nil] if head.nil?
         prior = head
         target = prior
-        while not target.match_by_value(value)
+        while target and not target.match_by_value(value)
           prior = target
           target = prior.next
           @current = target if target
