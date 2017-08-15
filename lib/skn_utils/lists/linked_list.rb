@@ -50,7 +50,7 @@ module SknUtils
         @current.value rescue nil
       end
 
-      # -+ int position from current node
+      # +int position from current node
       def nth(index)
         node = @current
         while index > 1 and node and node.next
@@ -60,8 +60,6 @@ module SknUtils
         end
         # no reverse or prev for Single List
         current
-      rescue NoMethodError
-        nil
       end
 
       # return node at positive index from head
@@ -119,10 +117,11 @@ module SknUtils
 
       # return remaining size
       def remove(value)
-        @current, target_node = find_by_value(value)
-        @current.next = target_node.remove!
-        self.tail = @current.next if tail === target_node
-        self.head = @current if head === target_node
+        prior, target_node = find_by_value(value)
+        @current = prior.nil? ? target_node.next : prior
+        @current.next = target_node.remove! if @current && target_node
+        self.tail = @current.next if @current && tail === target_node
+        self.head = @current.next if @current && head === target_node
         self.size -= 1
       end
 
@@ -203,19 +202,19 @@ module SknUtils
       attr_accessor :head, :tail
 
       def find_by_value(value)
-        return [nil,nil] if head.nil? or value.nil?
-        prior = head
+        return [@current, nil] if head.nil? || value.nil?
+        prior  = head
         target = prior
         while target and not target.match_by_value(value)
           prior = target
-          target = prior.next
-          @current = target if target
+          target = target.next
+          @current = prior if target
         end
         [prior, target]
       end
 
       def find_by_index(index)
-        return nil if head.nil? or index < 1 or index > size
+        return nil if head.nil? || index < 1 || index > size
         node = head
         node = node.next while ((index -= 1) > 0 and node.next)
         @current = node if node

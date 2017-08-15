@@ -217,7 +217,7 @@ module SknUtils
       attr_accessor :head, :tail
 
       def find_by_value(value)
-        return nil if head.nil? or value.nil? or size == 0
+        return nil if head.nil? || value.nil? || size == 0
         prior = head
         target = prior
         while target and not target.match_by_value(value)

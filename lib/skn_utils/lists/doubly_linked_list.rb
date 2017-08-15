@@ -127,8 +127,11 @@ module SknUtils
       def remove(value)
         target_node = find_by_value(value)
         if target_node
-          @current = target_node.prev if target_node.prev
-          @current.next = target_node.next if target_node.next
+          @current = target_node.prev ? target_node.prev : target_node.next
+          @current = @current ? @current : target_node.prev
+
+          @current.next = target_node.next ? target_node.next : target_node.prev
+
           @current.next.prev = @current if @current and @current.next and @current.next.prev
           target_node.remove!
         end
@@ -215,9 +218,10 @@ module SknUtils
       attr_accessor :head, :tail
 
       def find_by_value(value)
-        return nil if head.nil? or value.nil?
+        return nil if head.nil? || value.nil? || size == 0
         prior = head
         target = prior
+        @current = target
         while target and not target.match_by_value(value)
           prior = target
           target = prior.next

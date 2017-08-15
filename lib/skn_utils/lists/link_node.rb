@@ -16,7 +16,10 @@ module SknUtils
 
         case strategy
           when :single # after logic
-            anchor_node.next = self if anchor_node
+            if anchor_node
+              @next = anchor_node.next
+              anchor_node.next = self
+            end
           when :before
             @prev = anchor_node.prev if anchor_node
             @next = anchor_node
@@ -25,7 +28,7 @@ module SknUtils
             @prev = anchor_node
             @next = anchor_node.next if anchor_node
             anchor_node.next = self if anchor_node
-            @next.prev = self if @next
+            @next.prev = self if anchor_node and @next
           when :circle_before
             @prev = anchor_node ? anchor_node.prev : self
             @next = anchor_node ? anchor_node : self
