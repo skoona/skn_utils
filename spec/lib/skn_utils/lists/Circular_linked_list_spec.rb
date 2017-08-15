@@ -167,7 +167,7 @@ RSpec.describe SknUtils::Lists::CircularLinkedList, "Circular LinkedList " do
         expect(only.nth(2)).to be nil
         expect(only.at_index(2)).to be nil
       end
-      xit "#remove does not make navigation methods unstable when target not found. " do
+      it "#remove does not make navigation methods unstable when target not found. " do
         only = described_class.new(55)
         only.remove(20)
         expect(only.first).to eq(55)

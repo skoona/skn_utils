@@ -33,12 +33,12 @@ module SknUtils
             @prev = anchor_node ? anchor_node.prev : self
             @next = anchor_node ? anchor_node : self
             anchor_node.prev = self if anchor_node
-            @prev.next = self if anchor_node
+            anchor_node.next.prev = self if anchor_node
           when :circle_after
             @prev = anchor_node ? anchor_node : self
             @next = anchor_node ? anchor_node.next : self
+            anchor_node.next.prev = self if anchor_node
             anchor_node.next = self if anchor_node
-            @next.prev = self if anchor_node
         end
       end
 

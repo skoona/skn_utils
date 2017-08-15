@@ -109,9 +109,9 @@ module SknUtils
       def insert_before(position_value, value)
         target = find_by_value(position_value)
         node = LinkNode.new(value, target, :circle_before, &@match_value)
-        @current = node if target
-        self.head = node if head === target
-        self.tail = node if tail.nil?
+        @current = node
+        send(:head=, node) if size == 0 || head === target
+        send(:tail=, node) if size == 0 && tail.nil?
         self.size += 1
       end
 
@@ -120,8 +120,8 @@ module SknUtils
         target = find_by_value(position_value)
         node = LinkNode.new(value, target, :circle_after, &@match_value)
         @current = node
-        self.head = node if head.nil?
-        self.tail = node if tail === target
+        send(:head=, node) if size == 0 && head.nil?
+        send(:tail=, node) if size == 0 || tail === target
         self.size += 1
       end
 
@@ -129,15 +129,30 @@ module SknUtils
       def remove(value)
         target_node = find_by_value(value)
         if target_node
-          @current = target_node.prev
-          @current.next = target_node.next
-          @current.next.prev = @current if @current and @current.next and @current.next.prev
+          if size == 1                           # will become zero
+            @current = nil
+            send(:head=, nil)
+            send(:tail=, nil)
+          elsif target_node === head            # top
+            @current = target_node.next
+            @current.prev = target_node.prev
+            send(:tail).next = @current
+            send(:head=, @current)
+          elsif target_node === tail            # bottom
+            @current = target_node.prev
+            @current.next = target_node.next
+            send(:head).prev = @current
+            send(:tail=, @current)
+          else                                   # middle
+            @current           = target_node.prev
+            @current.next      = target_node.next
+            @current.next.prev = @current
+          end
           target_node.remove!
+          self.size -= 1
         end
-        self.tail = @current if tail === target_node
-        self.head = @current if head === target_node
-        self.size -= 1
       end
+
 
       # return number cleared
       def clear
@@ -151,8 +166,8 @@ module SknUtils
         end
 
         @current = nil
-        self.head = nil
-        self.tail = nil
+        send(:head=, nil)
+        send(:tail=, nil)
         self.size = 0
         rc
       end
@@ -217,19 +232,20 @@ module SknUtils
       attr_accessor :head, :tail
 
       def find_by_value(value)
-        return nil if head.nil? || value.nil? || size == 0
+        return nil if value.nil? || size == 0
         prior = head
+        stop_node = prior
         target = prior
         while target and not target.match_by_value(value)
           prior = target
           target = prior.next
-          @current = target if target
+          break if stop_node === target
         end
         target
       end
 
       def find_by_index(index)
-        return nil if head.nil? or index < 1 or index > size
+        return nil if index < 1 or index > size
         node = head
         node = node.next while ((index -= 1) > 0 and node.next)
         @current = node if node
