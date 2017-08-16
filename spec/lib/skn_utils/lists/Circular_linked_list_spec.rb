@@ -170,6 +170,7 @@ RSpec.describe SknUtils::Lists::CircularLinkedList, "Circular LinkedList " do
       it "#remove does not make navigation methods unstable when target not found. " do
         only = described_class.new(55)
         only.remove(20)
+        expect(only.to_a).to eq([55])
         expect(only.first).to eq(55)
         expect(only.next).to eq(55)
         expect(only.last).to eq(55)
