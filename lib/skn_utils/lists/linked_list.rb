@@ -55,7 +55,7 @@ module SknUtils
 
       # return values and position current to last node accessed
       def first
-        @current = head if head
+        @current = self.head if self.head
         @current.value rescue nil
       end
 
@@ -69,7 +69,7 @@ module SknUtils
       end
 
       def last
-        @current = tail if tail
+        @current = self.tail if self.tail
         @current.value rescue nil
       end
 
@@ -92,7 +92,7 @@ module SknUtils
       end
 
       def empty?
-        size == 0
+        self.size == 0
       end
 
       #
@@ -107,13 +107,13 @@ module SknUtils
 
       # return new size
       def prepend(value)
-        temp = head.value rescue nil
+        temp = self.head.value rescue nil
         insert_before(temp, value)
       end
 
       # return new size
       def append(value)
-        temp = tail.value rescue nil
+        temp = self.tail.value rescue nil
         insert_after(temp, value)
       end
 
@@ -122,8 +122,8 @@ module SknUtils
         prior, target = find_by_value(position_value)
         node = LinkNode.new(value, prior, :single, &@match_value)
         node.next = target if target
-        self.head = node if head === target
-        self.tail = node if tail.nil?
+        self.head = node if self.head === target
+        self.tail = node if self.tail.nil?
         @current = node
         self.size += 1
       end
@@ -132,8 +132,8 @@ module SknUtils
       def insert_after(position_value, value)
         prior, target = find_by_value(position_value)
         node = LinkNode.new(value, target, :single, &@match_value)
-        self.head = node if head.nil?
-        self.tail = node if tail === target
+        self.head = node if self.head.nil?
+        self.tail = node if self.tail === target
         @current = node
         self.size += 1
       end
@@ -143,20 +143,20 @@ module SknUtils
         prior, target_node = find_by_value(value)
         @current = prior.nil? ? target_node.next : prior
         @current.next = target_node.remove! if @current && target_node
-        self.tail = @current.next if @current && tail === target_node
-        self.head = @current.next if @current && head === target_node
+        self.tail = @current.next if @current && self.tail === target_node
+        self.head = @current.next if @current && self.head === target_node
         self.size -= 1
       end
 
       # return number cleared
       def clear
         rc = 0
-        node = head
-        position = head
+        node = self.head
+        position = node
         while node do
           node = node.remove!
           rc += 1
-          break if position === node
+          break if position.equal?(node)
         end
 
         @current = nil
@@ -172,8 +172,8 @@ module SknUtils
 
       # perform each() or return enumerator
       def each(&block)
-        @current = head
-        position = head
+        @current = self.head
+        position = self.head
         if block_given?
           while position do
             block.call(position.value.dup )
@@ -191,8 +191,8 @@ module SknUtils
 
       # convert self to a value array
       def to_a
-        @current = head
-        position = head
+        @current = self.head
+        position = self.head
         result = []
         while position do
           result << position.value.dup
@@ -217,16 +217,16 @@ module SknUtils
         sorted = merge_sort(to_a)
         clear
         sorted.each {|item| insert(item) }
-        size
+        self.size
       end
 
-    private
+    protected
 
       attr_accessor :head, :tail
 
       def find_by_value(value)
-        return [@current, nil] if head.nil? || value.nil?
-        prior  = head
+        return [@current, nil] if self.head.nil? || value.nil?
+        prior  = self.head
         target = prior
         while target and not target.match_by_value(value)
           prior = target
@@ -237,8 +237,8 @@ module SknUtils
       end
 
       def find_by_index(index)
-        return nil if head.nil? || index < 1 || index > size
-        node = head
+        return nil if self.head.nil? || index < 1 || index > self.size
+        node = self.head
         node = node.next while ((index -= 1) > 0 and node.next)
         @current = node if node
         node
