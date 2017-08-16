@@ -155,6 +155,31 @@ module SknUtils
 
       attr_accessor :head, :tail
 
+      # Retrieves requested node, not value
+      def node_request(method_sym=:current)
+        position_value = send(method_sym.to_sym)
+        @current
+      end
+      def node_value
+        node_request.value
+      end
+      def first_node
+        node_request(:first)
+      end
+      def next_node
+        node_request(:next)
+      end
+      def current_node
+        node_request(:current)
+      end
+      def prev_node
+        node_request(:prev)
+      end
+      def last_node
+        node_request(:last)
+      end
+
+
       # Merged Sort via Ref: http://rubyalgorithms.com/merge_sort.html
       # arr is Array to be sorted, sort_cond is Proc expecting a/b params returning true/false
       def merge_sort(arr)

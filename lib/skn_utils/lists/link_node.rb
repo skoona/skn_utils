@@ -12,7 +12,7 @@ module SknUtils
         @value = val
         @prev = nil
         @next = nil
-        @manager = mgr
+        @provider = mgr
         @cmp_proc = block_given? ? cmp_key : lambda {|a| a }
 
         case strategy
@@ -60,9 +60,9 @@ module SknUtils
       protected()
 
       def method_missing(method, *args, &block)
-        if @mgr and @mgr.respond_to?(method)
-          block_given? ? @mgr.send(method, *args, block) :
-              (args.size == 0 ?  @mgr.send(method) : @mgr.send(method, *args))
+        if @provider and @provider.protected_methods(true).include?(method.to_sym)
+          block_given? ? @provider.send(method, *args, block) :
+              (args.size == 0 ?  @provider.send(method) : @provider.send(method, *args))
         else
           super
         end
