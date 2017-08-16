@@ -1,3 +1,26 @@
+##
+# File <SknUtils>/lib/skn_utils/lists/doubly_linked_list.rb
+#
+#     ll = SknUtils::Lists::DoublyLinkedList.new(*vargs, &compare_key_proc)
+# - or -
+#     ll = SknUtils::Lists::DoublyLinkedList.new(1,2,3,4,5) {|element| element[:key] }
+# - or -
+#     ll = SknUtils::Lists::DoublyLinkedList.new(
+#                     {key: 'Z'}, {key: 'K'}, {key: 'S'}, {key: 'n'}, {key: 's'}
+#          ) {|el| el[:key] }
+# - or -
+#     cmp_proc = lambda { |el| el[:key] }
+#     vargs = [{key: 'Z'}, {key: 'K'}, {key: 'S'}, {key: 'n'}, {key: 's'}]
+#     ll = SknUtils::Lists::DoublyLinkedList.new(*vargs, &cmp_proc)
+###
+# value = ll.first
+# value = ll.at_index(4)
+# count = ll.insert({key: 'anyValue'})
+# ...
+# count = ll.sort!           -- defaults to :asc
+# count = ll.sort!(:desc)
+# count = ll.sort!() {|a,b| a[:key] <= b[:key] }
+##
 
 module SknUtils
   module Lists

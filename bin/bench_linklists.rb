@@ -52,9 +52,10 @@ Benchmark.ips do |x|
 
   adders = [50, 10, 110, 6, 30, 101, 12, 33, 4]
   vargs  = [70, 71, 72, 73, 74, 75, 76, 77, 78, 79]
+  cproc  = lambda {|a| a}
 
   x.report('LinkedList Ops') do
-    ll = SknUtils::Lists::LinkedList.new(*vargs)
+    ll = SknUtils::Lists::LinkedList.new(*vargs, &cproc)
     adders.each {|x| ll.insert_after(74, x)}
     value = ll.sort!
     ll.first

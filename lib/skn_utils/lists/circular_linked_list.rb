@@ -1,3 +1,26 @@
+##
+# File <SknUtils>/lib/skn_utils/lists/circular_linked_list.rb
+#
+#     ll = SknUtils::Lists::CircularLinkedList.new(*vargs, &compare_key_proc)
+# - or -
+#     ll = SknUtils::Lists::CircularLinkedList.new(1,2,3,4,5) {|element| element[:key] }
+# - or -
+#     ll = SknUtils::Lists::CircularLinkedList.new(
+#                     {key: 'Z'}, {key: 'K'}, {key: 'S'}, {key: 'n'}, {key: 's'}
+#          ) {|el| el[:key] }
+# - or -
+#     cmp_proc = lambda { |el| el[:key] }
+#     vargs = [{key: 'Z'}, {key: 'K'}, {key: 'S'}, {key: 'n'}, {key: 's'}]
+#     ll = SknUtils::Lists::CircularLinkedList.new(*vargs, &cmp_proc)
+###
+# value = ll.first
+# value = ll.at_index(4)
+# count = ll.insert({key: 'anyValue'})
+# ...
+# count = ll.sort!           -- defaults to :asc
+# count = ll.sort!(:desc)
+# count = ll.sort!() {|a,b| a[:key] <= b[:key] }
+##
 
 module SknUtils
   module Lists
@@ -178,11 +201,11 @@ module SknUtils
       def clear
         rc = 0
         node = self.head
-        position = self.head
+        position = node
         while node do
           node = node.remove!
           rc += 1
-          break if position === node
+          break if position.equal?(node)
         end
 
         @current = nil
