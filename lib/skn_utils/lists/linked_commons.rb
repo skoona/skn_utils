@@ -13,6 +13,13 @@ module SknUtils
     class LinkedCommons
       attr_accessor :size
 
+      # Initialize and return first node if nodes are available
+      def self.call(*vargs, &compare_key_proc)
+        target = self.new(*vargs, &compare_key_proc)
+        return target.instance_variable_get(:@current) if vargs.size > 1
+        target
+      end
+
       def initialize(*vargs, &compare_key_proc)
         @current = nil
         @head = nil
@@ -155,31 +162,6 @@ module SknUtils
 
       attr_accessor :head, :tail
 
-      # Retrieves requested node, not value
-      def node_request(method_sym=:current, *vargs)
-        position_value = (vargs.size == 0 ?  send(method_sym) : send(method_sym, *vargs))
-        @current
-      end
-      def node_value
-        node_request.value
-      end
-      def first_node
-        node_request(:first)
-      end
-      def next_node
-        node_request(:next)
-      end
-      def current_node
-        node_request(:current)
-      end
-      def prev_node
-        node_request(:prev)
-      end
-      def last_node
-        node_request(:last)
-      end
-
-
       # Merged Sort via Ref: http://rubyalgorithms.com/merge_sort.html
       # arr is Array to be sorted, sort_cond is Proc expecting a/b params returning true/false
       def merge_sort(arr)
@@ -201,6 +183,18 @@ module SknUtils
         end
 
         sorted + left + right
+      end
+
+      # Retrieves requested node, not value
+      def node_request(method_sym=:current, *vargs, &block)
+        position_value = block_given? ? send(method_sym, *vargs, block) :
+                             (vargs.size == 0 ?  send(method_sym) : send(method_sym, *vargs))
+        @current
+      end
+      # Retrieves requested value, not node
+      def node_value_request(method_sym=:current, *vargs, &block)
+        position_value = block_given? ? send(method_sym, *vargs, block) :
+                             (vargs.size == 0 ?  send(method_sym) : send(method_sym, *vargs))
       end
 
     end
