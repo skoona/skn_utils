@@ -28,35 +28,20 @@ module SknUtils
     # Forward (#next) and Backwards (#prev) navigation
     # Head when (prev == nil)
     # Tail when (next == nil)
+
+    # LinkedCommons provides;
+    # - #initialize, #first, #next, #current, #last, #at_index,
+    #   #insert, #prepend, #append, #empty?, #clear,
+    #   #each, #to_a, and #sort!
+    #
     class DoublyLinkedList < LinkedCommons
 
       #
       # Navigation
       #
 
-      # return values and position current to last node accessed
-      # prevent @current from nil assignment
-      def first
-        @current = self.head if self.head
-        @current.value rescue nil
-      end
-
-      def next
-        @current = @current.next if @current and @current.next
-        @current.value rescue nil
-      end
-
-      def current
-        @current.value rescue nil
-      end
-
       def prev
         @current = @current.prev if @current and @current.prev
-        @current.value rescue nil
-      end
-
-      def last
-        @current = self.tail if self.tail
         @current.value rescue nil
       end
 
@@ -79,37 +64,14 @@ module SknUtils
         current
       end
 
-      # return node at positive index from head
-      def at_index(index)
-        find_by_index(index)
-        current
-      end
-
       #
       # Modifications
       #
 
       # return new size
-      def insert(value)
-        temp = @current.value rescue nil
-        insert_after(temp, value)
-      end
-
-      # return new size
-      def prepend(value)
-        temp = self.head.value rescue nil
-        insert_before(temp, value)
-      end
-      # return new size
-      def append(value)
-        temp = self.tail.value rescue nil
-        insert_after(temp, value)
-      end
-
-      # return new size
       def insert_before(position_value, value)
         target = find_by_value(position_value)
-        node = LinkNode.new(value, target, :before, &@match_value)
+        node = LinkNode.new(value, target, :before, self,  &@match_value)
         @current = node if target
         self.head = node if self.head === target
         self.tail = node if self.tail.nil?
@@ -119,7 +81,7 @@ module SknUtils
       # return new size
       def insert_after(position_value, value)
         target = find_by_value(position_value)
-        node = LinkNode.new(value, target, :after, &@match_value)
+        node = LinkNode.new(value, target, :after, self,  &@match_value)
         @current = node
         self.head = node if self.head.nil?
         self.tail = node if self.tail === target

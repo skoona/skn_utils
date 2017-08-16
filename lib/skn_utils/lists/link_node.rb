@@ -8,10 +8,11 @@ module SknUtils
     class LinkNode
       attr_accessor :prev, :next, :value
 
-      def initialize(val, anchor_node=nil, strategy=:after, &cmp_key)
+      def initialize(val, anchor_node=nil, strategy=:after, mgr=nil, &cmp_key)
         @value = val
         @prev = nil
         @next = nil
+        @manager = mgr
         @cmp_proc = block_given? ? cmp_key : lambda {|a| a }
 
         case strategy
@@ -54,6 +55,17 @@ module SknUtils
 
       def to_s
         "Node with value: #{@value}"
+      end
+
+      protected()
+
+      def method_missing(method, *args, &block)
+        if @mgr and @mgr.respond_to?(method)
+          block_given? ? @mgr.send(method, *args, block) :
+              (args.size == 0 ?  @mgr.send(method) : @mgr.send(method, *args))
+        else
+          super
+        end
       end
     end
   end # module
