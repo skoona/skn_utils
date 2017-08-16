@@ -156,8 +156,8 @@ module SknUtils
       attr_accessor :head, :tail
 
       # Retrieves requested node, not value
-      def node_request(method_sym=:current)
-        position_value = send(method_sym.to_sym)
+      def node_request(method_sym=:current, *vargs)
+        position_value = (vargs.size == 0 ?  send(method_sym) : send(method_sym, *vargs))
         @current
       end
       def node_value

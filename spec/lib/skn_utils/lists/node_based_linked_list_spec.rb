@@ -31,6 +31,9 @@ RSpec.describe SknUtils::Lists::DoublyLinkedList, "DoublyLinkedList using node i
 
     context "Node Values " do
 
+      it "#methods with params are supported through #{}node_request() interface. " do
+        expect(list.send(:first_node).node_request(:at_index, 5).value).to eq(50)
+      end
       it "First node has the expected value. " do
         expect(list.send(:first_node).value).to eq(10)
       end
