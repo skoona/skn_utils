@@ -41,7 +41,21 @@ module SknUtils
       end
 
       def match_by_value(other_value)
-        @cmp_proc.call(value) === @cmp_proc.call(other_value)
+        @cmp_proc.call(value).equal? @cmp_proc.call(other_value)
+      end
+
+      # Returns: assuming two LinkNode s are being compared
+      #   0 if first operand equals second,
+      #   1 if first operand is greater than the second and
+      #  -1 if first operand is less than the second.
+      def <=>(other)
+        if @cmp_proc.call(self.value)  == @cmp_proc.call(other.value)
+            0
+        elsif @cmp_proc.call(self.value) > @cmp_proc.call(other.value)
+            1
+        elsif @cmp_proc.call(self.value) < @cmp_proc.call(other.value)
+            -1
+        end
       end
 
       # returns next node
