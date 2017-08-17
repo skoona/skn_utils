@@ -73,7 +73,7 @@ module SknUtils
         target = find_by_value(position_value)
         node = LinkNode.new(value, target, :before, self,  &@match_value)
         @current = node if target
-        self.head = node if self.head === target
+        self.head = node if self.head.equal?(target)
         self.tail = node if self.tail.nil?
         self.size += 1
       end
@@ -84,7 +84,7 @@ module SknUtils
         node = LinkNode.new(value, target, :after, self,  &@match_value)
         @current = node
         self.head = node if self.head.nil?
-        self.tail = node if self.tail === target
+        self.tail = node if self.tail.equal?(target)
         self.size += 1
       end
 
