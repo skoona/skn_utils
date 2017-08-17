@@ -2,9 +2,27 @@
 # File <SknUtils>/lib/skn_utils/lists/linked_commons.rb
 #
 # Common routines for Linked List:
-#   #initialize, #first, #next, #current, #last, #at_index,
-#   #insert, #prepend, #append, #empty?, #clear,
-#   #each, #to_a, and #sort!
+#     #initialize, #first, #next, #current, #last, #at_index,
+#     #insert, #prepend, #append, #empty?, #clear,
+#     #each, #to_a, and #sort!
+#
+#   list = SknUtils::Lists::DoublyLinkedList.new(1,2,3,4)
+#
+#   value = list.first
+#   value = list.next
+#
+##
+#   Node Interface Special Methods called
+#   from LinkNode to execute regular methods on other nodes
+#
+#     #node_request(method_sym=:current, *vargs, &block)          ==> node
+#     #node_value_request(method_sym=:current, *vargs, &block)    ==> value or method return
+##
+#    node = SknUtils::Lists::DoublyLinkedList.call(1,2,3,4)
+#
+#    node = node.first_node
+#    value = node.value
+#    value = node.next_node.value
 ##
 
 module SknUtils

@@ -66,6 +66,8 @@ module SknUtils
         @value = nil
         @prev = nil
         @next = nil
+        @provider = nil
+        @cmp_proc = nil
         next_node
       end
 
