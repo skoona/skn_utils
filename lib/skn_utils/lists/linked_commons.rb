@@ -114,14 +114,14 @@ module SknUtils
           while position do
             block.call( position.value.dup )
             position = position.next
-            break if position === @current
+            break if position.equal?(@current)
           end
         else
           Enumerator.new do |yielder|
             while position do
               yielder << position.value.dup
               position = position.next
-              break if position === @current
+              break if position.equal?(@current)
             end
           end
         end

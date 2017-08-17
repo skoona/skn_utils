@@ -54,14 +54,14 @@ module SknUtils
             node = node.next
             index -= 1
             @current = node
-            break if position === node
+            break if position.equal?(node)
           end
         elsif index < 0
           while index < 0 and node and node.prev
             node = node.prev
             index += 1
             @current = node
-            break if position === node
+            break if position.equal?(node)
           end
         end
         current
@@ -83,10 +83,6 @@ module SknUtils
           self.head      =  node
           node.prev      = self.tail
           self.tail.next = node
-        elsif self.tail == target
-          self.tail =  node
-          node.next      = self.head
-          self.head.prev = node
         end
         self.size += 1
       end
@@ -103,10 +99,6 @@ module SknUtils
           self.tail =  node
           node.next      = self.head
           self.head.prev = node
-        elsif self.head == target   # new head
-          self.head      =  node
-          node.prev      = self.tail
-          self.tail.next = node
         end
         self.size += 1
       end
@@ -119,12 +111,12 @@ module SknUtils
             @current = nil
             self.head = nil
             self.tail = nil
-          elsif target_node === self.head            # top
+          elsif target_node.equal?(self.head)            # top
             @current = target_node.next
             @current.prev = target_node.prev
             self.tail.next = @current
             self.head = @current
-          elsif target_node === self.tail            # bottom
+          elsif target_node.equal?(self.tail)            # bottom
             @current = target_node.prev
             @current.next = target_node.next
             self.head.prev = @current
