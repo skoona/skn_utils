@@ -1,4 +1,10 @@
 require "skn_utils/version"
+require 'psych'
+require 'json'
+require 'erb'
+unless defined?(Rails)
+ require 'deep_merge'
+end
 require 'skn_utils/nested_result'
 require 'skn_utils/result_bean'
 require 'skn_utils/page_controls'
@@ -12,12 +18,7 @@ require 'skn_utils/lists/doubly_linked_list'
 require 'skn_utils/lists/circular_linked_list'
 require 'skn_utils/exploring/commander'
 require 'skn_utils/exploring/action_service'
-require 'psych'
-require 'json'
-require 'erb'
-unless defined?(Rails)
- require 'deep_merge'
-end
+# require 'skn_utils/exploring/configuration'
 require 'skn_hash'
 require 'skn_settings'
 

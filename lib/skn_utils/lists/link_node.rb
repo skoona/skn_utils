@@ -1,12 +1,12 @@
 ##
-#
+# Node.
+# - primary object and container of value
 ##
 
 module SknUtils
   module Lists
 
     class LinkNode
-      include Comparable
 
       attr_accessor :prev, :next, :value
 
@@ -50,20 +50,6 @@ module SknUtils
         @cmp_proc.call(self.value) == @cmp_proc.call(other_value)
       end
 
-      # Returns
-      #   0 if first operand equals second,
-      #   1 if first operand is greater than the second and
-      #  -1 if first operand is less than the second.
-      def <=>(other_node)
-        if @cmp_proc.call(self.value) == @cmp_proc.call(other_node.value)
-          0
-        elsif @cmp_proc.call(self.value) > @cmp_proc.call(other_node.value)
-          1
-        else
-          -1
-        end
-      end
-
       # returns next node
       def remove!
         next_node = @next
@@ -104,15 +90,12 @@ module SknUtils
         block_given? ? @provider.send(method_sym, *vargs, &block) :
             (vargs.size == 0 ?  @provider.send(method_sym) : @provider.send(method_sym, *vargs))
         @provider.instance_variable_get(:@current)
-      rescue
-        nil
       end
+
       # Retrieves requested value, not node
       def node_value_request(method_sym=:current, *vargs, &block)
-        position_value = block_given? ? @provider.send(method_sym, *vargs, &block) :
-                             (vargs.size == 0 ?  @provider.send(method_sym) : @provider.send(method_sym, *vargs))
-      rescue
-        nil
+        block_given? ? @provider.send(method_sym, *vargs, &block) :
+            (vargs.size == 0 ?  @provider.send(method_sym) : @provider.send(method_sym, *vargs))
       end
 
     end

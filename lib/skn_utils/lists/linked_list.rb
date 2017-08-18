@@ -40,10 +40,6 @@ module SknUtils
       # Navigation
       #
 
-      def node
-        @current
-      end
-      
       # +int position from current node
       def nth(index)
         node = @current

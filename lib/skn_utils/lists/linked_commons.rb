@@ -81,6 +81,12 @@ module SknUtils
         current
       end
 
+      # Access to current node as anchor for Node based operations
+      # if initialized without vargs, this is only way to access a node
+      def nodes
+        @current
+      end
+
       def empty?
         self.size == 0
       end
