@@ -90,6 +90,7 @@ Ruby Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated
       #to_a                        -- returns Array of each value in the list
 
     State
+      #node                        -- returns the current node (LinkedNode class)
       #clear                       -- removes all elements and return number of elements removed
       #empty?                      -- returns true if list has no elements, otherwise false
       #size                        -- returns total count of elements in the list
@@ -133,9 +134,9 @@ Ruby Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated
 
     Initialization: optional &block to identify data key
     
-      #call(*vargs, &block)         -- Instansiates new list and optionally creates nodes from each comma-seperated value;
+      #call(*vargs, &block)         -- Instansiates new list and creates nodes from each comma-seperated value;
                                       also, assigns &block as default value identifier for find and sort operations
-                                      returns the first node when initialized with vargs -- else class instance 
+                                      returns the first node -- else class instance
                compare_key_block example:  node = LinkedList.call({:key=>"Z"},{:key=>"S"},{:key=>"N"}) {|a| a[:key]}
 
 
