@@ -120,8 +120,8 @@ RSpec.shared_examples "a linked list" do |list_type|
   context "Sort Feature" do
     let(:num_list)   { described_class.new(100, 50, 10, 40, 80, 30, 60, 90, 70, 20, 110) }
     let(:alpha_list) { described_class.new('Z', 'K', 'S', 'n', 's', 'z', 'k', 'N', 'o', 'A') }
-    let(:hash_list)  { described_class.new({key: 'Z'}, {key: 'K'}, {key: 'S'}, {key: 'n'}, {key: 's'},
-                                           {key: 'z'}, {key: 'k'}, {key: 'N'}, {key: 'o'}, {key: 'A'}
+    let(:hash_list)  { described_class.new({key: 'Z'}, {key: 'K'}, {key: 'S'}, {:key=>"S"}, {key: 'n'}, {key: 's'},
+                                           {key: 'z'}, {key: 'k'}, {key: 'N'}, {key: 'A'}
                                           ) {|a| a[:key]}
     }
 
@@ -143,13 +143,13 @@ RSpec.shared_examples "a linked list" do |list_type|
     end
     it "#sort!() redefines hash object values in default order" do
       expect(hash_list.sort!).to eq(10)
-      expect(hash_list.to_a).to eq([{:key=>"A"}, {:key=>"K"}, {:key=>"N"}, {:key=>"S"}, {:key=>"Z"},
-                                    {:key=>"k"}, {:key=>"n"}, {:key=>"o"}, {:key=>"s"}, {:key=>"z"}])
+      expect(hash_list.to_a).to eq([{:key=>"A"}, {:key=>"K"}, {:key=>"N"}, {:key=>"S"}, {:key=>"S"}, {:key=>"Z"},
+                                    {:key=>"k"}, {:key=>"n"}, {:key=>"s"}, {:key=>"z"}])
     end
     it "#sort!() lambda overrides sort_condifiton and sorts hash object values in custom order" do
       expect(hash_list.sort!() {|a,b| a[:key] <= b[:key] }).to eq(10)
-      expect(hash_list.to_a).to eq([{:key=>"z"}, {:key=>"s"}, {:key=>"o"}, {:key=>"n"}, {:key=>"k"},
-                                    {:key=>"Z"}, {:key=>"S"}, {:key=>"N"}, {:key=>"K"}, {:key=>"A"}])
+      expect(hash_list.to_a).to eq([{:key=>"z"}, {:key=>"s"}, {:key=>"n"}, {:key=>"k"},
+                                    {:key=>"Z"}, {:key=>"S"}, {:key=>"S"}, {:key=>"N"}, {:key=>"K"}, {:key=>"A"}])
     end
   end
 

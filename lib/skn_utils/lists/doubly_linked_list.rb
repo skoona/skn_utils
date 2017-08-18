@@ -69,6 +69,16 @@ module SknUtils
       #
 
       # return new size
+      def insert(value)
+        node = @current
+        @current = LinkNode.new(value, node, :after, self,  &@match_value)
+        self.head = @current if self.head.nil?
+        self.tail = @current if self.tail.equal?(node)
+        self.size += 1
+      end
+      alias_method  :append, :insert
+
+      # return new size
       def insert_before(position_value, value)
         target = find_by_value(position_value)
         node = LinkNode.new(value, target, :before, self,  &@match_value)
@@ -115,17 +125,6 @@ module SknUtils
       end
 
     protected
-
-      def find_by_value(value)
-        return nil if self.head.nil? || value.nil? || self.size == 0
-        prior = self.head
-        target = prior
-        while target and not target.match_by_value(value)
-          prior = target
-          target = prior.next
-        end
-        target
-      end
 
       def find_by_index(index)
         return nil if self.head.nil? or index < 1 or index > self.size

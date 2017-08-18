@@ -10,6 +10,10 @@ module SknUtils
 
       attr_accessor :prev, :next, :value
 
+      def self.call(val, anchor_node=nil, strategy=:after, mgr=nil, &cmp_key)
+        self.new(val, anchor_node, strategy, mgr, &cmp_key)
+      end
+
       def initialize(val, anchor_node=nil, strategy=:after, mgr=nil, &cmp_key)
         @value = val
         @prev = nil
@@ -43,7 +47,7 @@ module SknUtils
       end
 
       def match_by_value(other_value)
-        @cmp_proc.call(self.value) === @cmp_proc.call(other_value)
+        @cmp_proc.call(self.value) == @cmp_proc.call(other_value)
       end
 
       # Returns
@@ -77,7 +81,7 @@ module SknUtils
 
       # Reverse API to Parent Linked List Class
       def node_value
-        node_request.value
+        node_value_request(:current)
       end
       def first_node
         node_request(:first)
@@ -95,20 +99,22 @@ module SknUtils
         node_request(:last)
       end
 
-      protected()
-
-      def respond_to_missing?(method, include_private=false)
-        @provider && @provider.protected_methods(true).include?(method) || super
+      # Retrieves requested node, not value
+      def node_request(method_sym=:current, *vargs, &block)
+        block_given? ? @provider.send(method_sym, *vargs, &block) :
+            (vargs.size == 0 ?  @provider.send(method_sym) : @provider.send(method_sym, *vargs))
+        @provider.instance_variable_get(:@current)
+      rescue
+        nil
+      end
+      # Retrieves requested value, not node
+      def node_value_request(method_sym=:current, *vargs, &block)
+        position_value = block_given? ? @provider.send(method_sym, *vargs, &block) :
+                             (vargs.size == 0 ?  @provider.send(method_sym) : @provider.send(method_sym, *vargs))
+      rescue
+        nil
       end
 
-      def method_missing(method, *args, &block)
-        if @provider and @provider.protected_methods(true).include?(method)
-          block_given? ? @provider.send(method, *args, block) :
-              (args.size == 0 ?  @provider.send(method) : @provider.send(method, *args))
-        else
-          super
-        end
-      end
     end
   end # module
 end

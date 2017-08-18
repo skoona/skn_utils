@@ -31,7 +31,7 @@ module SknUtils
     class LinkedCommons
       attr_accessor :size
 
-      # Initialize and return first node if nodes are available
+      # Initialize and return first node if nodes are available, else class instance
       def self.call(*vargs, &compare_key_proc)
         target = self.new(*vargs, &compare_key_proc)
         return target.instance_variable_get(:@current) if vargs.size > 1
@@ -104,20 +104,9 @@ module SknUtils
       end
 
       # return new size
-      def insert(value)
-        temp = @current.value rescue nil
-        insert_after(temp, value)
-      end
-
-      # return new size
       def prepend(value)
         temp = self.head.value rescue nil
         insert_before(temp, value)
-      end
-      # return new size
-      def append(value)
-        temp = self.tail.value rescue nil
-        insert_after(temp, value)
       end
 
       #
@@ -127,7 +116,7 @@ module SknUtils
       # perform each() or return enumerator
       def each(&block)
         @current = self.head
-        position = self.head
+        position = @current
         if block_given?
           while position do
             block.call( position.value.dup )
@@ -180,6 +169,19 @@ module SknUtils
 
       attr_accessor :head, :tail
 
+      # scan for first occurance of matching value
+      def find_by_value(value)
+        return nil if value.nil? || self.size == 0
+        stop_node = self.head
+        target = stop_node
+        while target && !target.match_by_value(value)
+          target = target.next
+          break if stop_node.equal?(target)
+        end
+        target = nil unless target && target.match_by_value(value)
+        target
+      end
+
       # Merged Sort via Ref: http://rubyalgorithms.com/merge_sort.html
       # arr is Array to be sorted, sort_cond is Proc expecting a/b params returning true/false
       def merge_sort(arr)
@@ -201,18 +203,6 @@ module SknUtils
         end
 
         sorted + left + right
-      end
-
-      # Retrieves requested node, not value
-      def node_request(method_sym=:current, *vargs, &block)
-        position_value = block_given? ? send(method_sym, *vargs, block) :
-                             (vargs.size == 0 ?  send(method_sym) : send(method_sym, *vargs))
-        @current
-      end
-      # Retrieves requested value, not node
-      def node_value_request(method_sym=:current, *vargs, &block)
-        position_value = block_given? ? send(method_sym, *vargs, block) :
-                             (vargs.size == 0 ?  send(method_sym) : send(method_sym, *vargs))
       end
 
     end

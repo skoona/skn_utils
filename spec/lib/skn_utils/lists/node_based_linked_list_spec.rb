@@ -5,7 +5,7 @@
 RSpec.describe SknUtils::Lists::DoublyLinkedList, "DoublyLinkedList using node interface " do
 
   context "Node Interface Edge Cases " do
-    let(:node) { described_class.call(10,20, 30, 40, 50, 60, 70, 80, 90, 100) {|a| a} }
+    let(:node) { described_class.call(10, 20, 30, 40, 50, 60, 60, 70, 80, 90, 100) {|a| a} }
 
     context "Node Retrieval " do
 
@@ -55,6 +55,7 @@ RSpec.describe SknUtils::Lists::DoublyLinkedList, "DoublyLinkedList using node i
         end
 
         expect(nav_ary).to eq(node.node_value_request(:to_a))
+        expect(nav_ary).to eq([10, 20, 30, 40, 50, 60, 60, 70, 80, 90, 100])
       end
     end
 

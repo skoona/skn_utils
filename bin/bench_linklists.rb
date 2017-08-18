@@ -54,20 +54,40 @@ Benchmark.ips do |x|
   vargs  = [70, 71, 72, 73, 74, 75, 76, 77, 78, 79]
   cproc  = lambda {|a| a}
 
-  x.report('LinkedList Ops') do
+  x.report('Array Ops') do
+    ary = Array.new(vargs)
+    # adders.each {|x| ary.push(x) }
+    adders.each {|x| ary.insert(5, x) }
+    value = ary.sort!
+    ary.first
+    ary.clear
+  end
+
+  x.report('Single Ops') do
     ll = SknUtils::Lists::LinkedList.new(*vargs, &cproc)
-    adders.each {|x| ll.insert_after(74, x)}
+    # adders.each {|x| ll.insert(x) }
+    adders.each {|x| ll.insert_after(74, x) }
     value = ll.sort!
     ll.first
     ll.clear
   end
 
-  x.report('Array Ops') do
-    ary = Array.new(vargs)
-    adders.each {|x| ary.insert(5, x)}
-    value = ary.sort!
-    ary.first
-    ary.clear
+  x.report('Double Ops') do
+    dll = SknUtils::Lists::DoublyLinkedList.new(*vargs, &cproc)
+    # adders.each {|x| dll.insert(x) }
+    adders.each {|x| dll.insert_after(74, x) }
+    value = dll.sort!
+    dll.first
+    dll.clear
+  end
+
+  x.report('Circulat Ops') do
+    cl = SknUtils::Lists::CircularLinkedList.new(*vargs, &cproc)
+    # adders.each {|x| cl.insert(x) }
+    adders.each {|x| cl.insert_after(74, x) }
+    value = cl.sort!
+    cl.first
+    cl.clear
   end
 
   x.compare!
