@@ -3,7 +3,14 @@
 # Ruby Notify like class
 #
 # Ref: https://ozone.wordpress.com/category/programming/metaprogramming/
-
+##
+# Listeners implement:
+#
+#  def attribute_changed(attr, old, new)
+#    ...
+#  end
+#
+#
 module SknUtils
   class NotifierBase
 

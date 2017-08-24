@@ -54,7 +54,8 @@ Ruby Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated
 
 ## Public Components
     SknUtils::NestedResult           # >= V 3.0.0 Primary Key/Value Container with Dot/Hash notiation support.
-    SknSettings                      # Application Configuration class, Key/Value Container with Dot/Hash notiation support.
+    SknSettings                      # Multi-level application Configuration class, Key/Value Container with Dot/Hash notiation support.
+    SknUtils::Configurable           # Basic one-level configuration settings module for Applications and or Gems
 
     SknHash                          # Wrapper for name only, WITHOUT SknUtils namespace, inherits from SknUtils::NestedResult
     SknUtils::ResultBean             # Wrapper for name only, inherits from SknUtils::NestedResult
@@ -63,6 +64,7 @@ Ruby Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated
     SknUtils::List::LinkedList          # List with forward (#next) navigation, and tail/open
     SknUtils::List::DoublyLinkedList    # List with forward (#next) and backward (#prev) navigation, and head/tail open
     SknUtils::List::CircularLinkedList  # List with forward (#next) and backward (#prev) navigation, and head/tail wrapping
+
 
 
 ## Configuration Options
