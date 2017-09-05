@@ -28,7 +28,8 @@
 #   </listings>
 # </basic>
 ##
-
+# xml_string = SknUtils::Converters::HashToXml.call(hash)
+##
 module SknUtils
   module Converters
 
@@ -37,13 +38,13 @@ module SknUtils
       def initialize(*args)
       end
 
-      def self.call(*array_with_at_least_one_hash, &block)
-        new().call(*array_with_at_least_one_hash, &block)
+      def self.call(*vargs_with_at_least_one_hash, &block)
+        new().call(*vargs_with_at_least_one_hash, &block)
       end
 
-      def call(*array_with_at_least_one_hash, &block)
-        return nil if array_with_at_least_one_hash.size < 1
-        hash = generate_xml(*array_with_at_least_one_hash )
+      def call(*vargs, &block)
+        return nil if vargs.size == 0
+        hash = generate_xml(*vargs )
           yield hash if block_given?
         hash
       end
@@ -58,8 +59,8 @@ module SknUtils
 
         unless parent
           # assume that if the hash has a single key that it should be the root
-          root, data = (data.length == 1) ? [data.keys.first.to_s + 's', data] : ["root", data]
-          builder = ::Nokogiri::XML::Builder.new(opt) do |xml|
+          root, data = (data.length == 1) ? [data.keys.first.to_s , data] : ["root", data]
+          builder = ::Nokogiri::XML::Builder.new(opt.merge(:encoding => 'UTF-8')) do |xml|
             xml.send(root) {
               generate_xml(data, xml)
             }
@@ -90,7 +91,7 @@ module SknUtils
             parent.send(label, value)
           end
         end
-      end
+      end # end method
 
     end # end class
   end

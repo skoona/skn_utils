@@ -16,6 +16,9 @@ Ruby Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated
 
 
 ## New Features
+    09/2017  V3.4.0
+    Added HashToXml class which converts complex/simple hashes into XML. pre-req's Nokogiri 1.8.0 or higher, unless Rails present, then uses version included with rails.
+
     08/2017  V3.3.0
     Added Linked List classes which implement Single, Double, and Circular linked lists patterns.  LinkedLists are implemented
     with method results returning node values or the nodes themselves.
@@ -55,11 +58,13 @@ Ruby Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated
 ## Public Components
     SknUtils::NestedResult           # >= V 3.0.0 Primary Key/Value Container with Dot/Hash notiation support.
     SknSettings                      # Multi-level application Configuration class, Key/Value Container with Dot/Hash notiation support.
-    SknUtils::Configurable           # Basic one-level configuration settings module for Applications and or Gems
-
     SknHash                          # Wrapper for name only, WITHOUT SknUtils namespace, inherits from SknUtils::NestedResult
     SknUtils::ResultBean             # Wrapper for name only, inherits from SknUtils::NestedResult
     SknUtils::PageControls           # Wrapper for name only, inherits from SknUtils::NestedResult
+
+    SknUtils::Configurable           # Basic one-level configuration settings module for Applications and or Gems
+    SknUtils::Converters::HashToXml  # #call(hash) to convert Ruby complex hashes into XML
+
 
     SknUtils::List::LinkedList          # List with forward (#next) navigation, and tail/open
     SknUtils::List::DoublyLinkedList    # List with forward (#next) and backward (#prev) navigation, and head/tail open

@@ -24,7 +24,9 @@ require 'skn_utils/lists/circular_linked_list'
 # require 'skn_utils/exploring/commander'
 # require 'skn_utils/exploring/action_service'
 # require 'skn_utils/exploring/configuration'
-require 'skn_utils/converters/hash_to_xml'
+if defined?(::Nokogiri)
+  require 'skn_utils/converters/hash_to_xml'
+end
 require 'skn_hash'
 require 'skn_settings'
 
