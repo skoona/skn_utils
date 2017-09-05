@@ -1,6 +1,6 @@
 ## lib/skn_utils/action_service.rb
 #
-# Exploritory Action/Service Class
+# Exploratory Action/Service Class
 # Ref: https://blog.lelonek.me/what-service-objects-are-not-7abef8aa2f99#.p64vudxq4
 #      http://sporto.github.io/blog/2012/11/15/a-pattern-for-service-objects-in-rails/
 #

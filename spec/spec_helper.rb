@@ -16,7 +16,6 @@ require 'skn_utils/exploring/commander'
 require 'skn_utils/exploring/action_service'
 require 'skn_utils/exploring/configuration'
 require 'skn_utils/business_services/year_month'
-
 require 'rspec'
 
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration

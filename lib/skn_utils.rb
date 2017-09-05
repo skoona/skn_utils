@@ -6,6 +6,7 @@ require 'date'
 require 'time'
 unless defined?(Rails)
   require 'deep_merge'
+  require 'nokogiri'
 end
 require 'skn_utils/nested_result'
 require 'skn_utils/result_bean'
@@ -23,6 +24,7 @@ require 'skn_utils/lists/circular_linked_list'
 # require 'skn_utils/exploring/commander'
 # require 'skn_utils/exploring/action_service'
 # require 'skn_utils/exploring/configuration'
+require 'skn_utils/converters/hash_to_xml'
 require 'skn_hash'
 require 'skn_settings'
 
