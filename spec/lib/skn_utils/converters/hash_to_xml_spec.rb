@@ -41,7 +41,7 @@ describe SknUtils::Converters::HashToXml,  "Hash to XML Converter Utility " do
 
   context "Handles Complex Hashes. " do
     let(:array_of_hashes) {
-        {'arrayOfHashes' => [
+        {'resource' => [
                       { 'name' => 'category1',
                         'subCategory' => [
                             { 'name' => 'subCategory1',

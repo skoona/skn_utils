@@ -58,8 +58,8 @@ module SknUtils
 
         unless parent
           # assume that if the hash has a single key that it should be the root
-          root, data = (data.length == 1) ? [data.keys.first.to_s, data] : ["root", data]
-          builder = Nokogiri::XML::Builder.new(opt) do |xml|
+          root, data = (data.length == 1) ? [data.keys.first.to_s + 's', data] : ["root", data]
+          builder = ::Nokogiri::XML::Builder.new(opt) do |xml|
             xml.send(root) {
               generate_xml(data, xml)
             }
@@ -92,6 +92,6 @@ module SknUtils
         end
       end
 
-    end
+    end # end class
   end
 end
