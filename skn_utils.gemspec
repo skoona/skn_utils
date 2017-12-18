@@ -34,6 +34,7 @@ EOF
   spec.require_paths = ['lib']
 
   spec.add_runtime_dependency 'deep_merge', '~> 1.1'
+  spec.add_runtime_dependency 'nokogiri', '~> 1.8.0'
 
   spec.add_development_dependency "bundler", ">= 0"
   spec.add_development_dependency "rake", ">= 0"
@@ -41,6 +42,5 @@ EOF
   spec.add_development_dependency "pry", ">= 0"
   spec.add_development_dependency "simplecov", ">= 0"
   spec.add_development_dependency 'benchmark-ips'
-  spec.add_development_dependency 'nokogiri', '~> 1.8.0'
 
 end
