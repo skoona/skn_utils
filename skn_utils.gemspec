@@ -24,6 +24,8 @@ SknUtils::NestedResult class.  SknUtils::NestedResult replaces those original cl
 
 Please update your existing code in consideration of the above change, or use the prior version 2.0.6.
 
+Additionally, The gem nokogiri may be manually installed, for non-Rails applications, to enable SknUtils::HashToXml feature.
+
 EOF
   spec.homepage      = "https://github.com/skoona/skn_utils"
   spec.license       = "MIT"
@@ -33,14 +35,14 @@ EOF
   spec.test_files    = spec.files.grep(%r{^(spec)/})
   spec.require_paths = ['lib']
 
-  spec.add_runtime_dependency 'deep_merge', '~> 1.1'
-  spec.add_runtime_dependency 'nokogiri', '~> 1.8.0'
+  spec.add_runtime_dependency 'deep_merge', '~> 1'
 
-  spec.add_development_dependency "bundler", ">= 0"
-  spec.add_development_dependency "rake", ">= 0"
-  spec.add_development_dependency "rspec", '~> 3.0'
-  spec.add_development_dependency "pry", ">= 0"
-  spec.add_development_dependency "simplecov", ">= 0"
-  spec.add_development_dependency 'benchmark-ips'
+  spec.add_development_dependency "bundler",   "~> 1"
+  spec.add_development_dependency "rake",      "~> 10"
+  spec.add_development_dependency "rspec",     '~> 3'
+  spec.add_development_dependency "pry",       "~> 0"
+  spec.add_development_dependency "simplecov", "~> 0"
+  spec.add_development_dependency 'benchmark-ips', '~> 2'
+  spec.add_development_dependency 'nokogiri',  '~> 1.8'
 
 end

@@ -35,10 +35,11 @@ module SknUtils
         end
         define_method("#{attr}=") do |value|
           old_value = instance_variable_get("@#{attr}")
-          return if (value == old_value)
-          instance_variable_set("@#{attr}", value)
-          @listeners.each do |listener|
-            listener.attribute_changed(attr, old_value, value)
+          unless (value == old_value)
+            instance_variable_set("@#{attr}", value)
+            @listeners.each do |listener|
+              listener.attribute_changed(attr, old_value, value)
+            end
           end
         end
       end # loop on attrs
