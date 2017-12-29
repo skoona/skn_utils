@@ -4,6 +4,7 @@ require 'json'
 require 'erb'
 require 'date'
 require 'time'
+require 'concurrent'
 unless defined?(Rails)
   begin
     require 'deep_merge'
@@ -12,6 +13,7 @@ unless defined?(Rails)
     puts e.message
   end
 end
+require 'skn_utils/env_string_handler'
 require 'skn_utils/nested_result'
 require 'skn_utils/result_bean'
 require 'skn_utils/page_controls'

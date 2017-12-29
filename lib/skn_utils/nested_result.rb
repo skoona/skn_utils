@@ -193,7 +193,7 @@ module SknUtils
   protected
 
     def reset_from_empty!(params={}, speed=true)
-      @container =  {}
+      @container =  Concurrent::Hash.new()
       speed ? initialize_for_speed(params) :
           initialize_from_hash(params)
     end
@@ -229,7 +229,7 @@ module SknUtils
     end
 
     def container
-      @container ||= {}
+      @container ||= Concurrent::Hash.new()
     end
 
     # Feature: enables dot.notation and creates matching getter/setters

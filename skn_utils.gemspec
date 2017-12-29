@@ -36,6 +36,7 @@ EOF
   spec.require_paths = ['lib']
 
   spec.add_runtime_dependency 'deep_merge', '~> 1'
+  spec.add_runtime_dependency 'concurrent-ruby', '~> 1'
 
   spec.add_development_dependency "bundler",   "~> 1"
   spec.add_development_dependency "rake",      "~> 10"

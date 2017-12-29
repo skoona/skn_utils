@@ -16,6 +16,12 @@ Ruby Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated
 
 
 ## New Features
+    12/2017  V3.5.0
+    Made Nokogiri's gem install/load Optional for HashToXml class
+    Added SknContainer as a globally namespaced sub-class of NestedResult.  SknContainer is a NestedResult which is functional wrapper over a Concurrent::Hash.  Hashes can use anyObject or anyValue as their key:value pairs.  This makes them perfect for use as a DI Container.
+    Added EnvStringHandler class to augment YAML values in an application settings.yml file.  Rails.env.development? becomes SknSettings.env.development? if the following is added to the settings file.
+    ./config/settings.yml: `env: !ruby/string:EnvStringHandler <%= ENV['RACK_ENV'] %>`
+
     09/2017  V3.4.0
     Added HashToXml class which converts complex/simple hashes into XML. pre-req's Nokogiri 1.8.0 or higher, unless Rails present, then uses version included with rails.
 
