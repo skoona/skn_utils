@@ -16,21 +16,23 @@
 # Yes, its YAML trick
 # in config/settings.yml
 #   ...
-#   env: !ruby/string:EnvStringHandler <%= ENV['RACK_ENV'] %>
+#   env: !ruby/string:SknUtils::EnvStringHandler <%= ENV['RACK_ENV'] %>
 #   ...
 # #
-class EnvStringHandler < String
-  private
+module SknUtils
+  class EnvStringHandler < String
+    private
 
-  def respond_to_missing?(method_name, _include_private = false)
-    method_name[-1] == '?'
-  end
+    def respond_to_missing?(method_name, _include_private = false)
+      method_name[-1] == '?'
+    end
 
-  def method_missing(method_name, *arguments)
-    if method_name[-1] == '?'
-      self == method_name[0..-2]
-    else
-      super
+    def method_missing(method_name, *arguments)
+      if method_name[-1] == '?'
+        self == method_name[0..-2]
+      else
+        super
+      end
     end
   end
 end
