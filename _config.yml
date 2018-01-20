@@ -1,7 +1,7 @@
 title: SknUtils
 email: skoona@gmail.com
 description: > # this means to ignore newlines until "baseurl:"
-  Ruby GEM containing utilitarian classes for build Ruby applications.  SknUtils::NestedResult is the primary class, is it 
+  Ruby GEM containing utilitarian classes to help build Ruby applications.  SknUtils::NestedResult is the primary class, is it 
   a threadsafe wrapper over Ruby's Hash with dot.notation, ?.presence, and nested deep-merge features.  I use it for application 
   settings via YAML files, and as a container for persistent objects.
 baseurl: ""
