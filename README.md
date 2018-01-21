@@ -16,6 +16,10 @@ Ruby Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated
 
 
 ## New Features
+    01/2018  V3.6.0
+    Moved Linked List to my Minimum_Heaps gem.  This repo has a tag of 'lists' documententing the removal
+    Removed classes and utils not directly related to NestedResult
+
     12/2017  V3.5.0
     Made Nokogiri's gem install/load Optional for HashToXml class
     Added SknContainer as a globally namespaced sub-class of NestedResult.  SknContainer is a NestedResult which is functional wrapper over a Concurrent::Hash.  Hashes can use anyObject or anyValue as their key:value pairs.  This makes them perfect for use as a DI Container.
@@ -63,94 +67,17 @@ Ruby Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated
 
 ## Public Components
     SknUtils::NestedResult           # >= V 3.0.0 Primary Key/Value Container with Dot/Hash notiation support.
-    SknSettings                      # Multi-level application Configuration class, Key/Value Container with Dot/Hash notiation support.
     SknHash                          # Wrapper for name only, WITHOUT SknUtils namespace, inherits from SknUtils::NestedResult
     SknUtils::ResultBean             # Wrapper for name only, inherits from SknUtils::NestedResult
     SknUtils::PageControls           # Wrapper for name only, inherits from SknUtils::NestedResult
 
+    SknSettings                      # Multi-level application Configuration class, Key/Value Container with Dot/Hash notiation support.
+
     SknUtils::Configurable           # Basic one-level configuration settings module for Applications and or Gems
-    SknUtils::Converters::HashToXml  # #call(hash) to convert Ruby complex hashes into XML
-
-
-    SknUtils::List::LinkedList          # List with forward (#next) navigation, and tail/open
-    SknUtils::List::DoublyLinkedList    # List with forward (#next) and backward (#prev) navigation, and head/tail open
-    SknUtils::List::CircularLinkedList  # List with forward (#next) and backward (#prev) navigation, and head/tail wrapping
-
 
 
 ## Configuration Options
     None required other than initialization hash
-
-
-## Public Methods: SknUtils::Lists::LinkedList, SknUtils::Lists::DoublyLinkedList, and SknUtils::Lists::CircularLinkedList
-#### Each concrete Class supports the following methods: Value based interface
-    Value based interface presumes a direct reference to the object is maintained and the following methods will be called on that
-    object instance as needed.  Each method will generally return the value contained in the node, Nil, or the int number of nodes 
-    remaining.
-    
-    Navigation: return related value from relative positon in list, stops on first/last node for Single/Double, wraps for Circular.
-    
-      #first                       -- returns first value in list
-      #next                        -- returns next value from current position
-      #current                     -- returns current value
-      #prev                        -- returns previous value from current position (*not supported in Single)
-      #last                        -- returns last value from list
-      #nth(i)                      -- returns value of node at +|- positon relative to current position, (*negative not supported in Singular)
-      #at_index(i)                 -- returns value of i node relative to list's head
-
-    Enumeration
-      #each                        -- yields each value in list when block given, on Enumerator object
-      #to_a                        -- returns Array of each value in the list
-
-    State
-      #node                        -- returns the current node (LinkedNode class)
-      #clear                       -- removes all elements and return number of elements removed
-      #empty?                      -- returns true if list has no elements, otherwise false
-      #size                        -- returns total count of elements in the list
-      #sort!(:direction, &block)   -- Sort existing list in place using :direction (:asc,:desc, :default) symbol
-                                      if block is given, overrides :direction and uses custom proc to compare values
-                                      block format is:  {|a,b| a >= b };  example: 'll.sort(:default) {|a,b| a <= b}'
-
-    Modification: returns number of elements in the list after the operation
-    
-      #insert(value)                        -- inserts value after node at current positon, or appends
-      #append(value)                        -- inserts value after node at current positon
-      #prepend(value)                       -- inserts value before node at current positon
-      #insert_before(position_value, value) -- finds node matching position_value, then prepends new node
-      #insert_after(position_value, value)  -- finds node matching position_value, then appends new node
-      #remove(value)                        -- finds first node matching value, then destroys it
-
-    Initialization: optional &block to identify data key
-    
-      #new(*vargs, &block)         -- Instansiates new list and optionally creates nodes from each comma-seperated value;
-                                      also, assigns &block as default value identifier for find and sort operations
-                                      returns a class instance.
-               compare_key_block example:  instance = LinkedList.new({:key=>"Z"},{:key=>"S"},{:key=>"N"}) {|a| a[:key]}
-               
-#### Each concrete Class supports the following methods: Node based interface
-    Node based interface presumes a node is retrieved from the LinkedList, then using that/any available node all other methods
-    may be used.  Methods in play will include the LinkedNode (#next, #value, and #prev), along with all public methods from
-    the main class.
-                 
-    Navigation: return related Node from relative positon in list, stops on first/last node for Single/Double, wraps for Circular.
-    
-      #first_node                  -- returns first node
-      #next_node                   -- returns next node from current position
-      #current_node                -- returns current or last accessed node
-      #prev_node                   -- returns previous node from current position (*not supported in Single)
-      #last_node                   -- returns last node in list
-      #node_value                  -- returns value of the current/receiver node:  $ receiver.node_value
-      #node_request(method_sym, *vargs, &block) 
-                                   -- executes any method on the Value based Interface, returning a node
-      #node_value_request(method_sym, *vargs, &block) 
-                                   -- executes any method on the Value based Interface, returning result value
-
-    Initialization: optional &block to identify data key
-    
-      #call(*vargs, &block)         -- Instansiates new list and creates nodes from each comma-seperated value;
-                                      also, assigns &block as default value identifier for find and sort operations
-                                      returns the first node -- else class instance
-               compare_key_block example:  node = LinkedList.call({:key=>"Z"},{:key=>"S"},{:key=>"N"}) {|a| a[:key]}
 
 
 ## Public Methods: SknSettings ONLY
@@ -283,10 +210,10 @@ Ruby Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated
 
 ## Installation
 
-runtime prereqs: 
-    V3+ None
-    V2+ None
-    V1+ gem 'active_model', '~> 3.0'
+    runtime prereqs:
+        V3+ None
+        V2+ None
+        V1+ gem 'active_model', '~> 3.0'
 
 
 Add this line to your application's Gemfile:

@@ -21,11 +21,6 @@ EOF
   spec.post_install_message = <<-EOF
 This version includes modified versions of SknUtils::ResultBean, SknUtils::PageControls classes, which inherit from  
 SknUtils::NestedResult class.  SknUtils::NestedResult replaces those original classes and consolidates their function.  
-
-Please update your existing code in consideration of the above change, or use the prior version 2.0.6.
-
-Additionally, The gem nokogiri may be manually installed, for non-Rails applications, to enable SknUtils::HashToXml feature.
-
 EOF
   spec.homepage      = "https://github.com/skoona/skn_utils"
   spec.license       = "MIT"
@@ -44,6 +39,5 @@ EOF
   spec.add_development_dependency "pry",       "~> 0"
   spec.add_development_dependency "simplecov", "~> 0"
   spec.add_development_dependency 'benchmark-ips', '~> 2'
-  spec.add_development_dependency 'nokogiri',  '~> 1.8'
 
 end
