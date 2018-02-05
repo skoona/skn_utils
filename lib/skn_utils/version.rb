@@ -1,8 +1,8 @@
 # A better way to say it
 module SknUtils
   class Version
-    MAJOR = 3
-    MINOR = 6
+    MAJOR = 4
+    MINOR = 0
     PATCH = 0
 
     def self.to_s

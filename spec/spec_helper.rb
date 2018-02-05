@@ -1,4 +1,5 @@
 ENV['RAILS_ENV'] = 'test'
+ENV['RACK_ENV'] = 'test'
 
 ENV['TEST_GEM'] = 'gem'   # enable SknSettings Gem Mode Testing
 

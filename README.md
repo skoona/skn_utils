@@ -9,13 +9,29 @@ Ruby Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated
  an Object with Dot or Hash notational accessors to each key's value.  Additional key/value pairs can be added post-create
  by 'obj.my_new_var = "some value"', or simply assigning it.
 
-* Transforms the initializating hash into accessible object instance values, with their keys as method names.
+* Transforms the initialing hash into accessible object instance values, with their keys as method names.
 * If the key's value is also a hash, it too will become an Object.
-* if the key's value is a Array of Hashes, or Array of Arrays of Hashes, each element of the Arrays will become an Object.
+* if the key's value is a Array of Hashes, or Array of Arrays of Hashes, each hash element of the Arrays will become an Object.
 * The current key/value (including nested) pairs are returned via #to_hash or #to_json when and if needed.
 
+#### Primary Classes
+* SknSettings
+* SknContainer
+* SknHash
+* SknUtils::NestedResult
+* SknUtils::ResultBean
+* SknUtils::PageControls
+* SknUtils::Configurable
+* SknUtils::NullObject
+* SknUtils::EnvStringHandler
+* SknUtils::CoreObjectExtensions
 
 ## New Features
+    02/04/2018 V4.0.0
+    Added SknUtils::CoreObjectExtensions, this module contains those popular Rails ActiveSupport extensions like `:present?`.
+    - However, it is contructed with the Ruby `:refine` and `using SknUtils::CoreObjectExtensions` constraints, so as not to intefer with existing monkey-patches.
+    - Simply add `using SknUtils::CoreObjectExtensions` to any class or module you wish to use the `:present?`, `:blank?`, etc methods.
+
     01/2018  V3.6.0
     Moved Linked List to my Minimum_Heaps gem.  This repo has a tag of 'lists' documententing the removal
     Removed classes and utils not directly related to NestedResult
@@ -210,10 +226,11 @@ Ruby Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated
 
 ## Installation
 
-    runtime prereqs:
-        V3+ None
-        V2+ None
-        V1+ gem 'active_model', '~> 3.0'
+runtime prereqs:
+* V4+ None
+* V3+ None
+* V2+ None
+* V1+ gem 'active_model', '~> 3.0'
 
 
 Add this line to your application's Gemfile:

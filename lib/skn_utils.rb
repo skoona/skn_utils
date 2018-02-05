@@ -13,6 +13,7 @@ unless defined?(Rails)
     puts e.message
   end
 end
+require 'skn_utils/core_extensions'
 require 'skn_utils/env_string_handler'
 require 'skn_utils/nested_result'
 require 'skn_utils/result_bean'

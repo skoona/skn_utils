@@ -93,8 +93,17 @@
 module SknUtils
   class NestedResult
 
-    def initialize(params={}, mod=true)
-      reset_from_empty!(params, mod)
+    # ##
+    # Onlye good for the first level
+    def self.with_methods(args)
+      new(args, false)
+    end
+    def self.with_instance_vars(args)
+      new(args, true)
+    end
+
+    def initialize(params={}, speed=true)
+      reset_from_empty!(params, speed)
     end
 
     def [](attr)
