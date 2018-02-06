@@ -3,18 +3,46 @@
 
 # SknUtils
 #### SknUtils::NestedResult class; dynamic key/value container
-The intent of this gem is to be a container of data results or key/value pairs, with easy access to its contents, and on-demand transformation back to the hash (#to_hash).
+The intent of this gem is to be a container of nestable data results or key/value pairs, with easy access to its contents and on-demand transformation back to the creating hash (#to_hash).
 
-Ruby Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated at runtime with an input hash.  This library creates
- an Object with Dot or Hash notational accessors to each key's value.  Additional key/value pairs can be added post-create
- by 'obj.my_new_var = "some value"', or simply assigning it.
+A Ruby Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated at runtime with an input hash.  This library creates
+ an Object with Dot and Hash notational accessors to each key's value.  Additional key/value pairs can be added post-create
+ by simply assigning it; `obj.my_new_var = "some value"`
 
 * Transforms the initialing hash into accessible object instance values, with their keys as method names.
 * If the key's value is also a hash, it too will become an Object.
 * if the key's value is a Array of Hashes, or Array of Arrays of Hashes, each hash element of the Arrays will become an Object.
 * The current key/value (including nested) pairs are returned via #to_hash or #to_json when and if needed.
+* Best described as dot notation wrapper over a Ruby (Concurrent-Ruby) Hash.
 
-#### Primary Classes
+Ruby's Hash object is already extremely flexible, even more so with the addition of dot-notation.  As I work more with Ruby outside of Rails, I'm finding more use cases for the capabilities of this gem.  Here are a few examples:
+
+1. Application settings containers, SknSettings.  Loads Yaml file based on `ENV['RACK_ENV']` value, or specified file-key.
+    - Replaces Config and/or RBConfig Gems for yaml based settings
+1. Substitute for Rails.root, via a little ERB/YAML/Marshal statement in settings.yml file, and a helper class
+    - settings.yml (YAML)
+        - `root: <%= Dir.pwd %>`
+            - enables `SknSettings.root`
+        - `env:  !ruby/string:SknUtils::EnvStringHandler <%= ENV.fetch('RACK_ENV', 'development') %>`
+            - enables `SknSettings.env.production?` ...
+1. Since SknSettings is by necessity a global constant, it can serve as Session Storage to keep system objects; like a ROM-RB instance.
+1. In-Memory Key-Store, use it to cache active user objects, or active Integration passwords, and/or objects that are not serializable.
+1. Command registries used to displatch command requests to proper command handler. see example app [SknBase](https://github.com/skoona/skn_base/blob/master/strategy/services/content/command_handler.rb)
+```ruby
+    SknSettings.registry = {
+                            Services::Content::Commands::RetrieveAvailableResources  => method(:resources_metadata_service),
+                            Services::Content::Commands::RetrieveResourceContent  => method(:resource_content_service)
+                           }
+    ...
+    SknSettings.registry[ cmd.class ].call( cmd )
+    -- or --
+    SknSettings.registry.key?( cmd.class ) && cmd.valid? ?
+        SknSettings.registry[ cmd.class ].call( cmd ) :
+        command_not_found_action()
+```
+There are many more use cases for Ruby's Hash that this gem just makes easier to implement.
+
+#### Available Classes
 * SknSettings
 * SknContainer
 * SknHash
@@ -26,7 +54,7 @@ Ruby Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated
 * SknUtils::EnvStringHandler
 * SknUtils::CoreObjectExtensions
 
-## New Features
+## History
     02/04/2018 V4.0.0
     Added SknUtils::CoreObjectExtensions, this module contains those popular Rails ActiveSupport extensions like `:present?`.
     - However, it is contructed with the Ruby `:refine` and `using SknUtils::CoreObjectExtensions` constraints, so as not to intefer with existing monkey-patches.
@@ -82,7 +110,7 @@ Ruby Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated
 
 
 ## Public Components
-    SknUtils::NestedResult           # >= V 3.0.0 Primary Key/Value Container with Dot/Hash notiation support.
+    SknUtils::NestedResult           # Primary Key/Value Container with Dot/Hash notiation support.
     SknHash                          # Wrapper for name only, WITHOUT SknUtils namespace, inherits from SknUtils::NestedResult
     SknUtils::ResultBean             # Wrapper for name only, inherits from SknUtils::NestedResult
     SknUtils::PageControls           # Wrapper for name only, inherits from SknUtils::NestedResult
