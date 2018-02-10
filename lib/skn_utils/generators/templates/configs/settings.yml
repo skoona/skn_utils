@@ -1,0 +1,14 @@
+---
+Packaging:
+  pomVersion: 1.0.0
+  isTest: false
+  isDevelopment: false
+  isStaging: false
+  isProduction: false
+  configName: default
+  short_name: skn
+
+# Create a EnvStringHandler to support: SknSettings.env.development?
+# Yes, its YAML trick
+env: !ruby/string:SknUtils::EnvStringHandler <%= ENV['RACK_ENV'] %>
+root: <%= Dir.pwd %>
