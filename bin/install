@@ -2,6 +2,24 @@
 
 require 'bundler/setup'
 require 'thor'
-require 'skn_utils/generators/install_generator.thor'
+require 'thor/group'
 
+class InstallCommand < Thor::Group
+  include Thor::Actions
 
+  # Define arguments and options
+  argument :dir_name, :default => 'config'
+
+  desc "Install SknSettings YAML files."
+
+  def self.source_root
+    File.expand_path('bin', Dir.pwd)
+  end
+
+  def copy_app_settings_directory
+    directory 'configs', "#{dir_name}/", :verbose => true
+  end
+
+end
+
+InstallCommand.start
