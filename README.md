@@ -55,6 +55,9 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
 * SknUtils::CoreObjectExtensions
 
 ## History
+    02/04/2018 V4.0.2
+    Added `bin/install` to copy default settings.yml files to the project's config directory
+
     02/04/2018 V4.0.0
     Added SknUtils::CoreObjectExtensions, this module contains those popular Rails ActiveSupport extensions like `:present?`.
     - However, it is contructed with the Ruby `:refine` and `using SknUtils::CoreObjectExtensions` constraints, so as not to intefer with existing monkey-patches.
