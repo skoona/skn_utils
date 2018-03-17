@@ -110,7 +110,8 @@ RSpec.shared_examples 'plain old ruby object' do
     end
 
     it 'Raises NoMethodError in response to invalid key access' do
-      expect{object.sixty_two}.to raise_exception(NoMethodError)
+      expect{object.sixty_two}.not_to raise_exception
+      expect(object.sixty_two).to be_nil
     end
 
     context '#attribute? present? like feature operates as expected' do

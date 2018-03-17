@@ -329,10 +329,11 @@ module SknUtils
       elsif method.to_s.end_with?('?')                                # order of tests is significant,
         attribute?(method_nsym)
 
-      else # TODO: replace following with nil to match OpenStruct behavior when key not found
-        e = NoMethodError.new "undefined method `#{method}' for #{self.class.name}", method, args
-        e.set_backtrace caller(1)
-        raise e
+      else # TODO: replace following with nil to match OpenStruct or Hash behavior when key not found
+        nil
+        # e = NoMethodError.new "undefined method `#{method}' for #{self.class.name}", method, args
+        # e.set_backtrace caller(1)
+        # raise e
 
       end
     end # end method_missing: errors from enable_dot..., initialize_hash..., and attribute? are possible
