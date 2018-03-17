@@ -1,0 +1,4 @@
+test.yml---
+Packaging:
+  isDevelopment: true
+  configName: development

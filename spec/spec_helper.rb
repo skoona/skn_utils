@@ -1,4 +1,5 @@
 ENV['RAILS_ENV'] = 'test'
+ENV['RACK_ENV'] = 'test'
 
 ENV['TEST_GEM'] = 'gem'   # enable SknSettings Gem Mode Testing
 
@@ -12,11 +13,6 @@ SimpleCov.start do
 end
 
 require 'skn_utils'
-require 'skn_utils/exploring/commander'
-require 'skn_utils/exploring/action_service'
-require 'skn_utils/exploring/configuration'
-require 'skn_utils/business_services/year_month'
-
 require 'rspec'
 
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration

@@ -6,7 +6,7 @@ module SknUtils
   class SknConfiguration < NestedResult
 
     def initialize(params={})
-      default_mode = defined?(Rails) ? Rails.env : ENV.fetch('RAILS_ENV', 'development') 
+      default_mode = defined?(Rails) ? Rails.env : ENV.fetch('RACK_ENV', 'development')
       @config_filename = params.is_a?(String) ? params : params.fetch(:config_filename, default_mode)
       @base_path = ENV.fetch('TEST_GEM', 'rails').eql?('gem') ? './spec/factories/' : './config/'
       load_config_basename!(@config_filename)

@@ -3,19 +3,79 @@
 
 # SknUtils
 #### SknUtils::NestedResult class; dynamic key/value container
-The intent of this gem is to be a container of data results or key/value pairs, with easy access to its contents, and on-demand transformation back to the hash (#to_hash).
+The intent of this gem is to be a container of nestable data results or key/value pairs, with easy access to its contents and on-demand transformation back to the creating hash (#to_hash).
 
-Ruby Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated at runtime with an input hash.  This library creates
- an Object with Dot or Hash notational accessors to each key's value.  Additional key/value pairs can be added post-create
- by 'obj.my_new_var = "some value"', or simply assigning it.
+A Ruby Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated at runtime with an input hash.  This library creates
+ an Object with Dot and Hash notational accessors to each key's value.  Additional key/value pairs can be added post-create
+ by simply assigning it; `obj.my_new_var = "some value"`
 
-* Transforms the initializating hash into accessible object instance values, with their keys as method names.
+* Transforms the initialing hash into accessible object instance values, with their keys as method names.
 * If the key's value is also a hash, it too will become an Object.
-* if the key's value is a Array of Hashes, or Array of Arrays of Hashes, each element of the Arrays will become an Object.
+* if the key's value is a Array of Hashes, or Array of Arrays of Hashes, each hash element of the Arrays will become an Object.
 * The current key/value (including nested) pairs are returned via #to_hash or #to_json when and if needed.
+* Best described as dot notation wrapper over a Ruby (Concurrent-Ruby) Hash.
 
+Ruby's Hash object is already extremely flexible, even more so with the addition of dot-notation.  As I work more with Ruby outside of Rails, I'm finding more use cases for the capabilities of this gem.  Here are a few examples:
 
-## New Features
+1. Application settings containers, SknSettings.  Loads Yaml file based on `ENV['RACK_ENV']` value, or specified file-key.
+    - Replaces Config and/or RBConfig Gems for yaml based settings
+1. Substitute for Rails.root, via a little ERB/YAML/Marshal statement in settings.yml file, and a helper class
+    - settings.yml (YAML)
+        - `root: <%= Dir.pwd %>`
+            - enables `SknSettings.root`
+        - `env:  !ruby/string:SknUtils::EnvStringHandler <%= ENV.fetch('RACK_ENV', 'development') %>`
+            - enables `SknSettings.env.production?` ...
+1. Since SknSettings is by necessity a global constant, it can serve as Session Storage to keep system objects; like a ROM-RB instance.
+1. In-Memory Key-Store, use it to cache active user objects, or active Integration passwords, and/or objects that are not serializable.
+1. Command registries used to displatch command requests to proper command handler. see example app [SknBase](https://github.com/skoona/skn_base/blob/master/strategy/services/content/command_handler.rb)
+```ruby
+    SknSettings.registry = {
+                            Services::Content::Commands::RetrieveAvailableResources  => method(:resources_metadata_service),
+                            Services::Content::Commands::RetrieveResourceContent  => method(:resource_content_service)
+                           }
+    ...
+    SknSettings.registry[ cmd.class ].call( cmd )
+    -- or --
+    SknSettings.registry.key?( cmd.class ) && cmd.valid? ?
+        SknSettings.registry[ cmd.class ].call( cmd ) :
+        command_not_found_action()
+```
+There are many more use cases for Ruby's Hash that this gem just makes easier to implement.
+
+#### Available Classes
+* SknSettings
+* SknContainer
+* SknHash
+* SknUtils::NestedResult
+* SknUtils::ResultBean
+* SknUtils::PageControls
+* SknUtils::Configurable
+* SknUtils::NullObject
+* SknUtils::EnvStringHandler
+* SknUtils::CoreObjectExtensions
+
+## History
+    02/04/2018 V4.0.2
+    Added `bin/install` to copy default settings.yml files to the project's config directory
+
+    02/04/2018 V4.0.0
+    Added SknUtils::CoreObjectExtensions, this module contains those popular Rails ActiveSupport extensions like `:present?`.
+    - However, it is contructed with the Ruby `:refine` and `using SknUtils::CoreObjectExtensions` constraints, so as not to intefer with existing monkey-patches.
+    - Simply add `using SknUtils::CoreObjectExtensions` to any class or module you wish to use the `:present?`, `:blank?`, etc methods.
+
+    01/2018  V3.6.0
+    Moved Linked List to my Minimum_Heaps gem.  This repo has a tag of 'lists' documententing the removal
+    Removed classes and utils not directly related to NestedResult
+
+    12/2017  V3.5.0
+    Made Nokogiri's gem install/load Optional for HashToXml class
+    Added SknContainer as a globally namespaced sub-class of NestedResult.  SknContainer is a NestedResult which is functional wrapper over a Concurrent::Hash.  Hashes can use anyObject or anyValue as their key:value pairs.  This makes them perfect for use as a DI Container.
+    Added EnvStringHandler class to augment YAML values in an application settings.yml file.  Rails.env.development? becomes SknSettings.env.development? if the following is added to the settings file.
+    ./config/settings.yml: `env: !ruby/string:EnvStringHandler <%= ENV['RACK_ENV'] %>`
+
+    09/2017  V3.4.0
+    Added HashToXml class which converts complex/simple hashes into XML. pre-req's Nokogiri 1.8.0 or higher, unless Rails present, then uses version included with rails.
+
     08/2017  V3.3.0
     Added Linked List classes which implement Single, Double, and Circular linked lists patterns.  LinkedLists are implemented
     with method results returning node values or the nodes themselves.
@@ -53,91 +113,18 @@ Ruby Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated
 
 
 ## Public Components
-    SknUtils::NestedResult           # >= V 3.0.0 Primary Key/Value Container with Dot/Hash notiation support.
-    SknSettings                      # Application Configuration class, Key/Value Container with Dot/Hash notiation support.
-
+    SknUtils::NestedResult           # Primary Key/Value Container with Dot/Hash notiation support.
     SknHash                          # Wrapper for name only, WITHOUT SknUtils namespace, inherits from SknUtils::NestedResult
     SknUtils::ResultBean             # Wrapper for name only, inherits from SknUtils::NestedResult
     SknUtils::PageControls           # Wrapper for name only, inherits from SknUtils::NestedResult
 
-    SknUtils::List::LinkedList          # List with forward (#next) navigation, and tail/open
-    SknUtils::List::DoublyLinkedList    # List with forward (#next) and backward (#prev) navigation, and head/tail open
-    SknUtils::List::CircularLinkedList  # List with forward (#next) and backward (#prev) navigation, and head/tail wrapping
+    SknSettings                      # Multi-level application Configuration class, Key/Value Container with Dot/Hash notiation support.
+
+    SknUtils::Configurable           # Basic one-level configuration settings module for Applications and or Gems
 
 
 ## Configuration Options
     None required other than initialization hash
-
-
-## Public Methods: SknUtils::Lists::LinkedList, SknUtils::Lists::DoublyLinkedList, and SknUtils::Lists::CircularLinkedList
-#### Each concrete Class supports the following methods: Value based interface
-    Value based interface presumes a direct reference to the object is maintained and the following methods will be called on that
-    object instance as needed.  Each method will generally return the value contained in the node, Nil, or the int number of nodes 
-    remaining.
-    
-    Navigation: return related value from relative positon in list, stops on first/last node for Single/Double, wraps for Circular.
-    
-      #first                       -- returns first value in list
-      #next                        -- returns next value from current position
-      #current                     -- returns current value
-      #prev                        -- returns previous value from current position (*not supported in Single)
-      #last                        -- returns last value from list
-      #nth(i)                      -- returns value of node at +|- positon relative to current position, (*negative not supported in Singular)
-      #at_index(i)                 -- returns value of i node relative to list's head
-
-    Enumeration
-      #each                        -- yields each value in list when block given, on Enumerator object
-      #to_a                        -- returns Array of each value in the list
-
-    State
-      #node                        -- returns the current node (LinkedNode class)
-      #clear                       -- removes all elements and return number of elements removed
-      #empty?                      -- returns true if list has no elements, otherwise false
-      #size                        -- returns total count of elements in the list
-      #sort!(:direction, &block)   -- Sort existing list in place using :direction (:asc,:desc, :default) symbol
-                                      if block is given, overrides :direction and uses custom proc to compare values
-                                      block format is:  {|a,b| a >= b };  example: 'll.sort(:default) {|a,b| a <= b}'
-
-    Modification: returns number of elements in the list after the operation
-    
-      #insert(value)                        -- inserts value after node at current positon, or appends
-      #append(value)                        -- inserts value after node at current positon
-      #prepend(value)                       -- inserts value before node at current positon
-      #insert_before(position_value, value) -- finds node matching position_value, then prepends new node
-      #insert_after(position_value, value)  -- finds node matching position_value, then appends new node
-      #remove(value)                        -- finds first node matching value, then destroys it
-
-    Initialization: optional &block to identify data key
-    
-      #new(*vargs, &block)         -- Instansiates new list and optionally creates nodes from each comma-seperated value;
-                                      also, assigns &block as default value identifier for find and sort operations
-                                      returns a class instance.
-               compare_key_block example:  instance = LinkedList.new({:key=>"Z"},{:key=>"S"},{:key=>"N"}) {|a| a[:key]}
-               
-#### Each concrete Class supports the following methods: Node based interface
-    Node based interface presumes a node is retrieved from the LinkedList, then using that/any available node all other methods
-    may be used.  Methods in play will include the LinkedNode (#next, #value, and #prev), along with all public methods from
-    the main class.
-                 
-    Navigation: return related Node from relative positon in list, stops on first/last node for Single/Double, wraps for Circular.
-    
-      #first_node                  -- returns first node
-      #next_node                   -- returns next node from current position
-      #current_node                -- returns current or last accessed node
-      #prev_node                   -- returns previous node from current position (*not supported in Single)
-      #last_node                   -- returns last node in list
-      #node_value                  -- returns value of the current/receiver node:  $ receiver.node_value
-      #node_request(method_sym, *vargs, &block) 
-                                   -- executes any method on the Value based Interface, returning a node
-      #node_value_request(method_sym, *vargs, &block) 
-                                   -- executes any method on the Value based Interface, returning result value
-
-    Initialization: optional &block to identify data key
-    
-      #call(*vargs, &block)         -- Instansiates new list and creates nodes from each comma-seperated value;
-                                      also, assigns &block as default value identifier for find and sort operations
-                                      returns the first node -- else class instance
-               compare_key_block example:  node = LinkedList.call({:key=>"Z"},{:key=>"S"},{:key=>"N"}) {|a| a[:key]}
 
 
 ## Public Methods: SknSettings ONLY
@@ -270,10 +257,11 @@ Ruby Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated
 
 ## Installation
 
-runtime prereqs: 
-    V3+ None
-    V2+ None
-    V1+ gem 'active_model', '~> 3.0'
+runtime prereqs:
+* V4+ None
+* V3+ None
+* V2+ None
+* V1+ gem 'active_model', '~> 3.0'
 
 
 Add this line to your application's Gemfile:

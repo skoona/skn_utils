@@ -93,8 +93,17 @@
 module SknUtils
   class NestedResult
 
-    def initialize(params={})
-      reset_from_empty!(params)
+    # ##
+    # Onlye good for the first level
+    def self.with_methods(args)
+      new(args, false)
+    end
+    def self.with_instance_vars(args)
+      new(args, true)
+    end
+
+    def initialize(params={}, speed=true)
+      reset_from_empty!(params, speed)
     end
 
     def [](attr)
@@ -193,7 +202,7 @@ module SknUtils
   protected
 
     def reset_from_empty!(params={}, speed=true)
-      @container =  {}
+      @container =  Concurrent::Hash.new()
       speed ? initialize_for_speed(params) :
           initialize_from_hash(params)
     end
@@ -220,7 +229,7 @@ module SknUtils
     # Feature: attribute must exist and have a non-blank value to cause this method to return true
     def attribute?(attr)
       return false unless container.key?(key_as_sym(attr))
-      ![ "", " ", nil, [],[""], [" "], NestedResult.new({}), [[]]].any? {|a| a == container[key_as_sym(attr)] }
+      ![ "", " ", nil, [],[""], [" "], self.class.new({}), [[]]].any? {|a| a == container[key_as_sym(attr)] }
     end
 
     # Feature:  returns a hash of all attributes and their current values
@@ -229,7 +238,7 @@ module SknUtils
     end
 
     def container
-      @container ||= {}
+      @container ||= Concurrent::Hash.new()
     end
 
     # Feature: enables dot.notation and creates matching getter/setters
@@ -282,7 +291,7 @@ module SknUtils
     # Feature: unwrap array of array-of-hashes/object
     def array_to_hash(array)
       case array
-        when NestedResult
+        when self.class
           array.to_hash
         when Array
           array.map { |element| array_to_hash(element) }
@@ -295,7 +304,7 @@ module SknUtils
     def translate_value(value)
       case value
         when Hash
-          NestedResult.new(value)
+          self.class.new(value)
         when Array
           value.map { |element| translate_value(element) }
         else
