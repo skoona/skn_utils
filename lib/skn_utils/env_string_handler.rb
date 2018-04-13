@@ -17,6 +17,7 @@
 # in config/settings.yml
 #   ...
 #   env: !ruby/string:SknUtils::EnvStringHandler <%= ENV['RACK_ENV'] %>
+#  root: !ruby/string:SknUtils::EnvStringHandler <%= Dir.pwd %>
 #   ...
 # #
 module SknUtils
@@ -24,15 +25,22 @@ module SknUtils
     private
 
     def respond_to_missing?(method_name, _include_private = false)
-      method_name[-1] == '?'
+      method_name[-1] == '?' || method_name.to_s.eql?('join') || super
     end
 
     def method_missing(method_name, *arguments)
       if method_name[-1] == '?'
         self == method_name[0..-2]
+
+        # Only handle the :join method, else to super
+      elsif Pathname.public_instance_methods(false).include?(method_name)
+        method_name.to_s.eql?('join') ?
+            Pathname(self).send(method_name, *arguments).realdirpath.to_s  : super
+
       else
         super
       end
     end
+
   end
 end

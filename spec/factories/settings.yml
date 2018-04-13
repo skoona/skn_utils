@@ -11,5 +11,5 @@ Packaging:
 # Create a EnvStringHandler to support: SknSettings.env.development?
 # Yes, its YAML trick
 env: !ruby/string:SknUtils::EnvStringHandler <%= ENV['RACK_ENV'] %>
-root: <%= Dir.pwd %>
+root: !ruby/string:SknUtils::EnvStringHandler <%= Dir.pwd %>
 
