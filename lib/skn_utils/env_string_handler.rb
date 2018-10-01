@@ -35,7 +35,8 @@ module SknUtils
         # Only handle the :join method, else to super
       elsif Pathname.public_instance_methods(false).include?(method_name)
         method_name.to_s.eql?('join') ?
-            Pathname(self).send(method_name, *arguments).realdirpath.to_s  : super
+            Pathname(self).send(method_name, *arguments).realdirpath.to_s  :
+            Pathname(self).send(method_name, *arguments)
 
       else
         super
