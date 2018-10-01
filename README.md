@@ -55,6 +55,9 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
 * SknUtils::CoreObjectExtensions
 
 ## History
+    09/30/2018 V4.0.4
+    Updated EnvStringHandler class to behave like Rails.root in all respects.
+
     02/04/2018 V4.0.2
     Added `bin/install` to copy default settings.yml files to the project's config directory
 

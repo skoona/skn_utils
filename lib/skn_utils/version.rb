@@ -3,7 +3,7 @@ module SknUtils
   class Version
     MAJOR = 4
     MINOR = 0
-    PATCH = 3
+    PATCH = 4
 
     def self.to_s
       [MAJOR, MINOR, PATCH].join('.')
