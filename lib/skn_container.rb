@@ -1,11 +1,6 @@
-##
-# Register:
-#   SknContainer.<new.key> = AnyObject
+# ##
 #
-# Resolve:
-#   SknContainer.<new.key>  # => AnyObject
-#   SknContainer.<new.key>?  # => True | False based on existance #
-#
+# Credits: Inspired by: andyholland1991@aol.com, http://cv.droppages.com
 #
 #   class UserRepository
 #     def self.first
@@ -13,21 +8,31 @@
 #     end
 #   end
 #
-#   SknContainer.register(:user_repository, UserRepository)
-#   SknContainer.resolve(:user_repository).first
-#
 #   class PersonRepository
 #     def first
 #       { name: 'Gill' }
 #     end
 #   end
 #
+## Using Classes
+#
+#   SknContainer.register(:user_repository, UserRepository)
+#   -- or --
+#   SknContainer.register(:user_repository, UserRepository, call: false )
+#
+#   SknContainer.resolve(:user_repository).first
+#
+##  Using Procs
+#
 #   SknContainer.register(:person_repository, -> { PersonRepository.new })
+#   -- or --
+#   SknContainer.register(:person_repository, -> { PersonRepository.new }, call: true )
+#
 #   SknContainer.resolve(:person_repository).first
 ##
 
 # This creates a global constant (and singleton) wrapping a Hash
-class << (SknContainer = SknUtils::NestedResult.new())
+class << (SknContainer = Concurrent::Hash.new)
 
   class Content
     attr_reader :item, :options
@@ -56,6 +61,8 @@ class << (SknContainer = SknUtils::NestedResult.new())
     end
 
     self[key] = Content.new(item, options)
+
+    self # enable chaining
   end
 
   def resolve(key)

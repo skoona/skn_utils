@@ -44,17 +44,21 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
 
 #### Available Classes
 * SknSettings
+    * SknUtils::Configurable
+    * SknUtils::EnvStringHandler
 * SknContainer
 * SknHash
-* SknUtils::NestedResult
-* SknUtils::ResultBean
-* SknUtils::PageControls
-* SknUtils::Configurable
+    * SknUtils::NestedResult
+    * SknUtils::ResultBean
+    * SknUtils::PageControls
 * SknUtils::NullObject
-* SknUtils::EnvStringHandler
 * SknUtils::CoreObjectExtensions
 
 ## History
+    10/2/2018 V5.0.0
+    Modified SknContainer (IoC) to only use #register and #resolve as it's public API.
+    - Inspired by: [Andrew Holland](http://cv.droppages.com)
+
     09/30/2018 V4.0.4
     Updated EnvStringHandler class to behave like Rails.root in all respects.
 
@@ -124,10 +128,38 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
     SknSettings                      # Multi-level application Configuration class, Key/Value Container with Dot/Hash notiation support.
 
     SknUtils::Configurable           # Basic one-level configuration settings module for Applications and or Gems
+    SknContainer                     # Basic Key/Value container which #registers and #resolves procs, classes, and/or object
 
 
 ## Configuration Options
     None required other than initialization hash
+
+
+## Public Methods: SknContainer ONLY
+    SknContainer is global constant containing an initialized Object of Concurrent::Hash using defaults with additional methods.
+    Returns the keyed value as the original instance/value or if provided a proc the result of calling that proc.
+    To register a class or object for global retrieval, use the following API.  Also review the RSpecs for additional useage info.
+      #register(key, contents = nil, options = {}, &block)
+        - example: 
+            SknContainer.register(:some_klass, MyClass)                   -- class as value
+            SknContainer.register(:the_instance, MyClass.new)             -- Object Instance as value 
+            SknContainer.register(:unique_instance, -> {MyClass.new})     -- New Object Instance for each #resolve 
+
+            SknContainer                                                  -- #register return self to enable chaining
+                .register(:unique_instance, -> {MyClass.new})
+                  .register(:the_instance, MyClass.new)
+                    .register(:some_klass, MyClass)    
+            
+      #resolve(key)
+        - example:
+            klass  = SknContainer.resolve(:some_klass) 
+            result = SknContainer.resolve(:some_klass).new
+            
+            obj_instance1 = SknContainer.resolve(:unique_instance) 
+            obj_instance2 = SknContainer.resolve(:unique_instance)
+            
+            same_instance = SknContainer.resolve(:the_instance)
+
 
 
 ## Public Methods: SknSettings ONLY
