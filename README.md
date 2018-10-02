@@ -139,7 +139,7 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
     SknContainer is global constant containing an initialized Object of Concurrent::Hash using defaults with additional methods.
     Returns the keyed value as the original instance/value or if provided a proc the result of calling that proc.
     To register a class or object for global retrieval, use the following API.  Also review the RSpecs for additional useage info.
-      #register(key, contents = nil, options = {}, &block)
+      #register(key, contents = nil, options = {})
         - example: 
             SknContainer.register(:some_klass, MyClass)                   -- class as value
             SknContainer.register(:the_instance, MyClass.new)             -- Object Instance as value 

@@ -10,7 +10,7 @@ end
 
 
 
-describe SknContainer, "Gem D/I Lite Container module." do
+describe SknContainer, "IoC Lite Container module." do
 
 
   context "Operational Features. " do
@@ -55,6 +55,14 @@ describe SknContainer, "Gem D/I Lite Container module." do
     it "#resolve raises ArgumentError when key is not found. " do
       subject.register(:service_a, "AnyValue")
       expect{subject.resolve(:no_find)}.to raise_error ArgumentError
+    end
+
+    it "#resolve returns the block or method passed as value. " do
+      subject.register(:my_method) do |str|
+        str
+      end
+      val = subject.resolve(:my_method)
+      expect( val.call("Welcome") ).to eq "Welcome"
     end
   end
 
