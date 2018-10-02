@@ -29,6 +29,12 @@
 #   SknContainer.register(:person_repository, -> { PersonRepository.new }, call: true )
 #
 #   SknContainer.resolve(:person_repository).first
+#
+##  Outside Example
+#   SknContainer.register(:some_block, {call: false}) {|str| str.upcase }
+# #
+#   SknContainer.resolve(:some_block).call("hello")
+#   # ==> "HELLO"
 ##
 
 # This creates a global constant (and singleton) wrapping a Hash
