@@ -12,7 +12,6 @@ end
 
 describe SknContainer, "IoC Lite Container module." do
 
-
   context "Operational Features. " do
 
     it "#register accepts a proc object to produce unique instances. " do
@@ -57,12 +56,12 @@ describe SknContainer, "IoC Lite Container module." do
       expect{subject.resolve(:no_find)}.to raise_error ArgumentError
     end
 
-    it "#resolve returns the block or method passed as value. " do
-      subject.register(:my_method) do |str|
-        str
+    it "#resolve returns block without calling it first. " do
+      subject.register(:service_b, {call: false}) do |str|
+        str.upcase
       end
-      val = subject.resolve(:my_method)
-      expect( val.call("Welcome") ).to eq "Welcome"
+
+      expect( subject.resolve(:service_b).call("Hello") ).to eq "HELLO"
     end
   end
 
