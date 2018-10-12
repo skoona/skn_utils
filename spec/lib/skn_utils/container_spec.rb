@@ -51,9 +51,9 @@ describe SknContainer, "IoC Lite Container module." do
       expect( val_a ).to be_equal val_b
     end
 
-    it "#resolve raises ArgumentError when key is not found. " do
+    it "#resolve returns nil when key is not found. " do
       subject.register(:service_a, "AnyValue")
-      expect{subject.resolve(:no_find)}.to raise_error ArgumentError
+      expect(subject.resolve(:no_find)).to be_nil
     end
 
     it "#resolve returns block without calling it first. " do

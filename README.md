@@ -44,7 +44,7 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
 
 #### Available Classes
 * SknSuccess
-# SknFailure
+* SknFailure
 * SknSettings
     * SknUtils::Configurable
     * SknUtils::EnvStringHandler
@@ -127,17 +127,20 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
 
 ## Public Components
     SknUtils::NestedResult           # Primary Key/Value Container with Dot/Hash notiation support.
-    SknHash                          # Wrapper for name only, WITHOUT SknUtils namespace, inherits from SknUtils::NestedResult
-    SknUtils::ResultBean             # Wrapper for name only, inherits from SknUtils::NestedResult
-    SknUtils::PageControls           # Wrapper for name only, inherits from SknUtils::NestedResult
-
-    SknSettings                      # Multi-level application Configuration class, Key/Value Container with Dot/Hash notiation support.
+        SknHash                      # Wrapper for name only, WITHOUT SknUtils namespace, inherits from SknUtils::NestedResult
+        SknUtils::ResultBean         # Wrapper for name only, inherits from SknUtils::NestedResult
+        SknUtils::PageControls       # Wrapper for name only, inherits from SknUtils::NestedResult
+        SknUtils::DottedHash         # Wrapper for name only, inherits from SknUtils::NestedResult
 
     SknUtils::Configurable           # Basic one-level configuration Applications classes or modules. Adds MyClass.root,MyClass.env, and MyClass.logger, with MyClass.config.<user_attrs>
-    
+
+    SknSettings                      # Multi-level application Configuration class, Key/Value Container with Dot/Hash notiation support.    
+
     SknContainer                     # Basic Key/Value container which #registers and #resolves procs, classes, and/or object
+
     SknSuccess                       # Three attribute value containers for return codes   -- #success, #message, #value
     SknFailure                       # Three attribute value containers for return codes   -- #success, #message, #value
+
 
 ## Configuration Options
     None required other than initialization hash
@@ -161,7 +164,7 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
       #resolve(key)
         - example:
             klass  = SknContainer.resolve(:some_klass) 
-            result = SknContainer.resolve(:some_klass).new
+            instance = SknContainer.resolve(:some_klass).new
             
             obj_instance1 = SknContainer.resolve(:unique_instance) 
             obj_instance2 = SknContainer.resolve(:unique_instance)

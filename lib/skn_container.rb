@@ -72,11 +72,7 @@ class << (SknContainer = Concurrent::Hash.new)
   end
 
   def resolve(key)
-    content = self.fetch(key) do
-      fail ArgumentError, "Nothing registered with the name #{key}"
-    end
-
-    content.call
+    self.fetch(key) {|k| nil }&.call
   end
 
 end
