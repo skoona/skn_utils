@@ -43,6 +43,8 @@ Ruby's Hash object is already extremely flexible, even more so with the addition
 There are many more use cases for Ruby's Hash that this gem just makes easier to implement.
 
 #### Available Classes
+* SknSuccess
+# SknFailure
 * SknSettings
     * SknUtils::Configurable
     * SknUtils::EnvStringHandler
@@ -55,6 +57,10 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
 * SknUtils::CoreObjectExtensions
 
 ## History
+    10/12/2018 V5.0.1
+    Added SknSuccess/SknFailure as value object to carry return codes vs exceptions
+    Modified Configurable to mimic Rails.env, Rails.root, and Rails.logger
+
     10/2/2018 V5.0.0
     Modified SknContainer (IoC) to only use #register and #resolve as it's public API.
     - Inspired by: [Andrew Holland](http://cv.droppages.com)
@@ -127,9 +133,11 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
 
     SknSettings                      # Multi-level application Configuration class, Key/Value Container with Dot/Hash notiation support.
 
-    SknUtils::Configurable           # Basic one-level configuration settings module for Applications and or Gems
+    SknUtils::Configurable           # Basic one-level configuration Applications classes or modules. Adds MyClass.root,MyClass.env, and MyClass.logger, with MyClass.config.<user_attrs>
+    
     SknContainer                     # Basic Key/Value container which #registers and #resolves procs, classes, and/or object
-
+    SknSuccess                       # Three attribute value containers for return codes   -- #success, #message, #value
+    SknFailure                       # Three attribute value containers for return codes   -- #success, #message, #value
 
 ## Configuration Options
     None required other than initialization hash
@@ -163,7 +171,7 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
 
 
 ## Public Methods: SknSettings ONLY
-    SknSettings is global constant containing an initialized Object of SknUtils::SknConfiguration using defaults
+    SknSettings is global constant containing an initialized Object of SknUtils::Configuration using defaults
     To change the 'development'.yml default please use the following method early or in the case of Rails in 'application.rb
       #load_config_basename!(config_name) -- Where config_name is the name of yml files stored in the `./config/settings` directory
       #config_path!(path)                 -- Where path format is './<dirs>/', default is: './config/'

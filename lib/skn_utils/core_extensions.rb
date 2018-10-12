@@ -8,7 +8,7 @@ module SknUtils
 
     unless Object.respond_to?(:present?)
 
-      refine Object do
+      class ::Object
         # An object is blank if it's false, empty, or a whitespace string.
         # For example, '', '   ', +nil+, [], and {} are all blank.
         #
@@ -53,7 +53,7 @@ module SknUtils
         end
       end
 
-      refine NilClass do
+      class ::NilClass
         # +nil+ is blank:
         #
         #   nil.blank? # => true
@@ -64,7 +64,7 @@ module SknUtils
         end
       end
 
-      refine FalseClass do
+      class ::FalseClass
         # +false+ is blank:
         #
         #   false.blank? # => true
@@ -75,7 +75,7 @@ module SknUtils
         end
       end
 
-      refine TrueClass do
+      class ::TrueClass
         # +true+ is not blank:
         #
         #   true.blank? # => false
@@ -86,7 +86,7 @@ module SknUtils
         end
       end
 
-      refine Array do
+      class ::Array
         # An array is blank if it's empty:
         #
         #   [].blank?      # => true
@@ -96,7 +96,7 @@ module SknUtils
         alias_method :blank?, :empty?
       end
 
-      refine Hash do
+      class ::Hash
         # A hash is blank if it's empty:
         #
         #   {}.blank?                # => true
@@ -106,7 +106,7 @@ module SknUtils
         alias_method :blank?, :empty?
       end
 
-      refine String do
+      class ::String
         # A string is blank if it's empty or contains whitespaces only:
         #
         #   ''.blank?       # => true
@@ -124,7 +124,7 @@ module SknUtils
         end
       end
 
-      refine Numeric  do #:nodoc:
+      class ::Numeric
         # No number is blank:
         #
         #   1.blank? # => false
@@ -135,6 +135,7 @@ module SknUtils
           false
         end
       end
+
     end # end unless respond_to
 
   end # end CoreObjectExtensions

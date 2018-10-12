@@ -4,46 +4,83 @@
 #
 
 module SknUtils
-
-# In the end, we have got ourselves a pretty neat module for making an arbitrary
-# class configurable and then specifying those configuration values using a clean
-# and simple DSL that also lets us reference one configuration attribute
-# from another:
-#
-#################
-# Inside Target component
-#################
-# class MyApp
-#   include SknUtils::Configurable.with(:app_id, :title, :cookie_name)
-#   # ...
-# end
-#
-#################
-# Inside Initializer
-#################
-# MyApp.configure do
-#   app_id "my_app"
-#   title "My App"
-#   cookie_name { "#{app_id}_session" }
-# end
-#
-#################
-# Usage:
-#################
-# MyApp.config.app_id # ==> "my_app"
-#
-# Here is the final version of the module that implements our DSL—a total of 36 lines of code:
+  # For making an arbitrary class configurable and then specifying those configuration values using a clean
+  # and simple DSL that also lets us reference one configuration attribute from another
+  #
+  #################
+  # Inside Target component
+  #################
+  # class MyApp
+  #   include SknUtils::Configurable.with(:app_id, :title, :cookie_name) # or {root_enable: false})
+  #   # ... default=true for root|env|logger
+  # end
+  #
+  #################
+  # Inside Initializer
+  #################
+  # MyApp.configure do
+  #   app_id "my_app"
+  #   title "My App"
+  #   cookie_name { "#{app_id}_session" }
+  # end
+  #
+  #################
+  # During Definition
+  #################
+  # class MyApp
+  #   include SknUtils::Configurable.with(:app_id, :title, :cookie_name, {root_enable: true})
+  #   # ...
+  #   configure do
+  #     app_id "my_app"
+  #     title "My App"
+  #     cookie_name { "#{app_id}_session" }
+  #   end
+  #
+  #   self.logger = Logger.new
+  #   self.env = ENV.fetch('RACK_ENV', 'development')
+  #   self.root = Dir.pwd
+  # end
+  #
+  #################
+  # Usage:
+  #################
+  # MyApp.config.app_id # ==> "my_app"
+  # MyApp.logger        # ==> <Logger.class>
+  # MyApp.env.test?     # ==> true
+  #
+  # ###############
+  # Syntax
+  # ###############
+  # Main Class Attrs
+  # - root    =  application rood directory as Pathname
+  # - env     =  string value from RACK_ENV
+  # - logger  =  Assiigned Logger instance
+  # #with(*user_attrs, enable_root: true|false) - defaults to enable of Main Class Attrs
+  # ##
+  # User-Defined Attrs
+  # MyThing.with(:name1, :name2, ...)
+  #
+  # ##
 
   module Configurable
 
-    def self.with(*attrs)
-      not_provided = Object.new
+    def self.with(*attrs, **options)
+      _not_provided = Object.new
+      _app_main = options.empty? || options.values.any?{|v| v == true}
 
-      # Define the class/module methods
+      # Define the config class/module methods
       config_class = Class.new do
+        # add hash notation
+        define_method :[] do |attr|
+          instance_variable_get("@#{attr}")
+        end
+        define_method :[]= do |attr, val|
+          instance_variable_set("@#{attr}", val)
+        end
+
         attrs.each do |attr|
-          define_method attr do |value = not_provided, &block|
-            if value === not_provided && block.nil?
+          define_method attr do |value = _not_provided, &block|
+            if value === _not_provided && block.nil?
               result = instance_variable_get("@#{attr}")
               result.is_a?(Proc) ? instance_eval(&result) : result
             else
@@ -53,16 +90,37 @@ module SknUtils
         end
 
         attr_writer *attrs
-       end
+      end
 
       # Define the runtime access methods
       class_methods = Module.new do
         define_method :config do
-          @config ||= config_class.new
+          @__config ||= config_class.new
         end
-
         def configure(&block)
           config.instance_eval(&block)
+        end
+        if _app_main
+          # Enable Rails<Like>.env and Rails.logger like feature:
+          # - MyClass.env.production? or MyClass.logger or MyClass.root
+          def env
+            @__env ||= ::SknUtils::EnvStringHandler.new( ENV.fetch('RACK_ENV', 'development') )
+          end
+          def env=(str)
+            @__env = ::SknUtils::EnvStringHandler.new( str || ENV.fetch('RACK_ENV', 'development') )
+          end
+          def root
+            @__root ||= ::SknUtils::EnvStringHandler.new( Dir.pwd )
+          end
+          def root=(path)
+            @__root = ::SknUtils::EnvStringHandler.new( path || Dir.pwd )
+          end
+          def logger
+            @__logger ||= 'No Logger Assigned.'
+          end
+          def logger=(obj)
+            @__logger = obj
+          end
         end
       end
 

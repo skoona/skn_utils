@@ -20,12 +20,14 @@ require 'skn_utils/result_bean'
 require 'skn_utils/page_controls'
 require 'skn_utils/null_object'
 require 'skn_utils/notifier_base'
-require 'skn_utils/skn_configuration'
+require 'skn_utils/configuration'
 require 'skn_utils/configurable'
 
 require 'skn_hash'
 require 'skn_container'
 require 'skn_settings'
+require 'skn_success'
+require 'skn_failure'
 
 module SknUtils
 

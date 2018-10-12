@@ -7,5 +7,5 @@
 ##
 
 # This creates a global constant (and singleton) with a defaulted configuration
-class << (SknSettings = SknUtils::SknConfiguration.new())
+class << (SknSettings = SknUtils::Configuration.new())
 end
