@@ -38,41 +38,4 @@
 ##
 
 # This creates a global constant (and singleton) wrapping a Hash
-class << (SknContainer = Concurrent::Hash.new)
-
-  class Content
-    attr_reader :item, :options
-
-    def initialize(item, options = {})
-      @item, @options = item, {
-          call: item.is_a?(::Proc)
-      }.merge(options)
-    end
-
-    def call
-      if options[:call] == true
-        item.call
-      else
-        item
-      end
-    end
-  end
-
-  def register(key, contents = nil, options = {}, &block)
-    if block_given?
-      item = block
-      options = contents if contents.is_a?(::Hash)
-    else
-      item = contents
-    end
-
-    self[key] = Content.new(item, options)
-
-    self # enable chaining
-  end
-
-  def resolve(key)
-    self.fetch(key) {|k| nil }&.call
-  end
-
-end
+class << (SknContainer = SknRegistry.new); end

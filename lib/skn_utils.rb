@@ -26,6 +26,7 @@ require 'skn_utils/configuration'
 require 'skn_utils/configurable'
 
 require 'skn_hash'
+require 'skn_registry'
 require 'skn_container'
 require 'skn_settings'
 
