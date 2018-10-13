@@ -122,8 +122,8 @@ describe SknRegistry, "IoC Lite Container class." do
       expect(services.resolve(:some_depends, false)).to be_a Proc
       expect(
           services.resolve(:some_depends, false)
-          .call({greet: 'My warmest', str: 'Hello'})
-      ).to eq("My warmest HELLO")
+          .call({greet: 'My static', str: 'Hello'})
+      ).to eq("My static HELLO")
     end
   end
 
