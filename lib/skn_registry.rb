@@ -1,55 +1,69 @@
 # ##
+# SknRegistry
+# - Key/Value Container where keys and/or values can be any valid Ruby Class, Proc, Instance, or object.
 #
 # Credits: Inspired by: andyholland1991@aol.com, http://cv.droppages.com
 #
-#   class UserRepository
-#     def self.first
-#       { name: 'Jack' }
+# Syntax:
+#   reg = SknRegistry.new(&reg_blk)
+#         - where: &reg_blk is {|reg| reg.register(...); ... }
+#
+#   self_chain = reg.register(key, content, options={}, &block)
+#      content = reg.resolve(key, render_proc=true)
+#
+#  Params:
+#         key    - anyThing can be used as the key
+#     content    - anyThing can be used as value; Class, Proc, instance, value
+#     options    - hash of dependencies to pass into procs when rendering
+#      &block    - block used for #content; with/without a parameter. ex: {|parm| ...} | { ... }
+# render_proc    - bool: when #content is_a Proc, should it be #call()'ed before being returned
+#
+#
+# ## Examples
+#
+#   class Person
+#     attr_reader :first, :last
+#     def initialize(names={})
+#       self.first = names[:first]
+#       self.last = names[:last]
+#     end
+#     def name
+#       "#{first}.#{last}"
 #     end
 #   end
 #
-#   class PersonRepository
-#     def first
-#       { name: 'Gill' }
-#     end
-#   end
-#
-## Using Classes
-#
-#   SknContainer.register(:user_repository, UserRepository)
+# ##
+## Using Classes: default no #call before return
+# ##
+#   reg.register(:user, Person)
 #   -- or --
-#   SknContainer.register(:user_repository, UserRepository, call: false )
+#   reg.register(:user, Person, call: false )
+#   -- then --
+#   reg.resolve(:user).new({first: 'Monty', last: 'Python'}).name        # => 'Monty.Python'
+#   reg.resolve(:user).new({first: 'Monty', last: 'Python'}).name        # => 'Monty.Python'
 #
-#   SknContainer.resolve(:user_repository).first
+# ##
+## Using Procs: default #call before return
+# ##
 #
-##  Using Procs
-#
-#   SknContainer.register(:person_repository, -> { PersonRepository.new })
+#   reg.register(:user, -> { Person.new })
 #   -- or --
-#   SknContainer.register(:person_repository, -> { PersonRepository.new }, call: true )
+#   reg.register(:user, -> { Person.new }, call: false )
+#   -- or --
+#   reg.register(:user, ->(hsh) { Person.new(hsh) }, call: false )
+#   -- or --
+#   reg.register(:block_a, ->(hsh) { Person.new(hsh) }, {call: true, first: 'Monty', last: 'Python'} )
+#   -- or --
+#   reg.register(:block_b, {call: true, greet: 'Hello', str: 'Python'}) {|hsh| "#{hsh[:greet]} #{hsh[:str].upcase}" }
+#   -- then --
+#   reg.resolve(:person_repository).name         # => '.'
+#   reg.resolve(:person_repository).call().name  # => '.'
+#   reg.resolve(:person_repository).call({first: 'Monty', last: 'Python'}).name  # => 'Monty.Python'
+#   reg.resolve(:block_a).name                   # => 'Monty.Python'
+#   reg.resolve(:block_b)                        # => 'Hello PYTHON'
 #
-#   SknContainer.resolve(:person_repository).first
-#
-##  Proc without depends as value Example
-#   SknContainer.register(:some_block, {call: false}) {|str| str.upcase }
-# #
-#   SknContainer.resolve(:some_block).call("hello")
-#   # ==> "HELLO"
-#
-##  Proc without depends Example
-#   SknContainer.register(:some_block, {call: true}) { Object.new }
-# #
-#   SknContainer.resolve(:some_block)
-#   # ==> <Object#instance...>
-#
-##  Proc with Depends Example
-#   SknContainer.register(:some_block, {call: true, greet: 'My warmest', str: 'Hello'}) {|pkg| "#{pkg[:greet]} #{pkg[:str].upcase}" }
-# #
-#   SknContainer.resolve(:some_block).call("hello")
-#   # ==> "HELLO"
 ##
 
-# This creates a global constant (and singleton) wrapping a Hash
 class SknRegistry < Concurrent::Hash
 
   # Child to contain contents
@@ -67,18 +81,15 @@ class SknRegistry < Concurrent::Hash
     #   -- yes, call with depends: #item.call(depends)
     #   -- no, just #item.call()
     # - no, return #item
-    def call
-      _depends = options.dup
-      _do_call = !!_depends.delete(:call)
-      if _do_call
-        _depends.empty? ? item.call : item.call(_depends)
-      else
-        item
-      end
-    end
-  end
+    def call(render_proc=true)
+      _opts    = options.reject {|k,v| k === :call }
+      _do_call = render_proc && options[:call]
 
-  # base initializer
+      _do_call ? (_opts.empty? ? item.call : item.call( _opts )) : item
+    end
+  end # end content
+
+  # SknRegistry initializer
   #
   def initialize(&block)
     super
@@ -99,8 +110,8 @@ class SknRegistry < Concurrent::Hash
     self # enable chaining
   end
 
-  def resolve(key)
-    self.fetch(key) {|k| nil }&.call
+  def resolve(key, render_proc=true)  # false to prevent downstream #call
+    self[key]&.call(render_proc)
   end
 
 end

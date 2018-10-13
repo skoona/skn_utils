@@ -1,5 +1,8 @@
 # ##
 # Bad Result
+#
+# Syntax: SknFailure.call(payload, message=nil, bool_code=false)
+#
 
 class SknFailure
   attr_reader :value, :success, :message
@@ -9,17 +12,15 @@ class SknFailure
   end
 
   def initialize(*args)
-    val, rc, msg = *args
-    # puts "#{self.class.name} => val:#{val}, rc:#{rc}, msg:#{msg}, args:#{args}"
-
-    if args.size.eql?(2) and not ['TrueClass','FalseClass'].include?(rc.class.name)
-      msg = rc
-      rc = false
-    end
-
+    val, msg, rc = args
     @value = val || "Failure"
-    @success = !!rc
     @message = msg || ''
+    @success = rc.nil? ? false : rc
+    # puts "#{self.class.name} => val:#{val}, rc:#{rc}, msg:#{msg}, args:#{args}"
+    # puts "#{self.class.name} => @val:#{@value}, @rc:#{@success}, @msg:#{@message}"
   end
 
+  def payload
+    @value
+  end
 end

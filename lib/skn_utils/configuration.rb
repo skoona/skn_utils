@@ -13,7 +13,7 @@ module SknUtils
     end
 
     def load_config_basename!(conf)
-      reset_from_empty!(load_config(conf), false) # enable dot notation via defined methods vs method_missing
+      reset_from_empty!(load_config(conf), false) # enable dot notation via defined methods(true) vs method_missing(false)
       self
     end
 

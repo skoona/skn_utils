@@ -19,7 +19,7 @@ describe SknRegistry, "IoC Lite Container class." do
       cfg.register(:service_a, -> {MyService.new} )
       cfg.register(:service_b, MyService)
       cfg.register(:service_c, "AnyValue")
-      cfg.register(:some_block, {call: false}) {|str| str.upcase }
+      cfg.register(:some_block, ->(str){ str.upcase }, {call: false})
       cfg.register(:some_depends, {call: true, greet: 'My warmest', str: 'Hello'}) {|pkg| "#{pkg[:greet]} #{pkg[:str].upcase}" }
     end
   }
@@ -41,8 +41,10 @@ describe SknRegistry, "IoC Lite Container class." do
     end
 
     it "#register accepts a class object and return self to enable chaining. " do
-      val = registry.register(:service_k, MyService).register(:more, "More")
-      expect( val ).to be_equal registry
+      chain = registry.register(:service_k, MyService).register(:more, "More")
+      expect( chain ).to be_equal registry
+      expect( registry.resolve(:service_k) ).to be_equal MyService
+      expect( registry.resolve(:more) ).to eq('More')
     end
 
     it "#resolve returns class value. " do
@@ -114,6 +116,14 @@ describe SknRegistry, "IoC Lite Container class." do
 
     it "#resovle invokes the proc passing in dependencies. " do
       expect(services.resolve(:some_depends)).to eq("My warmest HELLO")
+    end
+
+    it "#resovle accepts override and does not render proc before returning it. " do
+      expect(services.resolve(:some_depends, false)).to be_a Proc
+      expect(
+          services.resolve(:some_depends, false)
+          .call({greet: 'My warmest', str: 'Hello'})
+      ).to eq("My warmest HELLO")
     end
   end
 

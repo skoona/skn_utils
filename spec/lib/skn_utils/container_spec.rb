@@ -1,6 +1,7 @@
 ##
 # spec/lib/skn_utils/container_spec.rb
 #
+#  @See SknRegistry also
 
 class MyKlassService
   def value
