@@ -49,6 +49,7 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
     * SknUtils::Configurable
     * SknUtils::EnvStringHandler
 * SknContainer
+* SknRegistry
 * SknHash
     * SknUtils::NestedResult
     * SknUtils::ResultBean
@@ -57,6 +58,11 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
 * SknUtils::CoreObjectExtensions
 
 ## History
+    10/13/2018 V5.1.0
+    Added SknRegistry to handle service and handler registrations.
+    - Command.class => CommandHandler.class/instance container
+    - Replaces SknContainer
+
     10/12/2018 V5.0.1
     Added SknSuccess/SknFailure as value object to carry return codes vs exceptions
     Modified Configurable to mimic Rails.env, Rails.root, and Rails.logger
