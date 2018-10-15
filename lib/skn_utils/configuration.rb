@@ -1,3 +1,5 @@
+# ##
+# lib/skn_utils/configuration.rb
 #
 # @see SknSettings
 #
