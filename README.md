@@ -46,18 +46,23 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
 * SknSuccess
 * SknFailure
 * SknSettings
-    * SknUtils::Configurable
+    * SknUtils::Configuration
     * SknUtils::EnvStringHandler
-* SknContainer
 * SknRegistry
+    * SknContainer
 * SknHash
-    * SknUtils::NestedResult
     * SknUtils::ResultBean
     * SknUtils::PageControls
+    * SknUtils::NestedResult
 * SknUtils::NullObject
 * SknUtils::CoreObjectExtensions
+* SknUtils::Configurable
+
 
 ## History
+    10/15/2018 V5.1.1
+    Enhanced SknSettings to match 95% of the (Rb)Config.gem public API.
+    
     10/13/2018 V5.1.0
     Added SknRegistry to handle service and handler registrations.
     - Command.class => CommandHandler.class/instance container
@@ -142,14 +147,14 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
 
     SknSettings                      # Multi-level application Configuration class, Key/Value Container with Dot/Hash notiation support.    
 
-    SknContainer                     # Basic Key/Value container which #registers and #resolves procs, classes, and/or object
+    SknContainer/SknRegistry         # Basic Key/Value container which #registers and #resolves procs, classes, and/or object
 
     SknSuccess                       # Three attribute value containers for return codes   -- #success, #message, #value
     SknFailure                       # Three attribute value containers for return codes   -- #success, #message, #value
 
 
 ## Configuration Options
-    None required other than initialization hash
+    None required 
 
 
 ## Public Methods: SknContainer ONLY
@@ -186,11 +191,33 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
       #config_path!(path)                 -- Where path format is './<dirs>/', default is: './config/'
                                              and contains a settings.yml file and a 'path/settings/' directory
 
-    Paths ./config and ./config/settings must exist.
+    Paths ./config must exist.
+    Paths ./config/settings/, and ./config/environments/ are optional
     File ./config/settings.yml must exist and contain a valid YAML file structure.
-      ./config/settings.yml                              -- Required   base
-      ./config/settings/<config_name>.yml                -- Optional   base.deep_merge!()
-      ./config/settings/<config_name>.local.yml          -- Optional   base.deep_merge!()
+       
+    File load/deep_merge sequence:
+    -------------------------------------------------
+     <prepend-somefile-or-hash>                       -- see #prepend_source!(...)
+     config/settings.yml
+     config/settings/#{environment}.yml
+     config/environments/#{environment}.yml    
+     config/settings.local.yml
+     config/settings/#{environment}.local.yml
+     config/environments/#{environment}.local.yml
+     <append-somefile-or-hash>                        -- see #add_source!(...)
+    
+    
+    Public API 
+     -------------------------------------------------
+     #load_config_basename!(environment_name)          -- self, loads std sequence
+     #config_path!(config_root)                        -- self, set config_root for above
+     #load_and_set_settings(ordered_filelist)          -- self, sets config_root and loads std sequence
+       - Alias: #reload_from_files(ordered_filelist)
+     #reload!()                                        -- self, clears and reloads last filelist
+     #setting_files(config_root, environment_name)     -- returns ordered filelist
+     #add_source!(file_path_or_hash)                   -- self, adds yaml_file or hash to end of filelist (:reload! required)
+     #prepend_source!(file_path_or_hash)               -- self, adds yaml_file or hash to start of filelist (:reload! required)
+     -------------------------------------------------
 
 
 ## Public Methods: SknUtils::NestedResult, SknHash & SknSettings

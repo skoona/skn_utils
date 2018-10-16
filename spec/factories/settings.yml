@@ -2,10 +2,10 @@
 Packaging:
   pomVersion: <%= SknUtils::VERSION %>
   isTest: false
-  isDevelopment: true
+  isDevelopment: false
   isStaging: false
   isProduction: false
-  configName: development
+  configName: default
   short_name: skn
 
 # Create a EnvStringHandler to support: SknSettings.env.development?

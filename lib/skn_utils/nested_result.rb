@@ -190,7 +190,7 @@ module SknUtils
       bundle.keys.each_with_object({}) do |attr,collector|
         value = bundle[attr]
         case value
-          when NestedResult
+          when NestedResult, self.class
             value = value.to_hash
           when Array
             value = value.map {|ele| array_to_hash(ele) }

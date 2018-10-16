@@ -1,0 +1,4 @@
+---
+Packaging:
+  isProduction: false
+  configName: production
