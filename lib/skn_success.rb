@@ -16,11 +16,12 @@ class SknSuccess
     @value = val || "Success"
     @message = msg || ''
     @success = rc.nil? ? true : rc
+    @_payload = val.kind_of?(Hash) ? SknUtils::DottedHash.new(val) : nil
     # puts "#{self.class.name} => val:#{val}, rc:#{rc}, msg:#{msg}, args:#{args}"
     # puts "#{self.class.name} => @val:#{@value}, @rc:#{@success}, @msg:#{@message}"
   end
 
   def payload
-    @value
+    @_payload || @value
   end
 end

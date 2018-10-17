@@ -5,7 +5,7 @@
 shared_examples "a response value" do
 
   let(:default_instance) { described_class.call }
-  let(:success_returned) { default_instance.instance_of?(SknSuccess) ? true : false }
+  let(:success_returned) { default_instance.success }
   let(:default_value) { described_class.name.to_s[3..-1] }
 
   context "Created without Params" do
@@ -24,6 +24,14 @@ shared_examples "a response value" do
 
     it "Has no default message. " do
       expect(default_instance.message ).to be_empty
+    end
+
+    it "#payload returns non-hash value when present. " do
+      expect(described_class.call("Samples").payload ).to eq("Samples")
+    end
+
+    it "#payload returns Dotted Hash when :value is a Hash. " do
+      expect(described_class.call(name: "Samples").payload.name ).to eq("Samples")
     end
   end
 

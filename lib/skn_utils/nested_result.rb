@@ -329,8 +329,8 @@ module SknUtils
       method_nsym = method_sym.is_a?(Symbol) ? method.to_s[0..-2].to_sym : method
 
 
-      if method.to_s.end_with?("=")                                    # add new key/value pair, transform value if Hash or Array
-        initialize_from_hash({method_nsym => args.first})         # Add Reader/Writer one first need
+      if method.to_s.end_with?("=")                                   # add new key/value pair, transform value if Hash or Array
+        initialize_from_hash({method_nsym => args.first})             # Add Reader/Writer one first need
 
       elsif container.key?(method_sym)
         container[method_sym]                                         # Add Reader/Writer one first need
