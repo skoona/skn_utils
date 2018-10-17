@@ -4,10 +4,11 @@
 
 class MyApp
   include SknUtils::Configurable.with( :app_id, :title, :cookie_name, enable_root: true) # No options hash defaults to true
-  # - and accept defaults for #env=, #root=, and #logger=
+  # - and accept defaults for #env=, #root=, #registry=, and #logger=
 
   # notice: self.logger=, the self is required when assigning values
   self.logger = Object.new
+  self.registry = Object.new
 
   configure do
     app_id 'some app'
@@ -49,6 +50,9 @@ describe SknUtils::Configurable, "Gem Configuration module." do
     end
     it "MyApp.logger returns expected value. " do
       expect( MyApp.logger ).to be_instance_of(Object) # eq('No Logger Assigned.')
+    end
+    it "MyApp.registry returns expected value. " do
+      expect( MyApp.registry ).to be_instance_of(Object)
     end
   end
 

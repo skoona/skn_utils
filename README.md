@@ -27,7 +27,7 @@ Ruby's Hash object is already extremely flexible, even more so with the addition
             - enables `SknSettings.env.production?` ...
 1. Since SknSettings is by necessity a global constant, it can serve as Session Storage to keep system objects; like a ROM-RB instance.
 1. In-Memory Key-Store, use it to cache active user objects, or active Integration passwords, and/or objects that are not serializable.
-1. Command registries used to displatch command requests to proper command handler. see example app [SknBase](https://github.com/skoona/skn_base/blob/master/strategy/services/content/command_handler.rb)
+1. Command registries used to dispatch command requests to proper command handler. see example app [SknBase](https://github.com/skoona/skn_base/blob/master/strategy/services/content/command_handler.rb)
 ```ruby
     SknSettings.registry = {
                             Services::Content::Commands::RetrieveAvailableResources  => method(:resources_metadata_service),
@@ -60,6 +60,10 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
 
 
 ## History
+    10/17/2018 V5.1.3
+    Enhanced SknUtils::Configurable to include a #registry method/value at its root, like Clas.registry or Class.root
+    - Right now these are Class methods only, will update them to survive #new later.
+
     10/15/2018 V5.1.1
     Enhanced SknSettings to match 95% of the (Rb)Config.gem public API.
     
@@ -143,7 +147,7 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
         SknUtils::PageControls       # Wrapper for name only, inherits from SknUtils::NestedResult
         SknUtils::DottedHash         # Wrapper for name only, inherits from SknUtils::NestedResult
 
-    SknUtils::Configurable           # Basic one-level configuration Applications classes or modules. Adds MyClass.root,MyClass.env, and MyClass.logger, with MyClass.config.<user_attrs>
+    SknUtils::Configurable           # Basic one-level class configuration Module
 
     SknSettings                      # Multi-level application Configuration class, Key/Value Container with Dot/Hash notiation support.    
 
@@ -153,8 +157,66 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
     SknFailure                       # Three attribute value containers for return codes   -- #success, #message, #value
 
 
-## Configuration Options
-    None required 
+## Public Methods: SknUtils::Configurable module
+ For making an arbitrary class configurable and then specifying those configuration values using a clean and simple DSL.
+```ruby
+  ################
+  Inside Target component
+  ################
+  class MyApp
+    include SknUtils::Configurable.with(:app_id, :title, :cookie_name) # or {root_enable: false})
+    # ... default=true for root|env|logger
+  end
+
+  ################
+  Inside Initializer
+  ################
+  MyApp.configure do
+    app_id "my_app"
+    title "My App"
+    cookie_name { "#{app_id}_session" }
+  end
+
+  ################
+  During Definition
+  ################
+  class MyApp
+    include SknUtils::Configurable.with(:app_id, :title, :cookie_name, {root_enable: true})
+    # ...
+    configure do
+      app_id "my_app"
+      title "My App"
+      cookie_name { "#{app_id}_session" }
+    end
+
+    self.logger = Logger.new
+    self.env    = ENV.fetch('RACK_ENV', 'development')
+    self.root   = Dir.pwd
+  end
+
+  ################
+  Usage:
+  ################
+  MyApp.config.app_id # ==> "my_app"
+  MyApp.logger        # ==> <Logger.class>
+  MyApp.registry      # ==> <SknRegistry.instance> or user assigned object
+  MyApp.env.test?     # ==> true
+
+  ###############
+  Syntax
+  ###############
+  Main Class Attrs
+  - root     =  application rood directory as Pathname
+  - env      =  string value from RACK_ENV
+  - registry =  SknRegistry instance
+  - logger   =  Assigned Logger instance
+  #with(*user_attrs, enable_root: true|false) - defaults to enable of Main Class Attrs
+  
+  # ##
+  # User-Defined Attrs
+  # ## 
+  MyThing.with(:name1, :name2, ...)
+```
 
 
 ## Public Methods: SknContainer ONLY

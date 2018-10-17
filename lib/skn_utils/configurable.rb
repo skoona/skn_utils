@@ -37,8 +37,8 @@ module SknUtils
   #   end
   #
   #   self.logger = Logger.new
-  #   self.env = ENV.fetch('RACK_ENV', 'development')
-  #   self.root = Dir.pwd
+  #   self.env    = ENV.fetch('RACK_ENV', 'development')
+  #   self.root   = Dir.pwd
   # end
   #
   #################
@@ -52,9 +52,10 @@ module SknUtils
   # Syntax
   # ###############
   # Main Class Attrs
-  # - root    =  application rood directory as Pathname
-  # - env     =  string value from RACK_ENV
-  # - logger  =  Assiigned Logger instance
+  # - root     =  application rood directory as Pathname
+  # - env      =  string value from RACK_ENV
+  # - registry =  SknRegistry instance
+  # - logger   =  Assigned Logger instance
   # #with(*user_attrs, enable_root: true|false) - defaults to enable of Main Class Attrs
   # ##
   # User-Defined Attrs
@@ -103,6 +104,12 @@ module SknUtils
         if _app_main
           # Enable Rails<Like>.env and Rails.logger like feature:
           # - MyClass.env.production? or MyClass.logger or MyClass.root
+          def registry
+            @__registry ||= ::SknRegistry.new
+          end
+          def registry=(obj_instance)
+            @__registry = obj_instance
+          end
           def env
             @__env ||= ::SknUtils::EnvStringHandler.new( ENV.fetch('RACK_ENV', 'development') )
           end
