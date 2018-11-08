@@ -58,4 +58,24 @@ module SknUtils
     end
   end # end method
 
+
+  UNITS = %W(Bytes KB MB GB TB PB EB).freeze
+  # ##
+  #
+  #
+  def self.as_human_size(number)
+    num = number.to_f
+    if number < 1001
+      num = number
+      exp = 0
+    else
+      max_exp  = UNITS.size - 1
+      exp = ( Math.log( num ) / Math.log( 1024 ) ).round
+      exp = max_exp  if exp > max_exp
+      num /= 1024 ** exp
+    end
+    ((num > 9 || num.modulo(1) < 0.1) ? '%d %s' : '%.1f %s') % [num, UNITS[exp]]
+  end
+
+
 end
