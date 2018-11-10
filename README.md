@@ -2,9 +2,7 @@
 [![Gem Version](https://badge.fury.io/rb/skn_utils.svg)](http://badge.fury.io/rb/skn_utils)
 
 # SknUtils
-#### SknUtils::NestedResult class; dynamic key/value container
-The intent of this gem is to be a container of nestable data results or key/value pairs, with easy access to its contents and on-demand transformation back to the creating hash (#to_hash).
-
+## SknUtils::NestedResult class; dynamic key/value container
 A Ruby Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated at runtime with an input hash.  This library creates
  an Object with Dot and Hash notational accessors to each key's value.  Additional key/value pairs can be added post-create
  by simply assigning it; `obj.my_new_var = "some value"`
