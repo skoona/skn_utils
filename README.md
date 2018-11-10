@@ -29,20 +29,20 @@ Ruby's Hash object is already extremely flexible, even more so with the addition
 1. In-Memory Key-Store, use it to cache active user objects, or active Integration passwords, and/or objects that are not serializable.
 1. Command registries used to dispatch command requests to proper command handler. see example app [SknBase](https://github.com/skoona/skn_base/blob/master/strategy/services/content/command_handler.rb)
 ```ruby
-    SknSettings.registry = {
+    SknSettings.command_handler = {
                             Commands::RetrieveAvailableResources  => method(:resources_metadata_service),
                             Commands::RetrieveResourceContent  => method(:resource_content_service)
                            }
     ...
-    SknSettings.registry[ cmd.class ].call( cmd )
+    SknSettings.command_handler[ cmd.class ].call( cmd )
     -- or --
-    SknSettings.registry.key?( cmd.class ) && cmd.valid? ?
-        SknSettings.registry[ cmd.class ].call( cmd ) :
-        command_not_found_action()
+    SknSettings.command_handler.key?( cmd.class ) && cmd.valid? ?
+        SknSettings.command_handler[ cmd.class ].call( cmd ) : command_not_found_action()
 ```
 There are many more use cases for Ruby's Hash that this gem just makes easier to implement.
 
-#### Available Classes
+
+## Available Classes
 * SknSuccess
 * SknFailure
 * SknSettings
@@ -57,6 +57,10 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
 * SknUtils::NullObject
 * SknUtils::CoreObjectExtensions
 * SknUtils::Configurable
+
+## Available Class.Methods
+* SknUtils.catch_exceptions()
+* SknUtils.as_human_size()
 
 
 ## History
@@ -165,18 +169,20 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
 
 
 ## Public Methods: SknUtils::Configurable module
- For making an arbitrary class configurable and then specifying those configuration values using a clean and simple DSL.
+ For making an arbitrary class configurable and then specifying those configuration values. 
 ```ruby
+  # (1) First establish the method names of class values desired.
   ################
-  Inside Target component
+  # Inside Target component
   ################
   class MyApp
     include SknUtils::Configurable.with(:app_id, :title, :cookie_name) # or {root_enable: false})
     # ... default=true for root|env|logger
   end
 
+  # (2) Set initial values for those class values in a Rails Initializer, or before use.
   ################
-  Inside Initializer
+  # Inside Initializer
   ################
   MyApp.configure do
     app_id "my_app"
@@ -184,8 +190,9 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
     cookie_name { "#{app_id}_session" }
   end
 
+  # (2) Or set initial values for those class values when defining the class.
   ################
-  During Definition
+  # During Definition
   ################
   class MyApp
     include SknUtils::Configurable.with(:app_id, :title, :cookie_name, {root_enable: true})
@@ -201,8 +208,9 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
     self.root   = Dir.pwd
   end
 
+  # (3) Remember they are class values, use as needed.
   ################
-  Usage:
+  # Usage:
   ################
   MyApp.config.app_id # ==> "my_app"
   MyApp.logger        # ==> <Logger.class>
@@ -210,10 +218,10 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
   MyApp.env.test?     # ==> true
 
   ###############
-  Syntax
+  # Syntax
   ###############
-  Main Class Attrs
-  - root     =  application rood directory as Pathname
+  # Main Class Attrs  -- defaults
+  - root     =  application root directory as Pathname
   - env      =  string value from RACK_ENV
   - registry =  SknRegistry instance
   - logger   =  Assigned Logger instance
@@ -227,16 +235,17 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
 
 
 ## Public Methods: SknContainer ONLY
-    SknContainer is global constant containing an initialized Object of Concurrent::Hash using defaults with additional methods.
+    SknContainer is global constant assigned to an instantiated instance of SknRegistry.
     Returns the keyed value as the original instance/value or if provided a proc the result of calling that proc.
     To register a class or object for global retrieval, use the following API.  Also review the RSpecs for additional useage info.
+    
       #register(key, contents = nil, options = {})
         - example: 
             SknContainer.register(:some_klass, MyClass)                   -- class as value
             SknContainer.register(:the_instance, MyClass.new)             -- Object Instance as value 
             SknContainer.register(:unique_instance, -> {MyClass.new})     -- New Object Instance for each #resolve 
 
-            SknContainer                                                  -- #register return self to enable chaining
+            SknContainer                                                  -- #register returns self to enable chaining
                 .register(:unique_instance, -> {MyClass.new})
                   .register(:the_instance, MyClass.new)
                     .register(:some_klass, MyClass)    
