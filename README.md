@@ -30,8 +30,8 @@ Ruby's Hash object is already extremely flexible, even more so with the addition
 1. Command registries used to dispatch command requests to proper command handler. see example app [SknBase](https://github.com/skoona/skn_base/blob/master/strategy/services/content/command_handler.rb)
 ```ruby
     SknSettings.registry = {
-                            Services::Content::Commands::RetrieveAvailableResources  => method(:resources_metadata_service),
-                            Services::Content::Commands::RetrieveResourceContent  => method(:resource_content_service)
+                            Commands::RetrieveAvailableResources  => method(:resources_metadata_service),
+                            Commands::RetrieveResourceContent  => method(:resource_content_service)
                            }
     ...
     SknSettings.registry[ cmd.class ].call( cmd )
@@ -60,6 +60,12 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
 
 
 ## History
+    11/09/2018 V5.3.0
+    Added two utils to SknUtils class: 
+        #catch_exceptions(&blk)  #=> catch all exceptions and retry block x times 
+        #as_human_size(12345)    #=> 12 KB
+    - See related RSpecs
+
     10/17/2018 V5.1.3
     Enhanced SknUtils::Configurable to include a #registry method/value at its root, like Clas.registry or Class.root
     - Right now these are Class methods only, will update them to survive #new later.
@@ -153,8 +159,9 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
 
     SknContainer/SknRegistry         # Basic Key/Value container which #registers and #resolves procs, classes, and/or object
 
-    SknSuccess                       # Three attribute value containers for return codes   -- #success, #message, #value
-    SknFailure                       # Three attribute value containers for return codes   -- #success, #message, #value
+    SknSuccess                       # Three attribute value containers for return codes   -- #value, #message, #success
+                                       - Extra #payload method returns value as NestResult if value is_a Hash 
+    SknFailure                       # Three attribute value containers for return codes   -- #value, #message, #success
 
 
 ## Public Methods: SknUtils::Configurable module

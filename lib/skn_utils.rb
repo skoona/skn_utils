@@ -6,7 +6,6 @@ require 'erb'
 require 'date'
 require 'time'
 require 'concurrent'
-require 'colorize'
 unless defined?(Rails)
   begin
     require 'deep_merge'
@@ -38,6 +37,7 @@ module SknUtils
 
   # Random Utils
   # Retries block up to :retries times with a :pause_between, and returns Success/Failure object
+  # -- return SknSuccess | SknFailure response object
   #
   def self.catch_exceptions(retries=3, pause_between=3, &block)
     retry_count ||= 1
@@ -46,8 +46,8 @@ module SknUtils
 
       SknSuccess.( yield )
 
-    rescue StandardError => error
-      Kernel.puts "#{retry_count} - #{error.class.name}:#{error.message}".light_blue.italic
+    rescue StandardError, ScriptError => error
+      puts "#{retry_count} - #{error.class.name}:#{error.message}"
       if retry_count <= attempts
         retry_count+= 1
         sleep(pause_between)
@@ -59,22 +59,22 @@ module SknUtils
   end # end method
 
 
-  UNITS = %W(Bytes KB MB GB TB PB EB).freeze
   # ##
-  #
+  # SknUtils.as_human_size(12345) #=> 12 KB
   #
   def self.as_human_size(number)
+    units = %W(Bytes KB MB GB TB PB EB)
     num = number.to_f
     if number < 1001
       num = number
       exp = 0
     else
-      max_exp  = UNITS.size - 1
+      max_exp  = units.size - 1
       exp = ( Math.log( num ) / Math.log( 1024 ) ).round
       exp = max_exp  if exp > max_exp
       num /= 1024 ** exp
     end
-    ((num > 9 || num.modulo(1) < 0.1) ? '%d %s' : '%.1f %s') % [num, UNITS[exp]]
+    ((num > 9 || num.modulo(1) < 0.1) ? '%d %s' : '%.1f %s') % [num, units[exp]]
   end
 
 

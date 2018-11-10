@@ -1,7 +1,7 @@
 # ##
 # Good Result
 #
-# Syntax: SknSuccess.call(payload, message=nil, bool_code=true)
+# Syntax: SknSuccess.call(value, message=nil, bool_code=true)
 #
 
 class SknSuccess
@@ -16,12 +16,15 @@ class SknSuccess
     @value = val || "Success"
     @message = msg || ''
     @success = rc.nil? ? true : rc
-    @_payload = val.kind_of?(Hash) ? SknUtils::DottedHash.new(val) : nil
-    # puts "#{self.class.name} => val:#{val}, rc:#{rc}, msg:#{msg}, args:#{args}"
-    # puts "#{self.class.name} => @val:#{@value}, @rc:#{@success}, @msg:#{@message}"
   end
 
   def payload
-    @_payload || @value
+    if defined?(@_payload)
+      @_payload
+    elsif value.kind_of?(Hash)
+      @_payload = SknUtils::DottedHash.new(value.to_h)
+    else
+      value
+    end
   end
 end
