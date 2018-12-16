@@ -44,7 +44,8 @@ module SknUtils
     attempts = retries
     begin
 
-      SknSuccess.( yield )
+      res = yield
+      [SknFailure, SknFailure].any? {|o| res.kind_of?(o) } ? res : SknSuccess.( res )
 
     rescue StandardError => error
       Kernel.puts "#{retry_count} - #{error.class.name}:#{error.message}".light_blue.italic
@@ -53,7 +54,7 @@ module SknUtils
         sleep(pause_between)
         retry
       else
-        SknFailure.( "RETRY ATTEMPTS FAILED - #{error.class.name}:#{error.message}" )
+        SknFailure.( "RETRY ATTEMPTS FAILED - #{error.class.name}:#{error.message}", error.backtrace[0..5].to_s )
       end
     end
   end # end method
