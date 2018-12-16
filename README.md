@@ -59,11 +59,18 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
 ## Available Class.Methods
 * SknUtils.catch_exceptions()
 * SknUtils.as_human_size()
+* SknUtils.duration(start_time=nil)
+
 
 
 ## History
+    12/16/2018 V5.4.0
+    Added :duration() utils to SknUtils module: 
+        #duration()            #=> returns start_time value 
+        #duration(start_time)  #=> returns elapsed-time as string, "%3.3f seconds"
+
     11/09/2018 V5.3.0
-    Added two utils to SknUtils class: 
+    Added two utils to SknUtils module: 
         #catch_exceptions(&blk)  #=> catch all exceptions and retry block x times 
         #as_human_size(12345)    #=> 12 KB
     - See related RSpecs

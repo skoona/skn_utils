@@ -78,5 +78,11 @@ module SknUtils
     ((num > 9 || num.modulo(1) < 0.1) ? '%d %s' : '%.1f %s') % [num, units[exp]]
   end
 
+  # call without to get start time
+  # call with start_time to get duration string
+  def self.duration(start_time=nil)
+    start_time.nil? ? Process.clock_gettime(Process::CLOCK_MONOTONIC) :
+        "%3.3f seconds" % (Process.clock_gettime(Process::CLOCK_MONOTONIC) - start_time)
+  end
 
 end
