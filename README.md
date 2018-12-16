@@ -2,9 +2,7 @@
 [![Gem Version](https://badge.fury.io/rb/skn_utils.svg)](http://badge.fury.io/rb/skn_utils)
 
 # SknUtils
-#### SknUtils::NestedResult class; dynamic key/value container
-The intent of this gem is to be a container of nestable data results or key/value pairs, with easy access to its contents and on-demand transformation back to the creating hash (#to_hash).
-
+## SknUtils::NestedResult class; dynamic key/value container
 A Ruby Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated at runtime with an input hash.  This library creates
  an Object with Dot and Hash notational accessors to each key's value.  Additional key/value pairs can be added post-create
  by simply assigning it; `obj.my_new_var = "some value"`
@@ -29,20 +27,20 @@ Ruby's Hash object is already extremely flexible, even more so with the addition
 1. In-Memory Key-Store, use it to cache active user objects, or active Integration passwords, and/or objects that are not serializable.
 1. Command registries used to dispatch command requests to proper command handler. see example app [SknBase](https://github.com/skoona/skn_base/blob/master/strategy/services/content/command_handler.rb)
 ```ruby
-    SknSettings.registry = {
-                            Services::Content::Commands::RetrieveAvailableResources  => method(:resources_metadata_service),
-                            Services::Content::Commands::RetrieveResourceContent  => method(:resource_content_service)
+    SknSettings.command_handler = {
+                            Commands::RetrieveAvailableResources  => method(:resources_metadata_service),
+                            Commands::RetrieveResourceContent  => method(:resource_content_service)
                            }
     ...
-    SknSettings.registry[ cmd.class ].call( cmd )
+    SknSettings.command_handler[ cmd.class ].call( cmd )
     -- or --
-    SknSettings.registry.key?( cmd.class ) && cmd.valid? ?
-        SknSettings.registry[ cmd.class ].call( cmd ) :
-        command_not_found_action()
+    SknSettings.command_handler.key?( cmd.class ) && cmd.valid? ?
+        SknSettings.command_handler[ cmd.class ].call( cmd ) : command_not_found_action()
 ```
 There are many more use cases for Ruby's Hash that this gem just makes easier to implement.
 
-#### Available Classes
+
+## Available Classes
 * SknSuccess
 * SknFailure
 * SknSettings
@@ -58,8 +56,18 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
 * SknUtils::CoreObjectExtensions
 * SknUtils::Configurable
 
+## Available Class.Methods
+* SknUtils.catch_exceptions()
+* SknUtils.as_human_size()
+
 
 ## History
+    11/09/2018 V5.3.0
+    Added two utils to SknUtils class: 
+        #catch_exceptions(&blk)  #=> catch all exceptions and retry block x times 
+        #as_human_size(12345)    #=> 12 KB
+    - See related RSpecs
+
     10/17/2018 V5.1.3
     Enhanced SknUtils::Configurable to include a #registry method/value at its root, like Clas.registry or Class.root
     - Right now these are Class methods only, will update them to survive #new later.
@@ -153,23 +161,26 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
 
     SknContainer/SknRegistry         # Basic Key/Value container which #registers and #resolves procs, classes, and/or object
 
-    SknSuccess                       # Three attribute value containers for return codes   -- #success, #message, #value
-    SknFailure                       # Three attribute value containers for return codes   -- #success, #message, #value
+    SknSuccess                       # Three attribute value containers for return codes   -- #value, #message, #success
+                                       - Extra #payload method returns value as NestResult if value is_a Hash 
+    SknFailure                       # Three attribute value containers for return codes   -- #value, #message, #success
 
 
 ## Public Methods: SknUtils::Configurable module
- For making an arbitrary class configurable and then specifying those configuration values using a clean and simple DSL.
+ For making an arbitrary class configurable and then specifying those configuration values. 
 ```ruby
+  # (1) First establish the method names of class values desired.
   ################
-  Inside Target component
+  # Inside Target component
   ################
   class MyApp
     include SknUtils::Configurable.with(:app_id, :title, :cookie_name) # or {root_enable: false})
     # ... default=true for root|env|logger
   end
 
+  # (2) Set initial values for those class values in a Rails Initializer, or before use.
   ################
-  Inside Initializer
+  # Inside Initializer
   ################
   MyApp.configure do
     app_id "my_app"
@@ -177,8 +188,9 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
     cookie_name { "#{app_id}_session" }
   end
 
+  # (2) Or set initial values for those class values when defining the class.
   ################
-  During Definition
+  # During Definition
   ################
   class MyApp
     include SknUtils::Configurable.with(:app_id, :title, :cookie_name, {root_enable: true})
@@ -194,8 +206,9 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
     self.root   = Dir.pwd
   end
 
+  # (3) Remember they are class values, use as needed.
   ################
-  Usage:
+  # Usage:
   ################
   MyApp.config.app_id # ==> "my_app"
   MyApp.logger        # ==> <Logger.class>
@@ -203,10 +216,10 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
   MyApp.env.test?     # ==> true
 
   ###############
-  Syntax
+  # Syntax
   ###############
-  Main Class Attrs
-  - root     =  application rood directory as Pathname
+  # Main Class Attrs  -- defaults
+  - root     =  application root directory as Pathname
   - env      =  string value from RACK_ENV
   - registry =  SknRegistry instance
   - logger   =  Assigned Logger instance
@@ -220,16 +233,17 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
 
 
 ## Public Methods: SknContainer ONLY
-    SknContainer is global constant containing an initialized Object of Concurrent::Hash using defaults with additional methods.
+    SknContainer is global constant assigned to an instantiated instance of SknRegistry.
     Returns the keyed value as the original instance/value or if provided a proc the result of calling that proc.
     To register a class or object for global retrieval, use the following API.  Also review the RSpecs for additional useage info.
+    
       #register(key, contents = nil, options = {})
         - example: 
             SknContainer.register(:some_klass, MyClass)                   -- class as value
             SknContainer.register(:the_instance, MyClass.new)             -- Object Instance as value 
             SknContainer.register(:unique_instance, -> {MyClass.new})     -- New Object Instance for each #resolve 
 
-            SknContainer                                                  -- #register return self to enable chaining
+            SknContainer                                                  -- #register returns self to enable chaining
                 .register(:unique_instance, -> {MyClass.new})
                   .register(:the_instance, MyClass.new)
                     .register(:some_klass, MyClass)    
