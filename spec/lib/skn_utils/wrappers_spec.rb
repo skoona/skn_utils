@@ -1,32 +1,5 @@
 # ##
 #
-# Ref: https://blog.appsignal.com/2018/10/02/ruby-magic-class-level-instance-variables.html
-
-
-module Wrappable
-  def wrap(mod)
-    wrappers << mod
-  end
-
-  def wrappers
-    @wrappers ||= []
-  end
-
-  def inherited_wrappers
-    ancestors
-        .grep(Wrappable)
-        .reverse
-        .flat_map(&:wrappers)
-  end
-
-  def new(*arguments, &block)
-    instance = allocate
-    inherited_wrappers.each { |mod|instance.singleton_class.include(mod) }
-    instance.send(:initialize, *arguments, &block)
-    instance
-  end
-end
-
 
 module Powered
   def make_noise
@@ -37,7 +10,7 @@ module Powered
 end
 
 class Machine
-  extend Wrappable
+  extend SknUtils::Wrappable
 
   wrap Powered
 
@@ -56,7 +29,7 @@ module Logging
 end
 
 class Bird
-  extend Wrappable
+  extend SknUtils::Wrappable
 
   wrap Logging
 
@@ -81,7 +54,7 @@ class Pigeon < Bird
   end
 end
 
-describe 'Wrappable Module Handles Inheritance properly ' do
+describe 'SknUtils::Wrappable Module Handles Inheritance properly ' do
 
   it '#make_noise handles Bird module. ' do
     expect do

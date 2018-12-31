@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 
 require "skn_utils/version"
 require 'psych'
@@ -25,6 +27,7 @@ require 'skn_utils/null_object'
 require 'skn_utils/notifier_base'
 require 'skn_utils/configuration'
 require 'skn_utils/configurable'
+require 'skn_utils/wrappable'
 
 require 'skn_hash'
 require 'skn_registry'

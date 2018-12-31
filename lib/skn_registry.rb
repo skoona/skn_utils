@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # ##
 # SknRegistry
 # - Key/Value Container where keys and/or values can be any valid Ruby Class, Proc, Instance, or object.

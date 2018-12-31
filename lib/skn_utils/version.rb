@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # A better way to say it
 module SknUtils
   class Version

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # <project.root>/lib/skn_utils/nested_result.rb
 #

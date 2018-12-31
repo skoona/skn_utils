@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # File: <gem-root>/lib/skn_utils/configurable.rb
 #  Ref: https://www.toptal.com/ruby/ruby-dsl-metaprogramming-guide
@@ -142,3 +144,12 @@ module SknUtils
 
   end # end module
 end # End module
+
+#
+# def [](key)
+#   @internal_var[key]
+# end
+#
+# def []=(key, value)
+#   @internal_var[key] = value
+# end

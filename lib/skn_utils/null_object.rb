@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 #
 # lib/skn_utils/null_object.rb
 #

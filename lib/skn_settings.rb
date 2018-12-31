@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 ##
 # Initialize:
 #   SknSettings.load_config_basename!('some_name')

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # ##
 # File: ./lib/skn_utils/core_extensions.rb  --
 # -- from: Rails 4.1 ActiveSupport:lib/active_support/core_ext/object/blank.rb

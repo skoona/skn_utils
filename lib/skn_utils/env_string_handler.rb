@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # File: ./lib/skn_utils/env_string_handler.rb
 #
 # Wrapping a string in this class gives you a prettier way to test
