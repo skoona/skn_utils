@@ -27,7 +27,7 @@ module SknUtils
   # end
   #
   #################
-  # During Definition
+  # -or- During Definition
   #################
   # class MyApp
   #   include SknUtils::Configurable.with(:app_id, :title, :cookie_name, {root_enable: true})
@@ -38,6 +38,7 @@ module SknUtils
   #     cookie_name { "#{app_id}_session" }
   #   end
   #
+  #   # these are the root_enable default settings
   #   self.logger = Logger.new
   #   self.env    = ENV.fetch('RACK_ENV', 'development')
   #   self.root   = Dir.pwd
@@ -67,9 +68,9 @@ module SknUtils
 
   module Configurable
 
-    def self.with(*attrs, **options)
+    def self.with(*config_attrs, **root_options)
       _not_provided = Object.new
-      _app_main = options.empty? || options.values.any?{|v| v == true}
+      _root_options = root_options.empty? || root_options.values.any?{|v| v == true}
 
       # Define the config class/module methods
       config_class = Class.new do
@@ -81,7 +82,7 @@ module SknUtils
           instance_variable_set("@#{attr}", val)
         end
 
-        attrs.each do |attr|
+        config_attrs.each do |attr|
           define_method attr do |value = _not_provided, &block|
             if value === _not_provided && block.nil?
               result = instance_variable_get("@#{attr}")
@@ -92,7 +93,7 @@ module SknUtils
           end
         end
 
-        attr_writer *attrs
+        attr_writer *config_attrs
       end
 
       # Define the runtime access methods
@@ -103,7 +104,7 @@ module SknUtils
         def configure(&block)
           config.instance_eval(&block)
         end
-        if _app_main
+        if _root_options
           # Enable Rails<Like>.env and Rails.logger like feature:
           # - MyClass.env.production? or MyClass.logger or MyClass.root
           def registry
