@@ -2,68 +2,67 @@
 [![Gem Version](https://badge.fury.io/rb/skn_utils.svg)](http://badge.fury.io/rb/skn_utils)
 
 # SknUtils
-## SknUtils::NestedResult class; dynamic key/value container
-A Ruby Gem containing a Ruby PORO (Plain Old Ruby Object) that can be instantiated at runtime with an input hash.  This library creates
- an Object with Dot and Hash notational accessors to each key's value.  Additional key/value pairs can be added post-create
- by simply assigning it; `obj.my_new_var = "some value"`
 
-* Transforms the initialing hash into accessible object instance values, with their keys as method names.
-* If the key's value is also a hash, it too will become an Object.
-* if the key's value is a Array of Hashes, or Array of Arrays of Hashes, each hash element of the Arrays will become an Object.
-* The current key/value (including nested) pairs are returned via #to_hash or #to_json when and if needed.
-* Best described as dot notation wrapper over a Ruby (Concurrent-Ruby) Hash.
+`SknUtils` is a collection of pure-ruby utility classes and modules, with limited 
+dependencies, to augment the development of Ruby applications.  Examples of these 
+utilities in action can be found in my related projects `SknServices`, `SknWebApp`, 
+and `SknBase`.
 
-Ruby's Hash object is already extremely flexible, even more so with the addition of dot-notation.  As I work more with Ruby outside of Rails, I'm finding more use cases for the capabilities of this gem.  Here are a few examples:
+*   The exchange or handoff of values between objects is addressed via the `NestedResults` 
+class which implements dot-notation and nesting over a concurrent hash: A ruby Hash can 
+use any valid ruby object as a key or value. 
+*   `NestedResults` is later sub-classed as `Configuration` to provide application level 
+settings using YAML files with a API simular to the RbConfig gem.
+*   Object or method return values can be enclosed `SknSuccess` or `SknFailure` classes 
+to prevent or minimize nil returns.
+*   Precise microsecond `duration`s, Number to `as_human_size`, and a `catch_exceptions` 
+retry-able feature are implemented on the SknUtils class directly for ease of use.
+*   `Configurable` module extends any class or module with configurable attribute method 
+as needed, with a set of defaults methods which emulate Rails.env, Rails.logger, and 
+Rails.root functionality.
+*   `CoreObjectExtensions` simular to ActiveSupport's, `#present?` and `#blank?` are 
+automatically applied, unless already present, when SknUtils gem is loaded.
+*   `SknRegistry` class is an advanced object which intends to manually pre-registry 
+classes or procs with a user-defined `label`.  Initialization and dependency injection 
+requirements of service-like classes can be included in this registration process allowing 
+them to be centrally maintained.  The `label` can be any valid ruby value; like a 
+classname, symbol, or string.
+*   `NullObject`, `NotifierBase`, and `Wrappable` are interesting classes which you might want to explore further.
 
-1. Application settings containers, SknSettings.  Loads Yaml file based on `ENV['RACK_ENV']` value, or specified file-key.
-    - Replaces Config and/or RBConfig Gems for yaml based settings
-1. Substitute for Rails.root, via a little ERB/YAML/Marshal statement in settings.yml file, and a helper class
-    - settings.yml (YAML)
-        - `root: <%= Dir.pwd %>`
-            - enables `SknSettings.root`
-        - `env:  !ruby/string:SknUtils::EnvStringHandler <%= ENV.fetch('RACK_ENV', 'development') %>`
-            - enables `SknSettings.env.production?` ...
-1. Since SknSettings is by necessity a global constant, it can serve as Session Storage to keep system objects; like a ROM-RB instance.
-1. In-Memory Key-Store, use it to cache active user objects, or active Integration passwords, and/or objects that are not serializable.
-1. Command registries used to dispatch command requests to proper command handler. see example app [SknBase](https://github.com/skoona/skn_base/blob/master/strategy/services/content/command_handler.rb)
-```ruby
-    SknSettings.command_handler = {
-                            Commands::RetrieveAvailableResources  => method(:resources_metadata_service),
-                            Commands::RetrieveResourceContent  => method(:resource_content_service)
-                           }
-    ...
-    SknSettings.command_handler[ cmd.class ].call( cmd )
-    -- or --
-    SknSettings.command_handler.key?( cmd.class ) && cmd.valid? ?
-        SknSettings.command_handler[ cmd.class ].call( cmd ) : command_not_found_action()
-```
-There are many more use cases for Ruby's Hash that this gem just makes easier to implement.
+All classes and modules have RSpec test coverage (90+) of their originally intended use-cases.   
 
 
-## Available Classes
-* SknSuccess
-* SknFailure
+### Available Classes
 * SknSettings
     * SknUtils::Configuration
     * SknUtils::EnvStringHandler
-* SknRegistry
-    * SknContainer
 * SknHash
     * SknUtils::ResultBean
     * SknUtils::PageControls
     * SknUtils::NestedResult
-* SknUtils::NullObject
-* SknUtils::CoreObjectExtensions
+* SknRegistry
+    * SknContainer
+* SknSuccess
+* SknFailure
 * SknUtils::Configurable
+* SknUtils::CoreObjectExtensions
+* SknUtils::NullObject
+* SknUtils::NotifierBase
+* SknUtils::Wrappable
 
-## Available Class.Methods
+### Available Class.Methods
 * SknUtils.catch_exceptions()
 * SknUtils.as_human_size()
 * SknUtils.duration(start_time=nil)
 
 
-
 ## History
+    1/2/2019 V5.4.1
+    Added
+    - Wrappable module for evaluation. 
+    - Ruby comment # frozen_string_literal, everywhere
+     
+
     12/16/2018 V5.4.0
     Added :duration() utils to SknUtils module: 
         #duration()            #=> returns start_time value 
@@ -154,6 +153,43 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
 	06/2015  V1.5.1 commit #67ef656
 	Last Version to depend on Rails (ActiveModel) for #to_json and #to_xml serialization
 
+### NestedResult class; dynamic key/value container
+A class implementing a Ruby PORO (Plain Old Ruby Object) that can be instantiated at runtime with a hash.  Creates
+ a nested object with Dot and Hash notational accessors to each key's value.  Additional key/value pairs can be added post-create
+ by simply assigning it; `obj.my_new_var = "some value"`
+
+* Transforms the initialing hash into accessible object instance values, with their keys as method names.
+* If the key's value is also a hash, it too will become an Object.
+* if the key's value is a Array of Hashes, or Array of Arrays of Hashes, each hash element of the Arrays will become an Object.
+* The current key/value (including nested) pairs are returned via #to_hash or #to_json when and if needed.
+* Best described as dot notation wrapper over a Ruby (Concurrent-Ruby) Hash.
+
+Ruby's Hash object is already extremely flexible, even more so with the addition of dot-notation.  As I work more with Ruby outside of Rails, I'm finding more use cases for the capabilities of this gem.  Here are a few examples:
+
+1. Application settings containers, SknSettings.  Loads Yaml file based on `ENV['RACK_ENV']` value, or specified file-key.
+    - Replaces Config and/or RBConfig Gems for yaml based settings
+1. Substitute for Rails.root, via a little ERB/YAML/Marshal statement in settings.yml file, and a helper class
+    - settings.yml (YAML)
+        - `root: <%= Dir.pwd %>`
+            - enables `SknSettings.root`
+        - `env:  !ruby/string:SknUtils::EnvStringHandler <%= ENV.fetch('RACK_ENV', 'development') %>`
+            - enables `SknSettings.env.production?` ...
+1. Since SknSettings is by necessity a global constant, it can serve as Session Storage to keep system objects; like a ROM-RB instance.
+1. In-Memory Key-Store, use it to cache active user objects, or active Integration passwords, and/or objects that are not serializable.
+1. Command registries used to dispatch command requests to proper command handler. see example app [SknBase](https://github.com/skoona/skn_base/blob/master/strategy/services/content/command_handler.rb)
+```ruby
+    SknSettings.command_handler = {
+                            Commands::RetrieveAvailableResources  => method(:resources_metadata_service),
+                            Commands::RetrieveResourceContent  => method(:resource_content_service)
+                           }
+    ...
+    SknSettings.command_handler[ cmd.class ].call( cmd )
+    -- or --
+    SknSettings.command_handler.key?( cmd.class ) && 
+      cmd.valid? ? SknSettings.command_handler[ cmd.class ].call( cmd ) : command_not_found_action()
+```
+There are many more use cases for Ruby's Hash that this gem just makes easier to implement.
+
 
 ## Public Components
     SknUtils::NestedResult           # Primary Key/Value Container with Dot/Hash notiation support.
@@ -239,8 +275,8 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
 ```
 
 
-## Public Methods: SknContainer ONLY
-    SknContainer is global constant assigned to an instantiated instance of SknRegistry.
+## Public Methods: SknRegistry ONLY
+    `SknContainer` is global constant assigned to an instantiated instance of `SknRegistry`.
     Returns the keyed value as the original instance/value or if provided a proc the result of calling that proc.
     To register a class or object for global retrieval, use the following API.  Also review the RSpecs for additional useage info.
     
@@ -420,10 +456,11 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
 ## Installation
 
 runtime prereqs:
-* V4+ None
-* V3+ None
-* V2+ None
-* V1+ gem 'active_model', '~> 3.0'
+*   V5+ None
+*   V4+ None
+*   V3+ None
+*   V2+ None
+*   V1+ gem 'active_model', '~> 3.0'
 
 
 Add this line to your application's Gemfile:
