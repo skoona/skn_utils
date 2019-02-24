@@ -36,11 +36,14 @@ begin
 
   if result.success?
     puts "Success: true"
+    puts "Values: #{result.values}"
+    puts "Messages: #{result.messages}"
   else
-    puts "Success: false - errors: #{result.errors.join(', ')}"
+    puts "Success: false - errors: #{result.messages.join(', ')}"
+    puts "Values: #{result.values}"
   end
 
-  result.values
+#  result.values
 rescue => e
   puts e
 end

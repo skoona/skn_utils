@@ -36,7 +36,7 @@ module SknUtils
       @merged.compact.all?(&:success)
     end
 
-    def errors
+    def messages
       @merged.map(&:message)&.compact || []
     end
 

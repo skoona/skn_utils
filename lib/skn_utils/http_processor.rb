@@ -9,8 +9,7 @@ module SknUtils
       completion = false
 
       response = Net::HTTP.start( command.uri.host,command.uri.port,
-                                  use_ssl: command.uri.scheme.eql?("https"),
-                                  set_debug_output:$stdout
+                                  use_ssl: command.uri.scheme.eql?("https")
       ) do |http|
         http.open_timeout = 5           # in seconds, for internal http timeouts
         http.read_timeout = 15          # in seconds
@@ -24,7 +23,7 @@ module SknUtils
         completion = SknFailure.call(response.code, response.message)
       else
         payload = command.json? ? JSON.load(response.body) : response.body
-        completion = SknSuccess.call(payload, response.code)
+        completion = SknSuccess.call(payload, response.class.name)
       end
 
       completion
