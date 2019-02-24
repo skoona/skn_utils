@@ -2,7 +2,8 @@
 # ##
 #
 #
-# Requires JobPostJson, ...
+# See JobCommands, HttpProcessor, ...
+# See ./bin/par_test_[block|grouped|wrapped] examples
 #
 
 module SknUtils
@@ -33,7 +34,7 @@ module SknUtils
     end
 
     def success?
-      @merged.compact.all?(&:success)
+      @merged.compact.all?(&:success) || false
     end
 
     def messages
@@ -45,7 +46,16 @@ module SknUtils
     end
   end
 
-  class ParallelJobs
+  class JobWrapper
+    def self.call(command, callable)
+      callable.call(command)
+    rescue => ex
+      SknFailure.(ex.class.name, "#{ex.message}; #{ex.backtrace[0]}")
+    end
+  end
+
+  class ConcurrentJobs
+    attr_reader :elapsed
 
     def self.call(async: true)
       worker = async ? AsyncWorker : SyncWorker
@@ -57,11 +67,13 @@ module SknUtils
       @workers = []
     end
 
-    # commands=[data-objs], callable=SknUtils::HttpProcessor
+    # commands: array of command objects related to callable
+    # callable: callable class or proc, ex:SknUtils::HttpProcessor
+    # callable must return SknSuccess || SknFailure
     def register_jobs(commands, callable)
       commands.each do |command|
         register_job do
-          callable.call(command)
+          JobWrapper.call(command,callable)
         end
       end
     end
@@ -71,14 +83,13 @@ module SknUtils
     end
 
     def render_jobs
-      stime = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+      stime = SknUtils.duration
       merged = @workers.each_with_object([]) do |worker, acc|
         acc.push( worker.call )
       end
-      puts "Duration: #{'%.3f' % (Process.clock_gettime(Process::CLOCK_MONOTONIC) - stime)} seconds"
+      @elapsed = SknUtils.duration(stime)
       Result.new(merged)
     rescue => e
-      puts e
       Result.new([])
     end
   end

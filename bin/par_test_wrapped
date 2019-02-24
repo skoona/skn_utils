@@ -1,4 +1,7 @@
 #!/usr/bin/env ruby
+#
+# file: par_test_wrapped
+#
 
 require 'bundler/setup'
 require 'skn_utils'
@@ -19,17 +22,14 @@ begin
   ]
 
   # Initialize the queue with Async Workers by default
-  provider = SknUtils::ParallelJobs.call
+  provider = SknUtils::ConcurrentJobs.call
 
   # Populate WorkQueue
-  provider.register_jobs(commands, SknUtils::HttpProcessor)
-
-  # -- OR Individually
-  # commands.each do |command|
-  #   provider.register_job do
-  #     SknUtils::HttpProcessor.call(command)
-  #   end
-  # end
+  commands.each do |command|
+    provider.register_job do
+      SknUtils::JobWrapper.call(command, SknUtils::HttpProcessor)
+    end
+  end
 
   # Execute WorkQueue
   result = provider.render_jobs
@@ -45,5 +45,5 @@ begin
 
 #  result.values
 rescue => e
-  puts e
+  $stderr.puts e.message, e.backtrace
 end

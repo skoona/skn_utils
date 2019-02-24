@@ -1,0 +1,54 @@
+#!/usr/bin/env ruby
+#
+# file: par_test_block
+#
+
+require 'bundler/setup'
+require 'skn_utils'
+
+
+# ##
+# MainLine
+# ##
+#
+begin
+  # CommandJSONPost, CommandFORMGet, CommandJSONGet,
+  # CommandJSONPut, CommandFORMDelete
+  commands = [
+      SknUtils::CommandJSONGet.call(full_url: "http://jsonplaceholder.typicode.com/posts"),
+      SknUtils::CommandJSONGet.call(full_url: "https://jsonplaceholder.typicode.com/comments"),
+      SknUtils::CommandJSONGet.call(full_url: "https://jsonplaceholder.typicode.com/todos/1"),
+      SknUtils::CommandJSONGet.call(full_url: "http://jsonplaceholder.typicode.com/users")
+  ]
+
+  # Initialize the queue with Async Workers by default
+  provider = SknUtils::ConcurrentJobs.call
+
+  # Populate WorkQueue
+  commands.each do |command|
+    provider.register_job do
+      begin
+        SknUtils::HttpProcessor.call(command)
+      rescue => ex
+        $stderr.puts ex
+        SknFailure.(ex.class.name, "#{ex.message}; #{ex.backtrace[0]}")
+      end
+    end
+  end
+
+  # Execute WorkQueue
+  result = provider.render_jobs
+
+  if result.success?
+    puts "Success: true"
+    puts "Values: #{result.values}"
+    puts "Messages: #{result.messages}"
+  else
+    puts "Success: false - errors: #{result.messages.join(', ')}"
+    puts "Values: #{result.values}"
+  end
+
+#  result.values
+rescue => e
+  $stderr.puts e.message, e.backtrace
+end

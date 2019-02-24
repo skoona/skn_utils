@@ -15,7 +15,7 @@ unless defined?(Rails)
     require 'net/https'
     require 'deep_merge'
   rescue LoadError => e
-    puts e.message
+    $stderr.puts e.message, e.backtrace
   end
 end
 require 'skn_utils/core_extensions'
@@ -34,7 +34,7 @@ require 'skn_utils/wrappable'
 
 require "skn_utils/job_commands"
 require "skn_utils/http_processor"
-require "skn_utils/parallel_jobs"
+require "skn_utils/concurrent_jobs"
 
 require 'skn_hash'
 require 'skn_registry'
