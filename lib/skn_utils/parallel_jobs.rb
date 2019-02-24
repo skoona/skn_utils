@@ -57,6 +57,15 @@ module SknUtils
       @workers = []
     end
 
+    # commands=[data-objs], callable=SknUtils::HttpProcessor
+    def register_jobs(commands, callable)
+      commands.each do |command|
+        register_job do
+          callable.call(command)
+        end
+      end
+    end
+
     def register_job(&blk)
       @workers << @worker.new(&blk)
     end
@@ -68,6 +77,9 @@ module SknUtils
       end
       puts "Duration: #{'%.3f' % (Process.clock_gettime(Process::CLOCK_MONOTONIC) - stime)} seconds"
       Result.new(merged)
+    rescue => e
+      puts e
+      Result.new([])
     end
   end
 end

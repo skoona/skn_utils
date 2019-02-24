@@ -10,6 +10,9 @@ require 'time'
 require 'concurrent'
 unless defined?(Rails)
   begin
+    require "uri"
+    require "net/http"
+    require 'net/https'
     require 'deep_merge'
   rescue LoadError => e
     puts e.message
@@ -29,7 +32,8 @@ require 'skn_utils/configuration'
 require 'skn_utils/configurable'
 require 'skn_utils/wrappable'
 
-require "skn_utils/job_post_json"
+require "skn_utils/job_commands"
+require "skn_utils/http_processor"
 require "skn_utils/parallel_jobs"
 
 require 'skn_hash'
@@ -93,33 +97,3 @@ module SknUtils
 
 end
 
-# ##
-# MainLine
-# ##
-#
-def test_jobs
-  # generate mock data resuqests
-  requests = (1..5).map { |i| "server#{i}.test" }
-
-  # Initialize the queue with Async Workers by default
-  provider = SknUtils::ParallelJobs.call
-
-  # Populate WorkQueue
-  requests.each do |request|
-    provider.register_job do
-      SknUtils::JobPostJson.call(request)
-    end
-  end
-
-  # Execute WorkQueue
-  result = provider.render_jobs
-
-  if result.success?
-    puts "Success: true"
-    puts "Values: #{result.values}"
-  else
-    puts "Success: false - errors: #{result.errors.join(', ')}"
-    puts "Values: #{result.values}"
-  end
-
-end

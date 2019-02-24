@@ -1,0 +1,46 @@
+#!/usr/bin/env ruby
+
+require 'bundler/setup'
+require 'skn_utils'
+
+
+# ##
+# MainLine
+# ##
+#
+begin
+  # CommandJSONPost, CommandFORMGet, CommandJSONGet,
+  # CommandJSONPut, CommandFORMDelete
+  commands = [
+      SknUtils::CommandJSONGet.call(full_url: "http://jsonplaceholder.typicode.com/posts"),
+      SknUtils::CommandJSONGet.call(full_url: "https://jsonplaceholder.typicode.com/comments"),
+      SknUtils::CommandJSONGet.call(full_url: "https://jsonplaceholder.typicode.com/todos/1"),
+      SknUtils::CommandJSONGet.call(full_url: "http://jsonplaceholder.typicode.com/users")
+  ]
+
+  # Initialize the queue with Async Workers by default
+  provider = SknUtils::ParallelJobs.call
+
+  # Populate WorkQueue
+  provider.register_jobs(commands, SknUtils::HttpProcessor)
+
+  # -- OR Individually
+  # commands.each do |command|
+  #   provider.register_job do
+  #     SknUtils::HttpProcessor.call(command)
+  #   end
+  # end
+
+  # Execute WorkQueue
+  result = provider.render_jobs
+
+  if result.success?
+    puts "Success: true"
+  else
+    puts "Success: false - errors: #{result.errors.join(', ')}"
+  end
+
+  result.values
+rescue => e
+  puts e
+end
