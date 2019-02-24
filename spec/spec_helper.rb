@@ -15,6 +15,8 @@ end
 require 'skn_utils'
 require 'rspec'
 
+require 'webmock/rspec'
+
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
   Kernel.srand config.seed
@@ -29,6 +31,8 @@ RSpec.configure do |config|
 
   # config.disable_monkey_patching!  # -- breaks rspec runtime
   config.warnings = true
+
+  config.include WebMock::API
 
   if config.files_to_run.one?
     config.formatter = :documentation
