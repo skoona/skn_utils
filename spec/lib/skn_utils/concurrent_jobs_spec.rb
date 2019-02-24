@@ -26,6 +26,10 @@ describe SknUtils::ConcurrentJobs, 'Run Multiple Jobs' do
     ->(cmd) { SomeUnkownThing.(cmd.uri.request_uri, "Catastrophic") }
   }
 
+  it "Job Commands will provide a valid http request object" do
+    expect(commands.any?(&:request)).to be true
+  end
+
   context "Asynchronous" do
     it "Runs Jobs" do
       provider = SknUtils::ConcurrentJobs.call

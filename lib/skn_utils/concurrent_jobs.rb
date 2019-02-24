@@ -90,7 +90,7 @@ module SknUtils
       @elapsed = SknUtils.duration(stime)
       Result.new(merged)
     rescue => e
-      Result.new([])
+      Result.new(merged || [])
     end
   end
 end

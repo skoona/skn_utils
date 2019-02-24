@@ -20,10 +20,10 @@ module SknUtils
     end
 
     def request
-      req = Net::HTTP::Post.new(url.path)        # Generate HTTPRequest object
+      req = Net::HTTP::Post.new(uri.path)        # Generate HTTPRequest object
       req.basic_auth(@_username, @_userpass) if credentials?
       req.content_type = 'application/json'
-      req.body(formatted_data)
+      req.body = formatted_data
       req
     end
 
@@ -62,7 +62,7 @@ module SknUtils
     end
 
     def request
-      req = Net::HTTP::Post.new(url.path)        # Generate HTTPRequest object
+      req = Net::HTTP::Post.new(uri.path)        # Generate HTTPRequest object
       req.basic_auth(@_username, @_userpass) if credentials?
       req.content_type = 'application/x-www-form-urlencoded'
       req.set_form_data(formatted_data)
@@ -139,10 +139,10 @@ module SknUtils
     end
 
     def request
-      req = Net::HTTP::Put.new(url.path)        # Generate HTTPRequest object
+      req = Net::HTTP::Put.new(uri.path)        # Generate HTTPRequest object
       req.basic_auth(@_username, @_userpass) if credentials?
       req.content_type = 'application/json'
-      req.body(formatted_data)
+      req.body = formatted_data
       req
     end
 
