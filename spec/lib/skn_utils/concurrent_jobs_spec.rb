@@ -27,28 +27,115 @@ describe SknUtils::ConcurrentJobs, 'Run Multiple Jobs' do
     ->(cmd) { SomeUnkownThing.(cmd.uri.request_uri, "Catastrophic") }
   }
 
-  it "Job Commands will provide a valid http request object" do
-    expect(commands.any?(&:request)).to be true
-  end
-
-  it "Performs Http Requests" do
-    stub_request(:get, "http://jsonplaceholder.typicode.com/users").
-        to_return(status: 200, body: "{\"message\":\"me\"}", headers: {})
-
-    cmd = SknUtils::CommandJSONGet.call(full_url: "http://jsonplaceholder.typicode.com/users")
-    provider = SknUtils::ConcurrentJobs.call
-    provider.register_job do
-      SknUtils::JobWrapper.call(cmd, SknUtils::HttpProcessor)
+  context "HTTP Requests " do
+    it "Job Commands will provide a valid http request object" do
+      expect(commands.any?(&:request)).to be true
     end
 
-    result = provider.render_jobs
+    it "Performs Http Post Requests" do
+      test_url = "http://jsonplaceholder.typicode.com/users"
+      stub_request(:post, test_url).
+          to_return(status: 200, body: "{\"message\":\"me\"}", headers: {})
 
-    expect(result).to be_a(SknUtils::Result)
-    expect(result.success?).to be true
-    expect(result.values.size).to eq(1)
-    expect(result.values[0]).to be_a(SknSuccess)
-    expect(result.values[0].value).to be_a(Hash)
-    expect(result.values[0].value["message"]).to eq("me")
+      cmd = SknUtils::CommandJSONPost.call(full_url: test_url, payload: {"one" => 1})
+
+      provider = SknUtils::ConcurrentJobs.call
+      provider.register_job do
+        SknUtils::JobWrapper.call(cmd, SknUtils::HttpProcessor)
+      end
+      result = provider.render_jobs
+
+      expect(result).to be_a(SknUtils::Result)
+      expect(result.success?).to be true
+      expect(result.values.size).to eq(1)
+      expect(result.values[0]).to be_a(SknSuccess)
+      expect(result.values[0].value).to be_a(Hash)
+      expect(result.values[0].value["message"]).to eq("me")
+    end
+
+    it "Performs Http Form Post Requests" do
+      test_url = "http://jsonplaceholder.typicode.com/users"
+      stub_request(:post, test_url).
+          to_return(status: 200, body: "message=me", headers: {})
+
+      cmd = SknUtils::CommandFORMPost.call(full_url: test_url, payload: {"one" => 1})
+
+      provider = SknUtils::ConcurrentJobs.call
+      provider.register_job do
+        SknUtils::JobWrapper.call(cmd, SknUtils::HttpProcessor)
+      end
+      result = provider.render_jobs
+
+      expect(result).to be_a(SknUtils::Result)
+      expect(result.success?).to be true
+      expect(result.values.size).to eq(1)
+      expect(result.values[0]).to be_a(SknSuccess)
+      expect(result.values[0].value).to be_a(String)
+      expect(result.values[0].value).to eq("message=me")
+    end
+
+    it "Performs Http Get Requests" do
+      test_url = "http://jsonplaceholder.typicode.com/users"
+      stub_request(:get, test_url).
+          to_return(status: 200, body: "{\"message\":\"me\"}", headers: {})
+
+      cmd = SknUtils::CommandJSONGet.call(full_url: test_url)
+
+      provider = SknUtils::ConcurrentJobs.call
+      provider.register_job do
+        SknUtils::JobWrapper.call(cmd, SknUtils::HttpProcessor)
+      end
+      result = provider.render_jobs
+
+      expect(result).to be_a(SknUtils::Result)
+      expect(result.success?).to be true
+      expect(result.values.size).to eq(1)
+      expect(result.values[0]).to be_a(SknSuccess)
+      expect(result.values[0].value).to be_a(Hash)
+      expect(result.values[0].value["message"]).to eq("me")
+    end
+
+    it "Performs Http Put Requests" do
+      test_url = "http://jsonplaceholder.typicode.com/users"
+      stub_request(:put, test_url).
+          to_return(status: 200, body: "{\"message\":\"me\"}", headers: {})
+
+      cmd = SknUtils::CommandJSONPut.call(full_url: test_url, payload: {"one" => 1})
+
+      provider = SknUtils::ConcurrentJobs.call
+      provider.register_job do
+        SknUtils::JobWrapper.call(cmd, SknUtils::HttpProcessor)
+      end
+      result = provider.render_jobs
+
+      expect(result).to be_a(SknUtils::Result)
+      expect(result.success?).to be true
+      expect(result.values.size).to eq(1)
+      expect(result.values[0]).to be_a(SknSuccess)
+      expect(result.values[0].value).to be_a(Hash)
+      expect(result.values[0].value["message"]).to eq("me")
+    end
+
+    it "Performs Http Form Delete Requests" do
+      test_url = "http://jsonplaceholder.typicode.com/users"
+      stub_request(:delete, test_url).
+          to_return(status: 200, body: "message=me", headers: {})
+
+      cmd = SknUtils::CommandFORMDelete.call(full_url: test_url, payload: {"one" => 1})
+
+      provider = SknUtils::ConcurrentJobs.call
+      provider.register_job do
+        SknUtils::JobWrapper.call(cmd, SknUtils::HttpProcessor)
+      end
+      result = provider.render_jobs
+
+      expect(result).to be_a(SknUtils::Result)
+      expect(result.success?).to be true
+      expect(result.values.size).to eq(1)
+      expect(result.values[0]).to be_a(SknSuccess)
+      expect(result.values[0].value).to be_a(String)
+      expect(result.values[0].value).to eq("message=me")
+    end
   end
 
   context "Asynchronous" do
