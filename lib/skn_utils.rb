@@ -58,7 +58,7 @@ module SknUtils
       [SknFailure, SknFailure].any? {|o| res.kind_of?(o) } ? res : SknSuccess.( res )
 
     rescue StandardError, ScriptError => error
-      puts "#{retry_count} - #{error.class.name}:#{error.message}"
+      $stderr.puts "#{retry_count} - #{error.class.name}:#{error.message}"
       if retry_count <= attempts
         retry_count+= 1
         sleep(pause_between)

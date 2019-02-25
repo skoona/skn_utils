@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 #
-# file: par_test_grouped
+# file: concurrent_test_wrapped
 #
 
 require 'bundler/setup'
@@ -25,7 +25,11 @@ begin
   provider = SknUtils::ConcurrentJobs.call
 
   # Populate WorkQueue
-  provider.register_jobs(commands, SknUtils::HttpProcessor)
+  commands.each do |command|
+    provider.register_job do
+      SknUtils::JobWrapper.call(command, SknUtils::HttpProcessor)  # mis-spelling these params result in [nil, nil, ...] results
+    end
+  end
 
   # Execute WorkQueue
   result = provider.render_jobs

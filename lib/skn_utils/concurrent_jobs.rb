@@ -34,11 +34,11 @@ module SknUtils
     end
 
     def success?
-      @merged.compact.all?(&:success) || false
+      @merged.all?(&:success) rescue false
     end
 
     def messages
-      @merged.map(&:message)&.compact || []
+      @merged.map(&:message)&.compact rescue []
     end
 
     def values
@@ -55,7 +55,7 @@ module SknUtils
   end
 
   class ConcurrentJobs
-    attr_reader :elapsed
+    attr_reader :elapsed_time_string
 
     def self.call(async: true)
       worker = async ? AsyncWorker : SyncWorker
@@ -87,7 +87,7 @@ module SknUtils
       merged = @workers.each_with_object([]) do |worker, acc|
         acc.push( worker.call )
       end
-      @elapsed = SknUtils.duration(stime)
+      @elapsed_time_string = SknUtils.duration(stime)
       Result.new(merged)
     rescue => e
       Result.new(merged || [])

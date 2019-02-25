@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 #
-# file: par_test_block
+# file: concurrent_test_block
 #
 
 require 'bundler/setup'
@@ -28,7 +28,7 @@ begin
   commands.each do |command|
     provider.register_job do
       begin
-        SknUtils::HttpProcessor.call(command)
+        SknUtils::HttpProcessor.call(command)   # mis-spelling these params result in [SknFailure, SknFailure, ...] results
       rescue => ex
         $stderr.puts ex
         SknFailure.(ex.class.name, "#{ex.message}; #{ex.backtrace[0]}")

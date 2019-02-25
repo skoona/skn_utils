@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 #
-# file: par_test_wrapped
+# file: concurrent_test_grouped
 #
 
 require 'bundler/setup'
@@ -25,11 +25,7 @@ begin
   provider = SknUtils::ConcurrentJobs.call
 
   # Populate WorkQueue
-  commands.each do |command|
-    provider.register_job do
-      SknUtils::JobWrapper.call(command, SknUtils::HttpProcessor)
-    end
-  end
+  provider.register_jobs(commands, SknUtils::HttpProcessor) # mis-spelling these params result in an immediate exception (line 43 below)
 
   # Execute WorkQueue
   result = provider.render_jobs

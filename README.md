@@ -13,7 +13,7 @@ class which implements dot-notation and nesting over a concurrent hash: A ruby H
 use any valid ruby object as a key or value. 
 *   `NestedResults` is later sub-classed as `Configuration` to provide application level 
 settings using YAML files with a API simular to the RbConfig gem.
-*   Object or method return values can be enclosed `SknSuccess` or `SknFailure` classes 
+*   Object or method return values can be enclosed in `SknSuccess` or `SknFailure` classes 
 to prevent or minimize nil returns.
 *   Precise microsecond `duration`s, Number to `as_human_size`, and a `catch_exceptions` 
 retry-able feature are implemented on the SknUtils class directly for ease of use.
@@ -22,12 +22,14 @@ as needed, with a set of defaults methods which emulate Rails.env, Rails.logger,
 Rails.root functionality.
 *   `CoreObjectExtensions` simular to ActiveSupport's, `#present?` and `#blank?` are 
 automatically applied, unless already present, when SknUtils gem is loaded.
-*   `SknRegistry` class is an advanced object which intends to manually pre-registry 
-classes or procs with a user-defined `label`.  Initialization and dependency injection 
+*   `SknRegistry` class is an advanced feature which allows you to manually register 
+classes, procs, or any value with a user-defined `label`.  Initialization and dependency injection 
 requirements of service-like classes can be included in this registration process allowing 
 them to be centrally maintained.  The `label` can be any valid ruby value; like a 
-classname, symbol, or string.
+classname, symbol, or string as needed
 *   `NullObject`, `NotifierBase`, and `Wrappable` are interesting classes which you might want to explore further.
+* `ConcurrentJobs` is a feature implemented to allow concurrent/multi-threaded execution of jobs.  The included 
+companion classes focus on HTTP GET,PUT,POST, and DELETE jobs as an example of how to use the `ConcurrentJobs` feature. 
 
 All classes and modules have RSpec test coverage (90+) of their originally intended use-cases.   
 
@@ -49,6 +51,14 @@ All classes and modules have RSpec test coverage (90+) of their originally inten
 * SknUtils::NullObject
 * SknUtils::NotifierBase
 * SknUtils::Wrappable
+* SknUtils::ConcurrentJobs
+    * SknUtils::JobWrapper      (via ConcurrentJobs)
+    * SknUtils::CommandJSONPost (via JobCommands)
+    * SknUtils::CommandFORMPost
+    * SknUtils::CommandJSONGet
+    * SknUtils::CommandJSONPut
+    * SknUtils::CommandFORMDelete
+    * SknUtils::HttpProcessor
 
 ### Available Class.Methods
 * SknUtils.catch_exceptions()
@@ -57,12 +67,16 @@ All classes and modules have RSpec test coverage (90+) of their originally inten
 
 
 ## History
+    2/24/2019 V5.5.0
+    Added
+    * ConcurrentJobs feature set  
+    - Executes (HTTP/any) jobs in parallel
+
     1/2/2019 V5.4.1
     Added
     - Wrappable module for evaluation. 
     - Ruby comment # frozen_string_literal, everywhere
      
-
     12/16/2018 V5.4.0
     Added :duration() utils to SknUtils module: 
         #duration()            #=> returns start_time value 
@@ -207,6 +221,14 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
     SknSuccess                       # Three attribute value containers for return codes   -- #value, #message, #success
                                        - Extra #payload method returns value as NestResult if value is_a Hash 
     SknFailure                       # Three attribute value containers for return codes   -- #value, #message, #success
+    SknUtils::ConcurrentJobs         # Async/Sync Job executor pool with HTTP support
+        SknUtils::CommandJSONGet     # HTTP Get Command class expecting `json` return, located inside `job_commands`
+        SknUtils::CommandJSONPut     # HTTP Put Command class expecting `json` return, located inside `job_commands`
+        SknUtils::CommandJSONPost    # HTTP Post Command class expecting `json` return, located inside `job_commands`
+        SknUtils::CommandFORMPost    # HTTP Post Command class expecting `form` data return, located inside `job_commands`
+        SknUtils::CommandFORMDelete  # HTTP Delete Command class expecting `form` data return, located inside `job_commands`
+        SknUtils::HttpProcessor      # Command driven HTTP processing object supporting GET,PUT,POST, and DELETE
+        SknUtils::JobWrapper         # Outer wrapper class to capture catastrophic exceptions (syntax normally)
 
 
 ## Public Methods: SknUtils::Configurable module
@@ -302,9 +324,69 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
             same_instance = SknContainer.resolve(:the_instance)
 
 
+## Public Methods: SknUtils::ConcurrentJobs ONLY
+    `ConcurrentJobs` behaves as a concurrent thread pool by using Concurrent::Promise from the `concurrent-ruby` gem. 
+    Enables the definition of Procs, or any callable class, which will be executed in parrallel the available jobs 
+    loaded into ConcurrentJobs.  Meant to reduce user-sensitive response times when multiple APIs must be invoked. 
+    Also review the RSpecs for additional useage info.
+    
+        SknUtils::ConcurrentJobs
+           #call(async: true)               - Instantiate ConcurrentJobs with Async Workers, false for Sync Workers
+           #register_jobs(cmds, callable)   - Array of Command to be executed by single callable
+           #register_job(&block)            - Adds callable block to internal worker queue
+           #render_jobs                     - Collect results from all jobs into a Result object
+           #elapsed_time_string             - "0.012 seconds" string showing duration of last #render_jobs call
+           
+           SknUtils::Result                 - Contains individual results from each job executed
+              #success?                     - Determines if any job failed
+              #messages                     - Retrieves messages from job results, assumed present when job fails
+              #values                       - Returns an array of individual results from job executions
+
+    Commands and HttpProcessors are included to demonstrate Job creating patterns.  ConcurrentJobs is not restricted
+    to Http calls or the command to command handler pattern.  Using the #register_job method you can pass callable BLOCK
+    and it will be executed when #render_jobs is invoked.  HttpProcessor is what I needed and triggered me to add this feature.              
+    
+    Example here:
+```ruby
+begin
+  # CommandJSONPost, CommandFORMGet, CommandJSONGet,
+  # CommandJSONPut, CommandFORMDelete
+  commands = [
+      SknUtils::CommandJSONGet.call(full_url: "http://jsonplaceholder.typicode.com/posts"),
+      SknUtils::CommandJSONGet.call(full_url: "https://jsonplaceholder.typicode.com/comments"),
+      SknUtils::CommandJSONGet.call(full_url: "https://jsonplaceholder.typicode.com/todos/1"),
+      SknUtils::CommandJSONGet.call(full_url: "http://jsonplaceholder.typicode.com/users")
+  ]
+
+  # Initialize the queue with Async Workers by default
+  provider = SknUtils::ConcurrentJobs.call
+
+  # Populate WorkQueue
+  provider.register_jobs(commands, SknUtils::HttpProcessor) # mis-spelling these params result in an immediate exception (line 43 below)
+
+  # Execute WorkQueue
+  result = provider.render_jobs
+
+  if result.success?
+    puts "Success: true"
+    puts "Values: #{result.values}"
+    puts "Messages: #{result.messages}"
+  else
+    puts "Success: false - errors: #{result.messages.join(', ')}"
+    puts "Values: #{result.values}"
+  end
+
+#  result.values
+rescue => e
+  $stderr.puts e.message, e.backtrace
+end
+
+```    
+
+
 
 ## Public Methods: SknSettings ONLY
-    SknSettings is global constant containing an initialized Object of SknUtils::Configuration using defaults
+    SknSettings is a global constant containing an initialized Object of SknUtils::Configuration using defaults
     To change the 'development'.yml default please use the following method early or in the case of Rails in 'application.rb
       #load_config_basename!(config_name) -- Where config_name is the name of yml files stored in the `./config/settings` directory
       #config_path!(path)                 -- Where path format is './<dirs>/', default is: './config/'

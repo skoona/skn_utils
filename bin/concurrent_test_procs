@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 #
-# file: par_test_procs
+# file: concurrent_test_procs
 #
 require 'bundler/setup'
 require 'skn_utils'
@@ -24,7 +24,7 @@ begin
   provider = SknUtils::ConcurrentJobs.call
 
   # Populate WorkQueue
-  work_proc = ->(cmd) { SknSuccess.(cmd.uri.request_uri, "Ok") }
+  work_proc = ->(cmd) { SknSuccess.(cmd.uri.request_uri, "Ok") }  # mis-spelling these params result in [SknFailure, SknFailure, ...] results
   provider.register_jobs(commands, work_proc)
 
   # Execute WorkQueue
