@@ -4,6 +4,7 @@
 # File: ./lib/skn_utils/core_extensions.rb  --
 # -- from: Rails 4.1 ActiveSupport:lib/active_support/core_ext/object/blank.rb
 # -- Ref: https://6ftdan.com/allyourdev/2015/01/20/refinements-over-monkey-patching/
+# -- Ref: https://medium.com/rubycademy/the-complete-guide-to-create-a-copy-of-an-object-in-ruby-part-ii-cd28a99d58d9
 
 module SknUtils
   module CoreObjectExtensions
@@ -53,6 +54,15 @@ module SknUtils
         def presence
           self if present?
         end
+
+        def duplicable?
+          true
+        end
+
+        def deep_dup
+          duplicable? ? dup : self
+        end
+
       end
 
       class ::NilClass
@@ -96,6 +106,10 @@ module SknUtils
         #
         # @return [true, false]
         alias_method :blank?, :empty?
+
+        def deep_dup
+          map(&:deep_dup)
+        end
       end
 
       class ::Hash
@@ -106,6 +120,19 @@ module SknUtils
         #
         # @return [true, false]
         alias_method :blank?, :empty?
+
+        def deep_dup
+          hash = dup
+          each_pair do |key, value|
+            if key.frozen? && ::String === key
+              hash[key] = value.deep_dup
+            else
+              hash.delete(key)
+              hash[key.deep_dup] = value.deep_dup
+            end
+          end
+          hash
+        end
       end
 
       class ::String
