@@ -73,9 +73,8 @@ class SknRegistry < Concurrent::Hash
     attr_reader :item, :options
 
     def initialize(item, options = {})
-      @item, @options = item, {
-          call: item.is_a?(::Proc)
-      }.merge(options)
+      @item    = item
+      @options = { call: item.is_a?(::Proc) }.merge(options)
     end
 
     # Determine if call is required, without changing original values
@@ -96,18 +95,19 @@ class SknRegistry < Concurrent::Hash
   def initialize(&block)
     super
     block.call(self) if block_given?
+    @__substitutes = {}
   end
 
   # public instance methods
   def register(key, contents = nil, options = {}, &block)
     if block_given?
       item = block
-      options = contents if contents.is_a?(::Hash)
+      options.merge!(contents) if contents.is_a?(::Hash)
     else
       item = contents
     end
 
-    self[key] = Content.new(item, options)
+    self.store( key, Content.new(item, options) )
 
     self # enable chaining
   end
@@ -115,5 +115,23 @@ class SknRegistry < Concurrent::Hash
   def resolve(key, render_proc=true)  # false to prevent downstream #call
     self[key]&.call(render_proc)
   end
+
+  def register_mock(key, contents = nil, options = {}, &block)
+    if member?(key)
+      @__substitutes.store(key, self.delete(key) )
+    end
+
+    register(key, contents, options, &block)
+  end
+  alias_method :substitute, :register_mock
+
+  def unregister_mocks!
+    @__substitutes.keys.each do |k|
+      self[k] = @__substitutes.delete(k)
+    end
+
+    nil
+  end
+  alias_method :restore!, :unregister_mocks!
 
 end

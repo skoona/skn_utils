@@ -323,6 +323,10 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
             
             same_instance = SknContainer.resolve(:the_instance)
 
+      * Testing Support:
+          - #substitute(...) allows you to mock an existing entry. #substitute is an alias for #register_mock              
+          - #restore! clears all mocked entries.  #restore! is an alias for #unregister_mock!
+
 
 ## Public Methods: SknUtils::ConcurrentJobs ONLY
     `ConcurrentJobs` behaves as a concurrent thread pool by using Concurrent::Promise from the `concurrent-ruby` gem. 

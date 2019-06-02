@@ -127,4 +127,26 @@ describe SknRegistry, "IoC Lite Container class." do
     end
   end
 
+
+  context "When used for testing " do
+
+    it "#register_mock Registers a temporary mock." do
+      services.register_mock(:service_c, "Testing" )
+
+      expect(services.resolve(:service_c)).to eq "Testing"
+      services.restore!
+    end
+
+    it "#unregister_mocks! Remove all mocks and restores previous entries if present." do
+      original = services.resolve(:service_c)
+      services.substitute(:service_c, "Testing")
+      expect(services.resolve(:service_c)).to eq "Testing"
+
+      services.unregister_mocks!
+
+      services.resolve(:service_c)
+      expect(services.resolve(:service_c)).to eq original
+    end
+  end
+
 end
