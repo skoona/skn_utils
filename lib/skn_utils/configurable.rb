@@ -59,6 +59,10 @@ module SknUtils
   # - env      =  string value from RACK_ENV
   # - registry =  SknRegistry instance
   # - logger   =  Assigned Logger instance
+  # - romDB    =  var for Rom-DB if used or Any Platform Database
+  # - metadata =  platform metadata container
+  # - userdata =  user area
+  # - metrics  =  platform metrics container
   # #with(*user_attrs, enable_root: true|false) - defaults to enable of Main Class Attrs
   # ##
   # User-Defined Attrs
@@ -130,6 +134,38 @@ module SknUtils
           end
           def logger=(obj)
             @__logger = obj
+          end
+
+          # Any Platform Database
+          def romDB
+            @__db ||= nil
+          end
+          def romDB(obj)
+            @__db = obj
+          end
+
+          # Maybe Platform Metadata
+          def metadata
+            @__metadata ||= nil
+          end
+          def metadata=(obj)
+            @__metadata = obj
+          end
+
+          # Userdata container for any use
+          def userdata
+            @__userdata ||= nil
+          end
+          def userdata=(obj)
+            @__userdata = obj
+          end
+
+          # Metrics container for any use
+          def metrics
+            @__metrics ||= nil
+          end
+          def metrics=(obj)
+            @__metrics = obj
           end
         end
       end

@@ -16,6 +16,7 @@ require 'skn_utils'
 require 'rspec'
 
 require 'webmock/rspec'
+require 'support/xml_matchers'
 
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|

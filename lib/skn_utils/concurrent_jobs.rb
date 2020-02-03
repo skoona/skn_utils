@@ -15,6 +15,8 @@ module SknUtils
 
     def call
       @blk.call
+    rescue => ex
+      SknFailure.(ex.class.name, { cause: ex.message, backtrace: ex.backtrace[0..8]})
     end
   end
 
@@ -25,6 +27,8 @@ module SknUtils
 
     def call
       @blk.value
+    rescue => ex
+      SknFailure.(ex.class.name, { cause: ex.message, backtrace: ex.backtrace[0..8]})
     end
   end
 
@@ -50,7 +54,7 @@ module SknUtils
     def self.call(command, callable)
       callable.call(command)
     rescue => ex
-      SknFailure.(ex.class.name, "#{ex.message}; #{ex.backtrace[0]}")
+      SknFailure.(ex.class.name, { cause: ex.message, backtrace: ex.backtrace[0..8]})
     end
   end
 
@@ -85,7 +89,12 @@ module SknUtils
     def render_jobs
       stime = SknUtils.duration
       merged = @workers.each_with_object([]) do |worker, acc|
-        acc.push( worker.call )
+        begin
+          res = worker.call
+          acc.push( res.nil? ? SknFailure.("Unknown", {cause: "Nil Return Value to render Jobs", backtrace: []}) : res )
+        rescue => ex
+          acc.push SknFailure.(ex.class.name, { cause: ex.message, backtrace: ex.backtrace[0..8]})
+        end
       end
       @elapsed_time_string = SknUtils.duration(stime)
       Result.new(merged)

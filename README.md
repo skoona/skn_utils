@@ -8,6 +8,7 @@ dependencies, to augment the development of Ruby applications.  Examples of thes
 utilities in action can be found in my related projects `SknServices`, `SknWebApp`, 
 and `SknBase`.
 
+* Most classes are standalone modules, or cleary documented, and can be copy/pasted into your project.
 *   The exchange or handoff of values between objects is addressed via the `NestedResults` 
 class which implements dot-notation and nesting over a concurrent hash: A ruby Hash can 
 use any valid ruby object as a key or value. 
@@ -31,7 +32,8 @@ classname, symbol, or string as needed
 * `ConcurrentJobs` is a feature implemented to allow concurrent/multi-threaded execution of jobs.  The included 
 companion classes focus on HTTP GET,PUT,POST, and DELETE jobs as an example of how to use the `ConcurrentJobs` feature. 
 
-All classes and modules have RSpec test coverage (90+) of their originally intended use-cases.   
+All classes and modules have RSpec test coverage (90+) of their originally intended 
+use-cases.    
 
 
 ### Available Classes
@@ -65,8 +67,19 @@ All classes and modules have RSpec test coverage (90+) of their originally inten
 * SknUtils.as_human_size()
 * SknUtils.duration(start_time=nil)
 
+### Available RSpec Helpers
+* spec/support/xml_matchers.rb
+    * expect(bundle).to have_xpath('//witnesses/witness/role')
+    * expect(bundle).to have_nodes('//witnesses/witness/role', 3)
+    * expect(bundle).to match_xpath('//lossInformation/date', "2020-01-28")
+ 
 
 ## History
+    2/3/2030 V5.7.0
+    Added
+    * RSpec XML_Matchers to spec/support folders
+    * Update ConcurrentJobs JobCommands to support HTTP Headers
+    
     2/24/2019 V5.5.0
     Added
     * ConcurrentJobs feature set  

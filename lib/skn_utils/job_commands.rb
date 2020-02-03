@@ -7,7 +7,7 @@ module SknUtils
   # #################################################
   #
   class CommandJSONPost
-    def self.call(options)  # {full_url:,username:,userpass:,payload:}
+    def self.call(options)  # {full_url:,username:,userpass:,payload:,headers:}
       new(options)
     end
 
@@ -20,7 +20,7 @@ module SknUtils
     end
 
     def request
-      req = Net::HTTP::Post.new(uri.path)        # Generate HTTPRequest object
+      req = @_headers.nil? ? Net::HTTP::Post.new(uri.path) : Net::HTTP::Post.new(uri.path, @_headers)        # Generate HTTPRequest object
       req.basic_auth(@_username, @_userpass) if credentials?
       req.content_type = 'application/json'
       req.body = formatted_data
@@ -32,6 +32,7 @@ module SknUtils
     def initialize(opts={})
       @_username = opts[:username]
       @_userpass = opts[:userpass]
+      @_headers  = opts[:headers]
       @_uri      = URI.parse( opts[:full_url])
       @_data     = opts[:payload]
     end
@@ -49,7 +50,7 @@ module SknUtils
   # #################################################
   #
   class CommandFORMPost
-    def self.call(options)  # {full_url:,username:,userpass:,payload:}
+    def self.call(options)  # {full_url:,username:,userpass:,payload:,headers:}
       new(options)
     end
 
@@ -62,7 +63,7 @@ module SknUtils
     end
 
     def request
-      req = Net::HTTP::Post.new(uri.path)        # Generate HTTPRequest object
+      req = @_headers.nil? ? Net::HTTP::Post.new(uri.path) : Net::HTTP::Post.new(uri.path, @_headers)        # Generate HTTPRequest object
       req.basic_auth(@_username, @_userpass) if credentials?
       req.content_type = 'application/x-www-form-urlencoded'
       req.set_form_data(formatted_data)
@@ -74,6 +75,7 @@ module SknUtils
     def initialize(opts={})
       @_username = opts[:username]
       @_userpass = opts[:userpass]
+      @_headers  = opts[:headers]
       @_uri      = URI.parse( opts[:full_url])
       @_data     = opts[:payload]
     end
@@ -91,7 +93,7 @@ module SknUtils
   # #################################################
   #
   class CommandJSONGet
-    def self.call(options)  # {full_url:,username:,userpass:}
+    def self.call(options)  # {full_url:,username:,userpass:,headers:}
       new(options)
     end
 
@@ -104,7 +106,7 @@ module SknUtils
     end
 
     def request
-      req = Net::HTTP::Get.new(uri.request_uri)
+      req = @_headers.nil? ? Net::HTTP::Get.new(uri.request_uri) : Net::HTTP::Get.new(uri.request_uri, @_headers)        # Generate HTTPRequest object
       req.basic_auth(@_username, @_userpass) if credentials?
       req
     end
@@ -114,6 +116,7 @@ module SknUtils
     def initialize(opts={})
       @_username = opts[:username]
       @_userpass = opts[:userpass]
+      @_headers  = opts[:headers]
       @_uri      = URI.parse( opts[:full_url])
     end
 
@@ -126,7 +129,7 @@ module SknUtils
   # #################################################
   #
   class CommandJSONPut
-    def self.call(options)  # {full_url:,username:,userpass:,payload:}
+    def self.call(options)  # {full_url:,username:,userpass:,payload:,headers:}
       new(options)
     end
 
@@ -139,7 +142,7 @@ module SknUtils
     end
 
     def request
-      req = Net::HTTP::Put.new(uri.path)        # Generate HTTPRequest object
+      req = @_headers.nil? ? Net::HTTP::Put.new(uri.path) : Net::HTTP::Put.new(uri.path, @_headers)        # Generate HTTPRequest object
       req.basic_auth(@_username, @_userpass) if credentials?
       req.content_type = 'application/json'
       req.body = formatted_data
@@ -151,6 +154,7 @@ module SknUtils
     def initialize(opts={})
       @_username = opts[:username]
       @_userpass = opts[:userpass]
+      @_headers  = opts[:headers]
       @_uri      = URI.parse( opts[:full_url])
       @_data     = opts[:payload]
     end
@@ -181,7 +185,7 @@ module SknUtils
     end
 
     def request
-      req = Net::HTTP::Delete.new(uri.request_uri)
+      req = @_headers.nil? ? Net::HTTP::Delete.new(uri.request_uri) : Net::HTTP::Delete.new(uri.request_uri, @_headers)        # Generate HTTPRequest object
       req.basic_auth(@_username, @_userpass) if credentials?
       req
     end
@@ -191,6 +195,7 @@ module SknUtils
     def initialize(opts={})
       @_username = opts[:username]
       @_userpass = opts[:userpass]
+      @_headers  = opts[:headers]
       @_uri      = URI.parse( opts[:full_url])
     end
 

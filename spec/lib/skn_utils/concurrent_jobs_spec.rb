@@ -7,7 +7,7 @@ describe SknUtils::ConcurrentJobs, 'Run Multiple Jobs' do
 
   let(:commands) {
     [
-        SknUtils::CommandJSONPost.call(full_url: "http://example.com/posts", payload: {one: 1}),
+        SknUtils::CommandJSONPost.call(full_url: "http://example.com/posts", payload: {one: 1}, headers: {'my-header'=> "header-value"}),
         SknUtils::CommandFORMPost.call(full_url: "http://example.com/posts", payload: {one: 1}),
         SknUtils::CommandJSONGet.call(full_url: "http://example.com/posts/1"),
         SknUtils::CommandJSONPut.call(full_url: "http://example.com/posts", payload: {one: 1}),
@@ -199,10 +199,12 @@ describe SknUtils::ConcurrentJobs, 'Run Multiple Jobs' do
       expect(result).to be_a(SknUtils::Result)
       expect(result.success?).to be false
       expect(result.values.size).to eq(commands.size)
+      expect(result.values.last).to be_a(SknSuccess)
       expect(result.values[3].value).to eq("NameError")
-      expect(result.values[3]).to be_a(SknFailure)
-      expect(result.values[3]).to be_a(SknFailure)
-      expect(result.values[0]).to be nil
+      expect(result.values[2]).to be_a(SknFailure)
+      expect(result.values[1]).to be_a(SknFailure)
+      expect(result.values[0]).to be_a(SknFailure)
+      expect(result.values[0].value).to eq("Unknown")
     end
   end
 
