@@ -368,6 +368,7 @@ to Http calls or the command to command handler pattern.  Using the #register_jo
 and it will be executed when #render_jobs is invoked.  HttpProcessor is what I needed and triggered me to add this feature.              
     
     Example here:
+    
 ```ruby
 begin
   # CommandJSONPost, CommandFORMGet, CommandJSONGet,
@@ -469,6 +470,7 @@ Each concrete Class supports the following utility methods:
 
 
 ## NestedResult Basic features include:
+
 ```ruby
  - provides the hash or dot notation methods of accessing values:
 
@@ -510,6 +512,7 @@ Each concrete Class supports the following utility methods:
 
 * The NestedResult produces these effects when given a params hash;
 * Follow VALUES that are Hashes, Arrays of Hashes, and Arrays of Arrays of Hashes
+
 ```ruby
     drb = SknUtils::NestedResult.new(params)                          Basic dot notation:
     ----------------------------------------------------      -----------------------------------------------------------------
@@ -534,6 +537,7 @@ Each concrete Class supports the following utility methods:
 ```
 
 * Expected usage
+
 ```ruby
        result =  SknUtils::NestedResult.new({
                            success: true,
@@ -549,6 +553,7 @@ Each concrete Class supports the following utility methods:
 
 
 * Wrap additional methods around the core NestedResult feature set
+
 ```ruby
        class MyPackage < SknUtils::NestedResult
           def initialize(params={})
