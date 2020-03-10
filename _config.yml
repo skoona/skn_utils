@@ -1,9 +1,10 @@
 title: SknUtils
 email: skoona@gmail.com
 description: > # this means to ignore newlines until "baseurl:"
-  Ruby GEM containing utilitarian classes to help build Ruby applications.  SknUtils::NestedResult is the primary class.  It is 
-  a threadsafe wrapper over Ruby's Hash with dot.notation, ?.presence, and nested deep-merge features added.  I use it for application 
-  settings via YAML files, and as a container for persistent objects.
+  Collection of pure-ruby utility classes and modules, with limited
+  dependencies, to augment the development of Ruby applications. Value containers supporting nested dot.notation access
+  over hashes, and utilities offering dependency injection/lookup, and language extensions support running in a non-rails
+  environment.  Plus, examples of null objects, class customization, and concurrent processing.
 baseurl: ""
 url: https://skoona.github.io/SknServices
 
@@ -21,4 +22,3 @@ github:
 author:
   name:       "James Scott, Jr. (a.k.a Skoona)"
   url:        https://keybase.io/skoona
-

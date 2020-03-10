@@ -201,39 +201,31 @@ Ruby's Hash object is already extremely flexible, even more so with the addition
             - enables `SknSettings.root`
         - `env:  !ruby/string:SknUtils::EnvStringHandler <%= ENV.fetch('RACK_ENV', 'development') %>`
             - enables `SknSettings.env.production?` ...
-1. Since SknSettings is by necessity a global constant, it can serve as Session Storage to keep system objects; like a ROM-RB instance.
-1. In-Memory Key-Store, use it to cache active user objects, or active Integration passwords, and/or objects that are not serializable.
-1. Command registries used to dispatch command requests to proper command handler. see example app [SknBase](https://github.com/skoona/skn_base/blob/master/strategy/services/content/command_handler.rb)
-```ruby
-    SknSettings.command_handler = {
-                            Commands::RetrieveAvailableResources  => method(:resources_metadata_service),
-                            Commands::RetrieveResourceContent  => method(:resource_content_service)
-                           }
-    ...
-    SknSettings.command_handler[ cmd.class ].call( cmd )
-    -- or --
-    SknSettings.command_handler.key?( cmd.class ) && 
-      cmd.valid? ? SknSettings.command_handler[ cmd.class ].call( cmd ) : command_not_found_action()
-```
+
 There are many more use cases for Ruby's Hash that this gem just makes easier to implement.
 
 
 ## Public Components
     SknUtils::NestedResult           # Primary Key/Value Container with Dot/Hash notiation support.
-        SknHash                      # Wrapper for name only, WITHOUT SknUtils namespace, inherits from SknUtils::NestedResult
-        SknUtils::ResultBean         # Wrapper for name only, inherits from SknUtils::NestedResult
-        SknUtils::PageControls       # Wrapper for name only, inherits from SknUtils::NestedResult
-        SknUtils::DottedHash         # Wrapper for name only, inherits from SknUtils::NestedResult
+        SknHash                      # Wrapper in name only, WITHOUT SknUtils namespace, inherits from SknUtils::NestedResult
+        SknUtils::ResultBean         # Wrapper in name only, inherits from SknUtils::NestedResult
+        SknUtils::PageControls       # Wrapper in name only, inherits from SknUtils::NestedResult
+        SknUtils::DottedHash         # Wrapper in name only, inherits from SknUtils::NestedResult
 
-    SknUtils::Configurable           # Basic one-level class configuration Module
+    SknSettings                      # Multi-level application Configuration class, Key/Value Container with Dot/Hash notiation support.
+                                     - Reads YAML files from ./config/ directory based by environment (RACK_ENV)
+                                     - INITIALIZED WHEN GEM LOADS    
 
-    SknSettings                      # Multi-level application Configuration class, Key/Value Container with Dot/Hash notiation support.    
+    SknUtils::Configurable           # Add Class writers/getters to any Class, think class configuration
 
-    SknContainer/SknRegistry         # Basic Key/Value container which #registers and #resolves procs, classes, and/or object
+    SknContainer/SknRegistry         # Key/Value container which #registers and #resolves procs, classes, and/or object
+                                     - Allows definition in one place, and label references as needed; dependency injection
+                                     - INITIALIZED WHEN GEM LOADS    
 
-    SknSuccess                       # Three attribute value containers for return codes   -- #value, #message, #success
+    SknSuccess                       # Three attribute value containers for consistant return codes   -- #value, #message, #success
                                        - Extra #payload method returns value as NestResult if value is_a Hash 
     SknFailure                       # Three attribute value containers for return codes   -- #value, #message, #success
+    
     SknUtils::ConcurrentJobs         # Async/Sync Job executor pool with HTTP support
         SknUtils::CommandJSONGet     # HTTP Get Command class expecting `json` return, located inside `job_commands`
         SknUtils::CommandJSONPut     # HTTP Put Command class expecting `json` return, located inside `job_commands`
@@ -245,7 +237,8 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
 
 
 ## Public Methods: SknUtils::Configurable module
- For making an arbitrary class configurable and then specifying those configuration values. 
+ For making an arbitrary class configurable and then specifying those configuration values. Intended to be used at the application 
+ level, similar to the use of `Rails`, or for classes that would benefit from a configuration value when objects are created from it. 
 ```ruby
   # (1) First establish the method names of class values desired.
   ################
@@ -310,21 +303,27 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
 ```
 
 
-## Public Methods: SknRegistry ONLY
-    `SknContainer` is global constant assigned to an instantiated instance of `SknRegistry`.
-    Returns the keyed value as the original instance/value or if provided a proc the result of calling that proc.
-    To register a class or object for global retrieval, use the following API.  Also review the RSpecs for additional useage info.
+## Public Methods: SknContainer and/or SknRegistry class
+    `SknContainer` is global constant assigned to an instantiated instance of `SknRegistry`.  `SknRegistry` can 
+    be instantiated in the regular way via `SknRegistry.new`; and is included in the SknConfigurable root options 
+    by default under the key `registry`.
+    
+    Either returns the labeled value as the original instance/value or if provided with a proc, the result of calling that proc.
+    To register, and `label`, a class or object for retrieval, use the following API.  Also review the RSpecs for 
+    additional useage info.
     
       #register(key, contents = nil, options = {})
         - example: 
             SknContainer.register(:some_klass, MyClass)                   -- class as value
             SknContainer.register(:the_instance, MyClass.new)             -- Object Instance as value 
-            SknContainer.register(:unique_instance, -> {MyClass.new})     -- New Object Instance for each #resolve 
+            SknContainer.register(:unique_instance, -> {MyClass.new}, call: true)  -- New Object Instance for each #resolve 
+            SknContainer.register(:unique_instance2, ->(parms) {MyClass.new(parms)}, call: false)  -- New Object with parms for each #resolve 
+            SknContainer.register(:some_proc, -> {MyClass.new}, call: false) -- Return uncalled proc for each #resolve 
 
             SknContainer                                                  -- #register returns self to enable chaining
                 .register(:unique_instance, -> {MyClass.new})
-                  .register(:the_instance, MyClass.new)
-                    .register(:some_klass, MyClass)    
+                .register(:the_instance, MyClass.new)
+                .register(:some_klass, MyClass)    
             
       #resolve(key)
         - example:
@@ -332,18 +331,22 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
             instance = SknContainer.resolve(:some_klass).new
             
             obj_instance1 = SknContainer.resolve(:unique_instance) 
-            obj_instance2 = SknContainer.resolve(:unique_instance)
+            obj_instance2 = SknContainer.resolve(:unique_instance2).call(parms)
             
             same_instance = SknContainer.resolve(:the_instance)
+   
+                some_proc = SknContainer.resolve(:some_proc).call
 
       * Testing Support:
-          - #substitute(...) allows you to mock an existing entry. #substitute is an alias for #register_mock              
+          - #substitute(...) allows you to mock an existing entry. #substitute is an alias for #register_mock
+            - SknContainer.substitute(:the_instance, MyClass.new)              
           - #restore! clears all mocked entries.  #restore! is an alias for #unregister_mock!
+            - SknContainer.restore!
 
 
-## Public Methods: SknUtils::ConcurrentJobs ONLY
+## Public Methods: SknUtils::ConcurrentJobs classes
     `ConcurrentJobs` behaves as a concurrent thread pool by using Concurrent::Promise from the `concurrent-ruby` gem. 
-    Enables the definition of Procs, or any callable class, which will be executed in parrallel the available jobs 
+    Enables the definition of Procs, or any callable class, which will be executed in parrallel with the available jobs 
     loaded into ConcurrentJobs.  Meant to reduce user-sensitive response times when multiple APIs must be invoked. 
     Also review the RSpecs for additional useage info.
     
@@ -401,8 +404,7 @@ end
 ```    
 
 
-
-## Public Methods: SknSettings ONLY
+## Public Methods: SknSettings class
     SknSettings is a global constant containing an initialized Object of SknUtils::Configuration using defaults
     To change the 'development'.yml default please use the following method early or in the case of Rails in 'application.rb
       #load_config_basename!(config_name) -- Where config_name is the name of yml files stored in the `./config/settings` directory
@@ -437,6 +439,11 @@ end
      #prepend_source!(file_path_or_hash)               -- self, adds yaml_file or hash to start of filelist (:reload! required)
      -------------------------------------------------
 
+    Usage
+     -------------------------------------------------
+     Dot notion of yaml file contents
+     SknSettings.version   # => version's value
+     -------------------------------------------------
 
 ## Public Methods: SknUtils::NestedResult, SknHash & SknSettings
     Each concrete Class supports the following utility methods:

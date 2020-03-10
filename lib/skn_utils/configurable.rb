@@ -63,6 +63,7 @@ module SknUtils
   # - metadata =  platform metadata container
   # - userdata =  user area
   # - metrics  =  platform metrics container
+  # - ...
   # #with(*user_attrs, enable_root: true|false) - defaults to enable of Main Class Attrs
   # ##
   # User-Defined Attrs
