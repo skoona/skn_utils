@@ -367,7 +367,7 @@ Commands and HttpProcessors are included to demonstrate Job creating patterns.  
 to Http calls or the command to command handler pattern.  Using the #register_job method you can pass callable BLOCK
 and it will be executed when #render_jobs is invoked.  HttpProcessor is what I needed and triggered me to add this feature.              
     
-    Example here:
+Example here:
     
 ```ruby
 begin
