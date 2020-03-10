@@ -237,8 +237,9 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
 
 
 ## Public Methods: SknUtils::Configurable module
- For making an arbitrary class configurable and then specifying those configuration values. Intended to be used at the application 
- level, similar to the use of `Rails`, or for classes that would benefit from a configuration value when objects are created from it. 
+For making an arbitrary class configurable and then specifying those configuration values. Intended to be used at the application 
+level, similar to the use of `Rails`, or for classes that would benefit from a configuration value when objects are created from it. 
+
 ```ruby
   # (1) First establish the method names of class values desired.
   ################
@@ -304,13 +305,13 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
 
 
 ## Public Methods: SknContainer and/or SknRegistry class
-    `SknContainer` is global constant assigned to an instantiated instance of `SknRegistry`.  `SknRegistry` can 
-    be instantiated in the regular way via `SknRegistry.new`; and is included in the SknConfigurable root options 
-    by default under the key `registry`.
-    
-    Either returns the labeled value as the original instance/value or if provided with a proc, the result of calling that proc.
-    To register, and `label`, a class or object for retrieval, use the following API.  Also review the RSpecs for 
-    additional useage info.
+`SknContainer` is global constant assigned to an instantiated instance of `SknRegistry`.  `SknRegistry` can 
+be instantiated in the regular way via `SknRegistry.new`; and is included in the SknConfigurable root options 
+by default under the key `registry`.
+
+Either returns the labeled value as the original instance/value or if provided with a proc, the result of calling that proc.
+To register, and `label`, a class or object for retrieval, use the following API.  Also review the RSpecs for 
+additional useage info.
     
       #register(key, contents = nil, options = {})
         - example: 
@@ -345,10 +346,10 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
 
 
 ## Public Methods: SknUtils::ConcurrentJobs classes
-    `ConcurrentJobs` behaves as a concurrent thread pool by using Concurrent::Promise from the `concurrent-ruby` gem. 
-    Enables the definition of Procs, or any callable class, which will be executed in parrallel with the available jobs 
-    loaded into ConcurrentJobs.  Meant to reduce user-sensitive response times when multiple APIs must be invoked. 
-    Also review the RSpecs for additional useage info.
+`ConcurrentJobs` behaves as a concurrent thread pool by using Concurrent::Promise from the `concurrent-ruby` gem. 
+Enables the definition of Procs, or any callable class, which will be executed in parrallel with the available jobs 
+loaded into ConcurrentJobs.  Meant to reduce user-sensitive response times when multiple APIs must be invoked. 
+Also review the RSpecs for additional useage info.
     
         SknUtils::ConcurrentJobs
            #call(async: true)               - Instantiate ConcurrentJobs with Async Workers, false for Sync Workers
@@ -362,9 +363,9 @@ There are many more use cases for Ruby's Hash that this gem just makes easier to
               #messages                     - Retrieves messages from job results, assumed present when job fails
               #values                       - Returns an array of individual results from job executions
 
-    Commands and HttpProcessors are included to demonstrate Job creating patterns.  ConcurrentJobs is not restricted
-    to Http calls or the command to command handler pattern.  Using the #register_job method you can pass callable BLOCK
-    and it will be executed when #render_jobs is invoked.  HttpProcessor is what I needed and triggered me to add this feature.              
+Commands and HttpProcessors are included to demonstrate Job creating patterns.  ConcurrentJobs is not restricted
+to Http calls or the command to command handler pattern.  Using the #register_job method you can pass callable BLOCK
+and it will be executed when #render_jobs is invoked.  HttpProcessor is what I needed and triggered me to add this feature.              
     
     Example here:
 ```ruby
@@ -405,8 +406,9 @@ end
 
 
 ## Public Methods: SknSettings class
-    SknSettings is a global constant containing an initialized Object of SknUtils::Configuration using defaults
-    To change the 'development'.yml default please use the following method early or in the case of Rails in 'application.rb
+SknSettings is a global constant containing an initialized Object of SknUtils::Configuration using defaults. 
+To change the 'development'.yml default please use the following method early or in the case of Rails in 'application.rb
+
       #load_config_basename!(config_name) -- Where config_name is the name of yml files stored in the `./config/settings` directory
       #config_path!(path)                 -- Where path format is './<dirs>/', default is: './config/'
                                              and contains a settings.yml file and a 'path/settings/' directory
@@ -441,12 +443,13 @@ end
 
     Usage
      -------------------------------------------------
-     Dot notion of yaml file contents
+     Dot notation of yaml file contents
      SknSettings.version   # => version's value
      -------------------------------------------------
 
 ## Public Methods: SknUtils::NestedResult, SknHash & SknSettings
-    Each concrete Class supports the following utility methods:
+Each concrete Class supports the following utility methods:
+    
       #to_hash                       -- returns a hash of current key/value pairs, including nested
       #to_json                       -- returns a json string of current key/value pairs, including nested
       #hash_from(:base_key)          -- exports the internal hash starting with this base level key
