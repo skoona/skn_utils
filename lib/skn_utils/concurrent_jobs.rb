@@ -16,7 +16,8 @@ module SknUtils
     def call
       @blk.call
     rescue => ex
-      SknFailure.(ex.class.name, { cause: ex.message, backtrace: ex.backtrace[0..8]})
+      failures = ex.backtrace.map {|x| x.split("/").last }.join(",")
+      SknFailure.(ex.class.name, { cause: ex.message, backtrace: failures})
     end
   end
 
@@ -28,7 +29,8 @@ module SknUtils
     def call
       @blk.value
     rescue => ex
-      SknFailure.(ex.class.name, { cause: ex.message, backtrace: ex.backtrace[0..8]})
+      failures = ex.backtrace.map {|x| x.split("/").last }.join(",")
+      SknFailure.(ex.class.name, { cause: ex.message, backtrace: failures})
     end
   end
 
@@ -50,11 +52,20 @@ module SknUtils
     end
   end
 
+  class CallableWrapperJob
+    def self.call(callable, command)
+      callable.call(command)
+    rescue => ex
+      failures = ex.backtrace.map {|x| x.split("/").last }.join(",")
+      SknFailure.(ex.class.name, { cause: ex.message, backtrace: failures})
+    end
+  end
   class JobWrapper
     def self.call(command, callable)
       callable.call(command)
     rescue => ex
-      SknFailure.(ex.class.name, { cause: ex.message, backtrace: ex.backtrace[0..8]})
+      failures = ex.backtrace.map {|x| x.split("/").last }.join(",")
+      SknFailure.(ex.class.name, { cause: ex.message, backtrace: failures})
     end
   end
 
@@ -93,7 +104,8 @@ module SknUtils
           res = worker.call
           acc.push( res.nil? ? SknFailure.("Unknown", {cause: "Nil Return Value to render Jobs", backtrace: []}) : res )
         rescue => ex
-          acc.push SknFailure.(ex.class.name, { cause: ex.message, backtrace: ex.backtrace[0..8]})
+          failures = ex.backtrace.map {|x| x.split("/").last }.join(",")
+          acc.push SknFailure.(ex.class.name, { cause: ex.message, backtrace: failures})
         end
       end
       @elapsed_time_string = SknUtils.duration(stime)
